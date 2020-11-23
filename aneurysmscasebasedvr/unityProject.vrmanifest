@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.aneurysmscasebasedvr.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\Hari\\WinterSemester2020\\MultiuserframeworkLauncher\\MUF-Kompakt\\aneurysmscasebasedvr\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "aneurysmscasebasedvr [Testing]"
+        }
+      }
+    }
+  ]
+}
