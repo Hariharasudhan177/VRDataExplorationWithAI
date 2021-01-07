@@ -59,6 +59,8 @@ namespace CAS
         /// </summary>
         public void PickAndPlace()
         {
+            Vector3 originalScale = transform.parent.localScale; 
+            transform.parent.localScale = new Vector3(1f, 1f, 1f); 
             //Validate values provided 
             bool validation = ValidateValues();
             if (!validation) return;
@@ -86,7 +88,7 @@ namespace CAS
 
                 //Position where model is to be placed 
                 Vector3 toBePosition = PointOnCircle(radiusOfSmallCircle, angleRequired, centreOfSmallCircle);
-
+                
                 /* Mesh is formed with vertices and triangles. So need to find the centre to position the mesh according to our needs
                  The centre is found using Mesh bounds */
                 //Mesh bounds 
@@ -100,7 +102,7 @@ namespace CAS
                 if (!child.GetComponent<CAS_PrepareModels>())
                 {
                     child.gameObject.AddComponent<CAS_PrepareModels>();
-                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, toBePosition, material);
+                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, material);
                 }
 
                 if (!child.GetComponent<CAS_ContolModel>())
@@ -120,7 +122,7 @@ namespace CAS
                     eachAngle = totalAngleOfSphere / numberOfModelsAtEachCircle;
                     angleRequired = (circleIndex * adjustmentAngle);
                     currentDistanceBetweenEachSmallCircle += (distanceBetweenSmallCircles - (circleIndex * adjustmentDistance));
-
+                    Debug.Log(currentDistanceBetweenEachSmallCircle + " " + distanceBetweenSmallCircles + " " + circleIndex + " " + adjustmentDistance); 
                     if (currentDistanceBetweenEachSmallCircle > radiusOfTheSphere)
                     {
                         //Infuture we can provide the values required by calculating the remainging 
@@ -129,9 +131,10 @@ namespace CAS
                     }
 
                     radiusOfSmallCircle = PythagoreanTheorem(radiusOfTheSphere, currentDistanceBetweenEachSmallCircle);
-
+                    //Debug.Log(radiusOfSmallCircle); 
                 }
             }
+            transform.parent.localScale = originalScale;
         }
 
         /// <summary>
@@ -180,9 +183,9 @@ namespace CAS
         public bool ValidateValues()
         {
             int numberOfChild = transform.childCount;
-
+            float nn = numberOfModelsAtFirstCircle + 1; 
             //Total models that could be accumulated from the number of models at first circle provided 
-            float numberOfModelsAccomodatable = (numberOfModelsAtFirstCircle * (numberOfModelsAtFirstCircle + 1)) / 2;
+            float numberOfModelsAccomodatable = (nn * (nn + 1)) / 2;
             if (numberOfModelsAccomodatable < numberOfChild)
             {
                 Debug.LogError("Models cannot be accomodated with the provided number of models at first circle. Value should be increased");

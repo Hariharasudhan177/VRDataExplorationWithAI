@@ -6,14 +6,25 @@ namespace CAS
 {
     public class CAS_ModelManager : MonoBehaviour
     {
+        //Model Information 
+        public Dictionary<string, GameObject> allModelsInformation;
+
+        //Default Material 
+        public Material defaultMaterial; 
+        
         public Dictionary<string, GameObject> filteredModelsListInFirstLayer;
         public Dictionary<string, GameObject> filteredModelsListInFirstLayerPrevious;
 
         // Start is called before the first frame update
         void Start()
         {
+            allModelsInformation = new Dictionary<string, GameObject>();
+
             filteredModelsListInFirstLayer = new Dictionary<string, GameObject>();
             filteredModelsListInFirstLayerPrevious = new Dictionary<string, GameObject>();
+
+            //Initialise prepare models 
+            //PrepareModels(); 
         }
 
         // Update is called once per frame
@@ -68,6 +79,21 @@ namespace CAS
                     unfilteredModel.Value.transform.GetComponent<CAS_ContolModel>().MoveModelToOriginalLayer(); 
                 }
             }
+        }
+
+        public void PrepareModels()
+        {            
+            //Looping through each child attached to the parent model object 
+            foreach (Transform child in transform)
+            {
+                //Prepare model 
+                if (!child.GetComponent<CAS_PrepareModels>())
+                {
+                    child.gameObject.AddComponent<CAS_PrepareModels>();
+                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, defaultMaterial);
+                }
+            }
+
         }
     }
 }

@@ -17,7 +17,7 @@ namespace CAS
         public GameObject filterSubOptionToggle;
 
         public CAS_DataManager dataManager;
-        public CAS_ModelManager modelManager;
+        public CAS_StepManager stepManager;
 
         //For hiding and showing - Should only use one in future 
         Dictionary<string, CAS_FilterSubOptionUI> filterSubOptionUIDictionary;
@@ -152,7 +152,7 @@ namespace CAS
             }
 
             List<string> filteredPatientIds = dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-            modelManager.FilterFirstLayer(filteredPatientIds); 
+            stepManager.IncreaseSteps(filteredPatientIds); 
         }
     }
 }

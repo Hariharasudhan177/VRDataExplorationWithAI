@@ -11,11 +11,11 @@ public class XRGrabMonkeyPatch : MonoBehaviour
 
         var newGripName = GetButtonName(InputHelpers.Button.GripPressed);
 
-        Debug.LogError("Monkey Patched Binary Grip Button Name: " + newGripName);
+        //Debug.LogError("Monkey Patched Binary Grip Button Name: " + newGripName);
 
         var newTriggerName = GetButtonName(InputHelpers.Button.TriggerPressed);
 
-        Debug.LogError("Monkey Patched Binary Trigger Button Name: " + newTriggerName);
+        //Debug.LogError("Monkey Patched Binary Trigger Button Name: " + newTriggerName);
 
     }
 

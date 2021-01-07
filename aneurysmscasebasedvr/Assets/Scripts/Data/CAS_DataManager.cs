@@ -3,22 +3,297 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Data;
 using System.Linq;
+using System;
+using System.Globalization;
 
 namespace CAS
 {
+    public enum TypeOfOptions{
+        specific, 
+        demographic, 
+        morphological, 
+        others, 
+        nofilter
+    }
+
     //using LINQ and normal query - Use one in future 
     public class CAS_DataManager : MonoBehaviour
     {
+        //Manager 
+        public CAS_Manager manager;
+
+        //Patient details main table
         private DataTable patientDetails;
+
+        //Model details 
+        Dictionary<string, GameObject> allModelsInformation;
+
+        //Legend details 
+        Dictionary<string, TypeOfOptions> columnTypeOfOption;
+
+        //From where data should be loaded
+        public string inputPath = "/Data/GlobalRecords.csv";
+
+        public void Start()
+        {
+            string path = Application.streamingAssetsPath + inputPath;
+
+            //Read data from path 
+            TextAsset dataCSV = new TextAsset(System.IO.File.ReadAllText(path));
+
+            //Initialization 
+            patientDetails = new DataTable();
+            allModelsInformation = new Dictionary<string, GameObject>();
+            columnTypeOfOption = new Dictionary<string, TypeOfOptions>();
+
+            ConvertCSVToDatatable(dataCSV.text);
+        }
+
+        void ConvertCSVToDatatable(string data)
+        {
+
+            patientDetails.Clear();
+
+            //Split data into rows 
+            string[] rowsOfInputData = data.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string dataWithoutModel= "";
+            int numberOfDataWithoutModel = 0;
+
+            int index = 0;
+            foreach (string row in rowsOfInputData)
+            {
+                string[] content = row.Split(new[] { ',' });
+
+                //DataTypeColumn which is second row 
+                string[] dataTypes = rowsOfInputData[1].Split(new[] { ',' });
+
+                //optionTypeColumn which is second row 
+                string[] optionTypes = rowsOfInputData[2].Split(new[] { ',' });
+
+                //First row of the dataset is header. So reading and adding columns 
+                if (index == 0)
+                {
+                    {
+                        //Id Column 
+                        DataColumn column = new DataColumn("index");
+                        column.DataType = System.Type.GetType("System.Int32");
+                        column.AutoIncrement = true;
+                        column.AutoIncrementSeed = 1;
+                        column.AutoIncrementStep = 1;
+                        patientDetails.Columns.Add(column);
+                    }
+
+                    //Other Columns from the data 
+                    for (int i = 0; i < content.Length; i++)
+                    {
+                        DataColumn column = new DataColumn(content[i]);
+                        Debug.Log(content[i] + dataTypes[i]);
+                        Debug.Log(dataTypes[i] == "integer");
+                        if (dataTypes[i] == "string")
+                        {
+                            column.DataType = System.Type.GetType("System.String"); 
+                        }else if(dataTypes[i] == "integer")
+                        {
+                            column.DataType = System.Type.GetType("System.Double");
+                        }
+                        patientDetails.Columns.Add(column);
+                    }
+
+                    //Adding some important columns 
+                    //To know if corresponding model is present
+                    {
+                        DataColumn column = new DataColumn("morphoPresent");
+                        column.DataType = System.Type.GetType("System.Boolean");
+                        patientDetails.Columns.Add(column); 
+                    }
+
+                    //To know if corresponding morpho is present
+                    {
+                        DataColumn column = new DataColumn("modelPresent");
+                        column.DataType = System.Type.GetType("System.Boolean");
+                        patientDetails.Columns.Add(column);
+                    }
+
+                    //Add option types 
+                    FindAndSetTypesOfOptions(content, optionTypes); 
+                }
+                //Second row data type and third row is type of parameter
+                else if(index != 1 && index != 2)
+                {                
+                    DataRow newRow = patientDetails.NewRow();
+                    
+                    for (int i = 0; i < content.Length; i++)
+                    {
+                        //check for null values  
+                        //checking the i value for that 
+                        if (i < content.Length && content[i] != null)
+                        {
+                            //column plus one to account for index 
+                            if (dataTypes[i] == "string")
+                            {
+                                if (content[i] != "")
+                                {
+                                    newRow[patientDetails.Columns[i + 1]] = content[i];
+                                }
+                                else
+                                {
+                                    newRow[patientDetails.Columns[i + 1]] = "N/A";
+                                }
+                            }
+                            else if(dataTypes[i] == "integer")
+                            {
+                                if (content[i] != "" && content[i] != "N/A")
+                                {
+                                    newRow[patientDetails.Columns[i + 1]] = double.Parse(content[i]);
+                                }
+                                else
+                                {
+                                    newRow[patientDetails.Columns[i + 1]] = -1.0d;
+                                }
+                            }
+                        }
+                    }
+
+                    if(double.Parse(newRow["Dmax"].ToString()) == -1.0d)
+                    {
+                        newRow["morphoPresent"] = true; 
+                    }
+                    else
+                    {
+                        newRow["morphoPresent"] = false; 
+                    }
+
+                    bool modelPresent = CheckIfCorrespondingModelIsPresent(content[0]);
+                    newRow["modelPresent"] = modelPresent;
+                    if (!modelPresent)
+                    {
+                        dataWithoutModel += content[0] + " ";
+                        numberOfDataWithoutModel++; 
+                    }
+
+                    patientDetails.Rows.Add(newRow);
+
+                }
+
+                index++;
+            }
+
+            manager.stepManager.allModelsInformation = allModelsInformation;
+
+            Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
+
+            //PrintDataMissingInformation 
+            int numberOfmodelsForWhichDataIsMissing = 0;
+            string modelsForWhichDataIsMissing = "";
+            foreach (Transform child in manager.stepManager.stepParents[0].transform)
+            {
+                if (child.GetComponent<CAS_PrepareModels>().dataAvailable < 0)
+                {
+                    modelsForWhichDataIsMissing += child.name + " ";
+                    numberOfmodelsForWhichDataIsMissing++;
+                }
+            }
+
+            Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
+
+            manager.filterAndGroupManager.PopulateFilterOptions();   
+        }
+
+        public bool CheckIfCorrespondingModelIsPresent(string patientId)
+        {
+            bool modelPresent = false; 
+
+            GameObject matchingModel = GameObject.Find(patientId);
+
+            if (matchingModel != null)
+            {
+                if (!allModelsInformation.ContainsKey(patientId))
+                {
+                    allModelsInformation.Add(patientId, matchingModel);
+                }
+                matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                modelPresent = true; 
+            }
+
+
+            if (matchingModel == null)
+            {
+                foreach (Transform child in manager.stepManager.stepParents[0].transform)
+                {
+                    if (child.name.Contains(patientId))
+                    {
+                        matchingModel = child.gameObject;
+                        if (!allModelsInformation.ContainsKey(patientId))
+                        {
+                            allModelsInformation.Add(patientId, matchingModel);
+                        }
+                        matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                        modelPresent = true; 
+                        break;
+                    }
+                }
+            }
+
+            return modelPresent; 
+        }
 
         public DataTable GetPatientDetails()
         {
             return patientDetails; 
         }
-
+            
         public void SetPatientDetails(DataTable _patientDetails)
         {
             patientDetails = _patientDetails; 
+        }
+
+        public void FindAndSetTypesOfOptions(String[] columnHeadings, String[] optionTypes)
+        {
+            TypeOfOptions typeOfThisColumn;
+
+            List<string> specific = new List<string>();
+            List<string> demographic = new List<string>();
+            List<string> morphological = new List<string>();
+            List<string> others = new List<string>();
+
+            for (int i = 0; i < columnHeadings.Length; i++)
+            {
+                if (optionTypes[i].ToLower() == "specific")
+                {
+                    typeOfThisColumn = TypeOfOptions.specific;
+                    specific.Add(columnHeadings[i]); 
+                }
+                else if (optionTypes[i].ToLower() == "demographic")
+                {
+                    typeOfThisColumn = TypeOfOptions.demographic;
+                    demographic.Add(columnHeadings[i]);
+                }
+                else if (optionTypes[i].ToLower() == "morphological")
+                {
+                    typeOfThisColumn = TypeOfOptions.morphological;
+                    morphological.Add(columnHeadings[i]);
+                }
+                else if (optionTypes[i].ToLower() == "others")
+                {
+                    typeOfThisColumn = TypeOfOptions.others;
+                    others.Add(columnHeadings[i]);
+                }
+                else 
+                {
+                    typeOfThisColumn = TypeOfOptions.nofilter;
+                }
+
+                columnTypeOfOption.Add(columnHeadings[i], typeOfThisColumn);
+            }
+
+            Dictionary<string, List<string>> optionsUnderSpecificTypes = new Dictionary<string, List<string>>();
+            optionsUnderSpecificTypes.Add("specific", specific);
+            optionsUnderSpecificTypes.Add("demographic", demographic);
+            optionsUnderSpecificTypes.Add("morphological", morphological);
+            optionsUnderSpecificTypes.Add("others", others);
+
+            manager.filterAndGroupManager.SetOptionsUnderSpecificTypes(optionsUnderSpecificTypes); 
         }
 
         //Column Names
@@ -38,6 +313,12 @@ namespace CAS
                 .Cast<DataRow>()
                 .Select(row => row[columnName])
                 .ToList();
+        }
+
+        //Column type
+        public Type GetColumnType(string columnName)
+        {
+            return patientDetails.Columns[columnName].DataType; 
         }
 
         //Distinct values from providing column names 
@@ -115,12 +396,6 @@ namespace CAS
 
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
         // Update is called once per frame
         void Update()
         {
@@ -189,6 +464,11 @@ namespace CAS
             filteredView.RowFilter = filter;
 
             return filteredView; 
+        }
+
+        public TypeOfOptions GetColumnTypeOfOption(string columnHeading)
+        {
+            return columnTypeOfOption[columnHeading]; 
         }
     }
 }

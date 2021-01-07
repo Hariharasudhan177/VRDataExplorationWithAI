@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Data;
-using System.Diagnostics; 
+using System.Diagnostics;
+using System; 
 
 namespace CAS
 {
@@ -24,8 +25,8 @@ namespace CAS
             //New patients datatable 
             patientDetails = new DataTable();
 
-            //ConvertCSVToDatatable(dataCSV.text);
-            ConvertCSVToDatatableWithDuplicateData(dataCSV.text); 
+            ConvertCSVToDatatable(dataCSV.text);
+            //ConvertCSVToDatatableWithDuplicateData(dataCSV.text); 
         }
 
         // Update is called once per frame
@@ -50,6 +51,10 @@ namespace CAS
                 UnityEngine.Debug.Log(rows.Length);
                 UnityEngine.Debug.Log(sw.ElapsedMilliseconds);
             }
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                AssignModelToDataTable(); 
+            }
         }
 
         void ConvertCSVToDatatable(string data)
@@ -57,12 +62,12 @@ namespace CAS
             patientDetails.Clear();
 
             //Split data into rows 
-            string[] rowsOfInputData = data.ToString().Split(new[] { '\r', '\n' });
+            string[] rowsOfInputData = data.ToString().Split(new[] { '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
 
             int index = 0;
             foreach (string row in rowsOfInputData)
             {
-
+                
                 string[] content = row.Split(new[] { ',' });
 
                 //First row of the dataset is header. So reading columns 
@@ -74,11 +79,10 @@ namespace CAS
                         patientDetails.Columns.Add(content[i]);
                     }
                 }
-                //Checking if last row as it is null 
-                else if (index < rowsOfInputData.Length - 1)
+                //Checking if last row as it is null - (Removed the -1 but should check whether this condition is necessary) 
+                else if (index < rowsOfInputData.Length)
                 {
-                    for (int j = 0; j < 500; j++)
-                    {
+                    
                         DataRow newRow = patientDetails.NewRow();
                         newRow["index"] = index;
                         for (int i = 0; i < content.Length; i++)
@@ -93,7 +97,7 @@ namespace CAS
                             }
                         }
                         patientDetails.Rows.Add(newRow);
-                    }
+                
 
                 }
                 index++;
@@ -102,73 +106,72 @@ namespace CAS
             dataManager.SetPatientDetails(patientDetails); 
         }
 
-        //index variable is wrong 
-        void ConvertCSVToDatatableWithDuplicateData(string data)
+        //Print the important details in a concatenated string .. dont waster anzthing as later might be useful 
+        public void AssignModelToDataTable()
         {
-            patientDetails.Clear();
+            Dictionary<string, GameObject> allModelsInformation = new Dictionary<string, GameObject>(); 
 
-            //Split data into rows 
-            string[] rowsOfInputData = data.ToString().Split(new[] { '\r', '\n' });
+            GameObject step1Parent = GameObject.Find("Step1"); 
+            DataRow[] rows = patientDetails.Select();
 
-            int index = 0;
-
-            foreach (string row in rowsOfInputData)
+            int numberOfRowsWithValidModels = 0; 
+            foreach (DataRow row in rows)
             {
-
-                string[] content = row.Split(new[] { ',' });
-
-                //First row of the dataset is header. So reading columns 
-                if (index == 0)
+                string rowStrig = "";
+                GameObject matchingModel = GameObject.Find(row.ItemArray[1].ToString());
+                if(matchingModel != null)
                 {
-                    patientDetails.Columns.Add("index");
-                    for (int i = 0; i < content.Length; i++)
+                    if (!allModelsInformation.ContainsKey(row.ItemArray[1].ToString()))
                     {
-                        patientDetails.Columns.Add(content[i]);
-                    }
+                        allModelsInformation.Add(row.ItemArray[1].ToString(), matchingModel);
+                    }                    
+
+                    matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1; 
+                    numberOfRowsWithValidModels++;
                 }
-                //Checking if last row as it is null 
-                else if (index < (rowsOfInputData.Length - 1))
+                
+                if(matchingModel == null)
                 {
-                    for (int j = 0; j < 8; j++)
+                    foreach(Transform child in step1Parent.transform)
                     {
-                        DataRow newRow = patientDetails.NewRow();
-                        newRow["index"] = index;
-                        for (int i = 0; i < content.Length; i++)
-                        {
-                            if (i == 0)
+                        if (child.name.Contains(row.ItemArray[1].ToString())){
+                            matchingModel = child.gameObject;
+                            if (!allModelsInformation.ContainsKey(row.ItemArray[1].ToString()))
                             {
-                                //First time same if otherwise different id's
-                                if (j == 0)
-                                {
-                                    newRow[patientDetails.Columns[i + 1]] = content[i];
-                                }
-                                else
-                                {
-                                    newRow[patientDetails.Columns[i + 1]] = content[i] + " (" + j + ")";
-                                }
+                                allModelsInformation.Add(row.ItemArray[1].ToString(), matchingModel);
                             }
-                            //check for null values 
-                            //last two column data not present in csv - so issue 
-                            //checking the i value for that 
-                            else if (i < content.Length && content[i] != null)
-                            {
-                                //column plus one to account for index 
-                                newRow[patientDetails.Columns[i + 1]] = content[i];
-                            }
+                            matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                            numberOfRowsWithValidModels++; 
+                            break; 
                         }
-                        patientDetails.Rows.Add(newRow);
-                    }
-
+                    }     
                 }
-                index++;
+
+                if(matchingModel == null)
+                {
+                    UnityEngine.Debug.Log(row.ItemArray[1].ToString());
+                }
+
+                foreach (object item in row.ItemArray)
+                {
+                    rowStrig = rowStrig + item.ToString() + " ";              
+                }               
             }
 
 
 
+            UnityEngine.Debug.Log(numberOfRowsWithValidModels);
 
-            dataManager.SetPatientDetails(patientDetails);
+            foreach (Transform child in step1Parent.transform)
+            {
+                if (child.GetComponent<CAS_PrepareModels>().dataAvailable < 0)
+                {
+                    UnityEngine.Debug.Log(child.name);
+                }
+            }
+
+            //dataManager.stepManager.allModelsInformation = allModelsInformation; 
         }
-
     }
 }
 

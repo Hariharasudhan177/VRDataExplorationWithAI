@@ -10,7 +10,8 @@ namespace CAS
     [ExecuteInEditMode]
     public class CAS_PrepareModels : MonoBehaviour
     {
-        public void Prepare(GameObject model, Vector3 position, Material material)
+        public int dataAvailable = -1; 
+        public void Prepare(GameObject model, Material material)
         {
             //Assigning Material 
             MeshRenderer meshRenderer = model.GetComponentInChildren<MeshRenderer>();
@@ -23,7 +24,9 @@ namespace CAS
 
 
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
-            //model.gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh; 
+            model.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
+            model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
+            model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().enabled = false;
 
             model.gameObject.AddComponent<CAS_GrabInteractable>();
             model.GetComponent<CAS_GrabInteractable>().throwOnDetach = false;

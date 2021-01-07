@@ -19,7 +19,7 @@ public class CAS_XRManager : MonoBehaviour
             oculusControllers.SetActive(true); 
         }else
         {
-            Debug.LogError("Unknown VR input system: " + XRSettings.loadedDeviceName);
+            //Debug.LogError("Unknown VR input system: " + XRSettings.loadedDeviceName);
         }
     }
 
