@@ -72,8 +72,7 @@ namespace CAS
                 models.Add(allModelsInformation[id]); 
             }
 
-            GameObject stepParent = new GameObject();
-            stepParent.name = "Step" + (stepParents.Count+1); 
+            GameObject stepParent = new GameObject(); 
             stepParent.transform.parent = modelsParent.transform;
 
             stepParent.AddComponent<CAS_EachStepManager>();
@@ -85,6 +84,31 @@ namespace CAS
             lastStepParent.RemoveFilteredModels(models); 
 
             stepParents.Add(stepModelManager);
+            stepParent.name = "Step" + (stepParents.Count);
+        }
+
+        public void RefreshStep(List<string> modelsId, int stepNumber)
+        {
+            //First add the models back, refresh the old step and then communicate with the new step 
+            CAS_EachStepManager stepParentManager = stepParents[stepNumber - 1];
+            CAS_EachStepManager lastStepParentManager = stepParents[stepNumber - 2];
+
+            List<GameObject> modelsToAddBack = new List<GameObject>();
+            foreach (string key in stepParentManager.GetModelsInThisStep().Keys)
+            {
+                modelsToAddBack.Add(stepParentManager.GetModelsInThisStep()[key]);
+            }
+            lastStepParentManager.AddBackFilteredModels(modelsToAddBack);
+
+            List<GameObject> models = new List<GameObject>();
+            foreach (string id in modelsId)
+            {
+                Debug.Log(id);
+                models.Add(allModelsInformation[id]);
+            }
+
+            stepParentManager.SetModels(models);
+            lastStepParentManager.RemoveFilteredModels(models);
         }
 
         public void DecreaseSteps()
@@ -107,7 +131,7 @@ namespace CAS
         public void InitialseStepParents()
         {
             GameObject firstParent = new GameObject();
-            firstParent.name = "Step" + (stepParents.Count + 1);
+            firstParent.name = "Step" + (stepParents.Count);
             firstParent.AddComponent<CAS_EachStepManager>();
             firstParent.AddComponent<CAS_PlaceModels>();
             firstParent.transform.parent = transform; 
@@ -127,7 +151,6 @@ namespace CAS
 
             totalInitialNumberOfModels = models.Count;
             stepParents[0].SetModels(models);
-
         }
     }
 }

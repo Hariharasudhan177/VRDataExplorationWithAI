@@ -122,7 +122,7 @@ namespace CAS
                     eachAngle = totalAngleOfSphere / numberOfModelsAtEachCircle;
                     angleRequired = (circleIndex * adjustmentAngle);
                     currentDistanceBetweenEachSmallCircle += (distanceBetweenSmallCircles - (circleIndex * adjustmentDistance));
-                    Debug.Log(currentDistanceBetweenEachSmallCircle + " " + distanceBetweenSmallCircles + " " + circleIndex + " " + adjustmentDistance); 
+                    //Debug.Log(currentDistanceBetweenEachSmallCircle + " " + distanceBetweenSmallCircles + " " + circleIndex + " " + adjustmentDistance); 
                     if (currentDistanceBetweenEachSmallCircle > radiusOfTheSphere)
                     {
                         //Infuture we can provide the values required by calculating the remainging 

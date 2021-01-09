@@ -48,8 +48,8 @@ namespace CAS
 
             CAS_TabGroup tabGroupOfFilterAndGroupOption = GetComponentInChildren<CAS_TabGroup>();
             tabGroupOfFilterAndGroupOption.ObjectsToSwap = objectsToSwap;
+            objectsToSwap[0].SetActive(true); 
 
-            filterAndGroupManager.filterAndGroupSubOptions.PopulateFilterOptions();
         }
 
         public TypeOfOptions FindTypeOfOptions(string columnHeading)

@@ -27,6 +27,11 @@ namespace CAS
 
         }
 
+        public Dictionary<string, GameObject> GetModelsInThisStep()
+        {
+            return modelsInThisStep; 
+        }
+
         public void SetModels(List<GameObject> models)
         {
             modelsInThisStep = new Dictionary<string, GameObject>();

@@ -68,6 +68,11 @@ namespace CAS
                 button.background.sprite = tabIdle;
             }
         }
+
+        public CAS_TabButton GetCurrentSelectedButton()
+        {
+            return selectedTab; 
+        }
     }
 }
 

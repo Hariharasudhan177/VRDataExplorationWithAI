@@ -22,7 +22,6 @@ public class CAS_FilterAndGroupOptionsType : MonoBehaviour
 
     public void SetOptionButtons(GameObject prefab, List<string> options)
     {
-        Debug.Log(options.Count);
         foreach(string option in options)
         {
             GameObject filterOptionButton = Instantiate(prefab, buttonParent);

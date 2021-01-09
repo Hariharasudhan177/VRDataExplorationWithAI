@@ -42,7 +42,7 @@ namespace CAS
             TextAsset dataCSV = new TextAsset(System.IO.File.ReadAllText(path));
 
             //Initialization 
-            patientDetails = new DataTable();
+            patientDetails = new DataTable("patientDetails");
             allModelsInformation = new Dictionary<string, GameObject>();
             columnTypeOfOption = new Dictionary<string, TypeOfOptions>();
 
@@ -88,8 +88,6 @@ namespace CAS
                     for (int i = 0; i < content.Length; i++)
                     {
                         DataColumn column = new DataColumn(content[i]);
-                        Debug.Log(content[i] + dataTypes[i]);
-                        Debug.Log(dataTypes[i] == "integer");
                         if (dataTypes[i] == "string")
                         {
                             column.DataType = System.Type.GetType("System.String"); 
@@ -342,6 +340,27 @@ namespace CAS
             return idList; 
         }
 
+        //Distinct values from providing column names 
+        public List<string> GetFilteredPatientIdsInteger(List<string> columnNames, List<List<double>> values)
+        {
+            DataView filteredView = QueryBuilderIntegerColumns(columnNames, values);
+            if (filteredView == null)
+            {
+                return null;
+            }
+
+            string[] requiredColumn = { "id" };
+            DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
+
+            List<string> idList = new List<string>();
+            foreach (DataRow row in filteredTable.Rows)
+            {
+                idList.Add(row["id"].ToString());
+            }
+
+            return idList;
+        }
+
         //Distinct values from providing column names with selectable columns 
         public List<object> GetFilteredPatientRequiredColumns(List<string> columnNames, List<List<string>> values, string[] requiredColumns)
         {
@@ -420,6 +439,37 @@ namespace CAS
             }
         }
 
+        public DataView QueryBuilderIntegerColumns(List<string> columnNames, List<List<double>> values)
+        {
+            int index = 0;
+            string filter = "";
+            foreach (string columnName in columnNames)
+            {
+                List<double> valuesForThisColumnName = values[index];
+
+                if (index != 0)
+                {
+                    filter += " AND "; 
+                }
+                
+                filter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )"; 
+
+                index++;
+            }
+            Debug.Log(filter); 
+
+            if(filter == "")
+            {
+                return null; 
+            }
+
+            //Creating a view for filter
+            DataView filteredView = new DataView(patientDetails);
+            filteredView.RowFilter = filter;
+
+            return filteredView; 
+        }
+
         public DataView QueryBuilder(List<string> columnNames, List<List<string>> values)
         {
             int index = 0;
@@ -452,18 +502,18 @@ namespace CAS
                 filter += ")";
                 index++;
             }
-            Debug.Log(filter); 
+            Debug.Log(filter);
 
-            if(filter == "")
+            if (filter == "")
             {
-                return null; 
+                return null;
             }
 
             //Creating a view for filter
             DataView filteredView = new DataView(patientDetails);
             filteredView.RowFilter = filter;
 
-            return filteredView; 
+            return filteredView;
         }
 
         public TypeOfOptions GetColumnTypeOfOption(string columnHeading)
@@ -472,4 +522,3 @@ namespace CAS
         }
     }
 }
-
