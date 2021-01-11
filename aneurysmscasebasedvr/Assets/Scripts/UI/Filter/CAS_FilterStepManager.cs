@@ -8,11 +8,11 @@ namespace CAS
     public class CAS_FilterStepManager : MonoBehaviour
     {
         CAS_TabGroup tabGroup; 
-        CAS_TabButton[] tabButtons;
+        public CAS_TabButton[] tabButtons;
 
         Dictionary<int, bool> eachStepStatus;
-        Dictionary<int, CAS_EachFilterAndGroupStep> eachFilterAndGroupSteps;
-        int activeAndCurrentStep = 0;
+        public Dictionary<int, CAS_EachFilterAndGroupStep> eachFilterAndGroupSteps;
+        public int activeAndCurrentStep = 0;
 
         //string activeAndCurrentStep;
 
@@ -27,7 +27,7 @@ namespace CAS
         // Start is called before the first frame update
         void Start()
         {
-            tabButtons = GetComponentsInChildren<CAS_TabButton>();
+            //tabButtons = GetComponentsInChildren<CAS_TabButton>();
             tabGroup = GetComponentInChildren<CAS_TabGroup>();
 
             int index = 0; 
@@ -55,24 +55,49 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-
+            int index = 0; 
+            foreach(CAS_TabButton tabButton in tabButtons)
+            {
+                if (tabGroup.selectedTab.name == tabButton.name)
+                {
+                    activeAndCurrentStep = index; 
+                }
+                index++; 
+            }            
         }
 
         public void ActivateStep(int index)
         {
-            if(index > eachStepStatus.Count-1  && index < eachStepStatus.Count - 1)
+            Debug.Log(index); 
+            if(index > -1)
             {
-                eachStepStatus[index] = true;
-                eachFilterAndGroupSteps[index].ActivateThisStep();
+                if(index < eachStepStatus.Count - 1)
+                {
+                    eachStepStatus[index] = true;
+                    eachFilterAndGroupSteps[index].ActivateThisStep();
+                }
             }
         }
 
-        public void DeActivateStep(int index)
+        public void ActivateStepButton(int index)
         {
-            if (index > eachStepStatus.Count - 1 && index < eachStepStatus.Count - 1)
+            if (index > -1)
             {
-                eachStepStatus[index] = false;
-                eachFilterAndGroupSteps[index].DeActivateThisStep();
+                if (index < eachStepStatus.Count - 1)
+                {
+                    tabButtons[index].GetComponent<Button>().interactable = true;
+                }
+            }          
+        }
+
+        public void DeActivateStepButton(int index)
+        {
+            if (index > -1)
+            {
+                if (index < eachStepStatus.Count - 1)
+                {
+                    tabButtons[index].GetComponent<Button>().interactable = false;
+                }
             }
         }
 
@@ -98,6 +123,11 @@ namespace CAS
         public int GetCurrentAndActiveStep()
         {
             return activeAndCurrentStep; 
+        }
+
+        public void SetCurrentAndActiveStep(int value)
+        {
+            activeAndCurrentStep = value; 
         }
     }
 }

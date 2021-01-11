@@ -322,16 +322,17 @@ namespace CAS
         //Distinct values from providing column names 
         public List<string> GetFilteredPatientIds(List<string> columnNames, List<List<string>> values)
         {
+            List<string> idList = new List<string>();
             DataView filteredView = QueryBuilder(columnNames, values);
             if(filteredView == null)
             {
-                return null; 
+                return idList; 
             }
 
             string[] requiredColumn = { "id" }; 
             DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
 
-            List<string> idList = new List<string>(); 
+           
             foreach (DataRow row in filteredTable.Rows)
             {
                 idList.Add(row["id"].ToString());
@@ -343,16 +344,16 @@ namespace CAS
         //Distinct values from providing column names 
         public List<string> GetFilteredPatientIdsInteger(List<string> columnNames, List<List<double>> values)
         {
+            List<string> idList = new List<string>();
             DataView filteredView = QueryBuilderIntegerColumns(columnNames, values);
             if (filteredView == null)
             {
-                return null;
+                return idList;
             }
 
             string[] requiredColumn = { "id" };
             DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
 
-            List<string> idList = new List<string>();
             foreach (DataRow row in filteredTable.Rows)
             {
                 idList.Add(row["id"].ToString());
@@ -456,6 +457,12 @@ namespace CAS
 
                 index++;
             }
+
+            if(filter != "")
+            {
+                filter += " AND (modelPresent = true)";
+            }
+            
             Debug.Log(filter); 
 
             if(filter == "")
@@ -502,6 +509,12 @@ namespace CAS
                 filter += ")";
                 index++;
             }
+
+            if (filter != "")
+            {
+                filter += " AND (modelPresent = true)";
+            }
+
             Debug.Log(filter);
 
             if (filter == "")

@@ -12,7 +12,7 @@ namespace CAS
         public GameObject filterAndGroupOptionTypePanelPrefab;
         public GameObject filterAndGroupOptionTypePanelPrefabParent;
 
-        public GameObject filterAndGroupOptionTypeButtonPrefab; 
+        public GameObject filterAndGroupOptionTypeButtonPrefab;
 
         private void Awake()
         {
@@ -31,6 +31,11 @@ namespace CAS
 
         }
 
+        public void SetFilterOptionSelected(string key)
+        {
+            filterAndGroupManager.SetFilterOptionSelected(key); 
+        }
+
         public void PopulateFilterOptions()
         {
             List<GameObject> objectsToSwap = new List<GameObject>();
@@ -43,13 +48,12 @@ namespace CAS
 
                 CAS_FilterAndGroupOptionsType filterAndGroupOptionsType = filterAndGroupOptionTypePanel.GetComponent<CAS_FilterAndGroupOptionsType>();
                 filterAndGroupOptionsType.SetOptionButtons(filterAndGroupOptionTypeButtonPrefab, filterAndGroupManager.GetOptionsUnderSpecificTypes()[key]);
-                objectsToSwap.Add(filterAndGroupOptionTypePanel);               
+                objectsToSwap.Add(filterAndGroupOptionTypePanel); 
             }
 
             CAS_TabGroup tabGroupOfFilterAndGroupOption = GetComponentInChildren<CAS_TabGroup>();
             tabGroupOfFilterAndGroupOption.ObjectsToSwap = objectsToSwap;
             objectsToSwap[0].SetActive(true); 
-
         }
 
         public TypeOfOptions FindTypeOfOptions(string columnHeading)

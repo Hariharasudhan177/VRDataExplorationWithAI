@@ -12,6 +12,8 @@ namespace CAS
         public Slider fromSlider;
         public Slider toSlider;
 
+        bool settingValue = false; 
+
         // Start is called before the first frame update
         void Start()
         {
@@ -26,21 +28,44 @@ namespace CAS
 
         public void SetEachFilterAndGroupSubOptionContent(double min, double max)
         {
+            settingValue = true; 
             fromSlider.minValue = (float)min;
             fromSlider.maxValue = (float)max;
+            fromSlider.gameObject.SetActive(true); 
 
             toSlider.minValue = (float)min;
             toSlider.maxValue = (float)max;
+            toSlider.gameObject.SetActive(true);
+            toSlider.value = (float)max;
+            settingValue = false; 
         }
 
         public void ChageFromSliderValue(float value)
         {
-            filterAndGroupSubOptionPanel.SetFromToSliderValue(0, value);
+            if (!settingValue)
+            {
+                if (value > toSlider.value)
+                {
+                    fromSlider.value = toSlider.value;
+                    return;
+                }
+
+                filterAndGroupSubOptionPanel.SetFromToSliderValue(0, value);
+            }
         }
 
         public void ChageToSliderValue(float value)
         {
-            filterAndGroupSubOptionPanel.SetFromToSliderValue(1, value);
+            if (!settingValue)
+            {
+                if(value < fromSlider.value)
+                {
+                    toSlider.value = fromSlider.value; 
+                    return; 
+                }
+
+                filterAndGroupSubOptionPanel.SetFromToSliderValue(1, value);
+            }
         }
     }
 

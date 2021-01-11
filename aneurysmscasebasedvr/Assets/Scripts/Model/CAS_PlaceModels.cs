@@ -53,14 +53,18 @@ namespace CAS
 
         public Material material;
 
-
         /// <summary>
         /// Picks every child models and places them in spherical wireframe
         /// </summary>
-        public void PickAndPlace()
+        public void PickAndPlace(LayerChangeType layerChangeType)
         {
-            Vector3 originalScale = transform.parent.localScale; 
-            transform.parent.localScale = new Vector3(1f, 1f, 1f); 
+            transform.GetComponentInParent<CAS_StepManager>().SetTrueScale(); 
+
+            material = GetComponentInParent<CAS_StepManager>().defaultMaterial;
+            Dictionary<string, Vector3> positionOfTheModels = new Dictionary<string, Vector3>(); 
+
+            //Vector3 originalScale = transform.parent.localScale; 
+            //transform.parent.localScale = new Vector3(1f, 1f, 1f); 
             //Validate values provided 
             bool validation = ValidateValues();
             if (!validation) return;
@@ -95,7 +99,12 @@ namespace CAS
                 Bounds meshBounds = child.GetComponentInChildren<MeshFilter>().sharedMesh.bounds;
                 //Offset by which the model is to be placed correctly 
                 //child.transform.position = toBePosition - meshBounds.center;
-                child.transform.position = toBePosition;
+                //child.transform.position = toBePosition;
+                Vector3 startPosition = child.transform.position; 
+                //child.transform.position = Vector3.Lerp(startPosition, toBePosition, Time.deltaTime*0.5f);
+                positionOfTheModels.Add(child.name, toBePosition); 
+
+                //Not sure of this line 
                 child.GetChild(0).transform.localPosition = Vector3.zero - meshBounds.center;
 
                 //Prepare model 
@@ -110,6 +119,8 @@ namespace CAS
                     child.gameObject.AddComponent<CAS_ContolModel>();
                 }
 
+                child.gameObject.GetComponent<CAS_ContolModel>().SetStepOriginalPositionMoving(toBePosition, layerChangeType); 
+
                 index++;
                 angleRequired = (circleIndex * adjustmentAngle) + (eachAngle * index);
 
@@ -122,7 +133,7 @@ namespace CAS
                     eachAngle = totalAngleOfSphere / numberOfModelsAtEachCircle;
                     angleRequired = (circleIndex * adjustmentAngle);
                     currentDistanceBetweenEachSmallCircle += (distanceBetweenSmallCircles - (circleIndex * adjustmentDistance));
-                    //Debug.Log(currentDistanceBetweenEachSmallCircle + " " + distanceBetweenSmallCircles + " " + circleIndex + " " + adjustmentDistance); 
+                    //Debug.Log(currentDistanceBetweenEachSmallCircle + " " + distanceBetweenSmallCircles + " " + circleIndex + " " + adjustmentDistance + " " + transform.GetComponentsInChildren<CAS_PrepareModels>().Length); 
                     if (currentDistanceBetweenEachSmallCircle > radiusOfTheSphere)
                     {
                         //Infuture we can provide the values required by calculating the remainging 
@@ -134,7 +145,9 @@ namespace CAS
                     //Debug.Log(radiusOfSmallCircle); 
                 }
             }
-            transform.parent.localScale = originalScale;
+            //transform.parent.localScale = originalScale;
+            transform.GetComponentInParent<CAS_StepManager>().SetOriginalScale();
+            transform.GetComponent<CAS_EachStepManager>().SetOriginalPositionOfTheModels(positionOfTheModels); 
         }
 
         /// <summary>

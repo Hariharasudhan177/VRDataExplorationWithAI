@@ -96,5 +96,10 @@ namespace CAS
         {
             filterStepManager.RemoveFilterFromActiveStepInteger(filterKey);
         }
+
+        public void SetFilterOptionSelected(string key)
+        {
+            filterAndGroupSubOptions.SetfilterSubOptionPanelsSelected(key); 
+        }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using System.Linq; 
 
 namespace CAS
 {
@@ -27,11 +28,14 @@ namespace CAS
         public int stepNumber;
 
         public GameObject filterButton;
-        public GameObject removeAllButton; 
+        public GameObject removeAllButton;
+
+        GameObject displayListGameObject; 
 
         void Awake()
         {
-            
+            filterSubOptionsSelected = new Dictionary<string, List<string>>();
+            filterSubOptionsSelectedInteger = new Dictionary<string, List<double>>();
         }
         // Start is called before the first frame update
         void Start()
@@ -42,13 +46,55 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
+            if(filterStepStatus == FilterStepStatus.Active)
+            {
+                filterAndGroupManager.filterStepManager.ActivateStepButton(stepNumber - 2);
 
+                filterAndGroupManager.filterStepManager.DeActivateStepButton(stepNumber);
+            }
+            else if(filterStepStatus == FilterStepStatus.FilterAdded)
+            {
+                filterAndGroupManager.filterStepManager.DeActivateStepButton(stepNumber - 2);
+
+                filterAndGroupManager.filterStepManager.DeActivateStepButton(stepNumber);
+            }
+            else if(filterStepStatus == FilterStepStatus.Filtered)
+            {
+                filterAndGroupManager.filterStepManager.DeActivateStepButton(stepNumber-2);
+
+                //Activating Next Step
+                filterAndGroupManager.filterStepManager.ActivateStepButton(stepNumber);
+            }
+            else if(filterStepStatus == FilterStepStatus.Inactive)
+            {
+
+            }
         }
 
         public void AddFilterToThisStep(string filterKey, List<string> filterOptions)
-        {
-            filterStepStatus = FilterStepStatus.FilterAdded; 
-            filterSubOptionsSelected.Add(filterKey, filterOptions);
+        {          
+            if (filterStepStatus == FilterStepStatus.Active)
+            {            
+                filterStepStatus = FilterStepStatus.FilterAdded;
+                filterAndGroupManager.filterStepManager.ActivateStep(stepNumber-1);
+            }
+
+            if(filterOptions.Count > 0)
+            {
+                filterSubOptionsSelected.Add(filterKey, filterOptions);
+            }
+            else
+            {
+                if (filterSubOptionsSelected.ContainsKey(filterKey))
+                {
+                    filterSubOptionsSelected.Remove(filterKey);
+                }
+
+                if((!(filterSubOptionsSelected.Count > 1)) && (filterStepStatus != FilterStepStatus.Filtered))
+                {
+                    filterStepStatus = FilterStepStatus.Active;
+                }
+            }
 
             string displayList = "";
             foreach (string filterOptionKey in filterSubOptionsSelected.Keys)
@@ -65,7 +111,12 @@ namespace CAS
 
         public void AddFilterToThisStepInteger(string filterKey, List<double> filterOptions)
         {
-            filterStepStatus = FilterStepStatus.FilterAdded;
+            if (filterStepStatus == FilterStepStatus.Active)
+            {
+                filterStepStatus = FilterStepStatus.FilterAdded;
+                filterAndGroupManager.filterStepManager.ActivateStep(stepNumber-1);
+            }
+
             filterSubOptionsSelectedInteger.Add(filterKey, filterOptions);
 
             string displayList = "";
@@ -83,7 +134,6 @@ namespace CAS
 
         public void RemoveFilterFromThisStep(string filterKey)
         {
-            filterStepStatus = FilterStepStatus.FilterAdded;
             filterSubOptionsSelected.Remove(filterKey); 
 
             string displayList = "";
@@ -101,7 +151,6 @@ namespace CAS
 
         public void RemoveFilterFromThisStepInteger(string filterKey)
         {
-            filterStepStatus = FilterStepStatus.FilterAdded;
             filterSubOptionsSelectedInteger.Remove(filterKey);
 
             string displayList = "";
@@ -119,39 +168,41 @@ namespace CAS
 
         public void OnClickFilterButton()
         {
-            filterStepStatus = FilterStepStatus.Filtered;
-
             if (filterStepStatus == FilterStepStatus.FilterAdded)
             {
                 List<string> filterOptions = new List<string>();
                 List<List<string>> filterOptionsValues = new List<List<string>>();
 
-                foreach (string key in filterSubOptionsSelected.Keys)
+                for (int i = 0; i <= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
                 {
-                    filterOptions.Add(key);
-                    filterOptionsValues.Add(filterSubOptionsSelected[key]);
+                    foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected.Keys)
+                    {
+                        filterOptions.Add(key);
+                        filterOptionsValues.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected[key]);
+                    }
                 }
 
                 List<string> filterOptionsInteger = new List<string>();
                 List<List<double>> filterOptionsValuesInteger = new List<List<double>>();
 
-                foreach (string key in filterSubOptionsSelectedInteger.Keys)
+                for(int i=0; i<= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
                 {
-                    filterOptionsInteger.Add(key);
-                    filterOptionsValuesInteger.Add(filterSubOptionsSelectedInteger[key]);
+                    foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger.Keys)
+                    {
+                        filterOptionsInteger.Add(key);
+                        filterOptionsValuesInteger.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger[key]);
+                    }
                 }
-
+                
                 List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptions, filterOptionsValuesInteger);
+                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
 
                 List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
                 filteredPatientIds.AddRange(filteredPatientIdsFromString);
                 filteredPatientIds.AddRange(filteredPatientIdsFromInteger);
 
                 filterAndGroupManager.manager.stepManager.IncreaseSteps(filteredPatientIds);
-
-                filterAndGroupManager.filterStepManager.ActivateStep(stepNumber);
-                filterAndGroupManager.filterStepManager.DeActivateStep(stepNumber-1);
+                filterStepStatus = FilterStepStatus.Filtered;
             }
             else if(filterStepStatus == FilterStepStatus.Filtered)
             {
@@ -174,42 +225,35 @@ namespace CAS
                 }
 
                 List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptions, filterOptionsValuesInteger);
+                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
 
                 List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
                 filteredPatientIds.AddRange(filteredPatientIdsFromString);
                 filteredPatientIds.AddRange(filteredPatientIdsFromInteger);         
 
                 filterAndGroupManager.manager.stepManager.RefreshStep(filteredPatientIds, stepNumber);
-            }
-        }
 
-        public void OnClickRemoveAllButton()
-        {
-            if (filterStepStatus == FilterStepStatus.Filtered)
-            {
-                filterAndGroupManager.manager.stepManager.DecreaseSteps();
-                filterAndGroupManager.filterStepManager.ActivateStep(stepNumber);
-                filterAndGroupManager.filterStepManager.DeActivateStep(stepNumber + 1);
+                if(!(filterSubOptionsSelected.Count > 0))
+                {
+                    filterStepStatus = FilterStepStatus.Active; 
+                }
             }
         }
 
         public void SetDisplayContent(string displayList)
         {
-            GameObject displayListGameObject = Instantiate(filterAndGroupManager.filterStepManager.displayListPrefab, filterDisplayListParent);
+            if(!displayListGameObject)
+            {
+                displayListGameObject = Instantiate(filterAndGroupManager.filterStepManager.displayListPrefab, filterDisplayListParent);
+            }
+ 
             displayListGameObject.GetComponent<CAS_EachDisplayList>().SetDisplayContent(displayList); 
         }
 
         public void ActivateThisStep()
         {
             filterButton.GetComponent<Button>().interactable = true;
-            removeAllButton.GetComponent<Button>().interactable = true; 
-        }
-
-        public void DeActivateThisStep()
-        {
-            filterButton.GetComponent<Button>().interactable = false;
-            removeAllButton.GetComponent<Button>().interactable = false;
+            removeAllButton.GetComponent<Button>().interactable = true;
         }
     }
 }

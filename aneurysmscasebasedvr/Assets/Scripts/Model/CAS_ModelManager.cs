@@ -81,20 +81,6 @@ namespace CAS
             }
         }
 
-        public void PrepareModels()
-        {            
-            //Looping through each child attached to the parent model object 
-            foreach (Transform child in transform)
-            {
-                //Prepare model 
-                if (!child.GetComponent<CAS_PrepareModels>())
-                {
-                    child.gameObject.AddComponent<CAS_PrepareModels>();
-                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, defaultMaterial);
-                }
-            }
-
-        }
     }
 }
 

@@ -17,13 +17,12 @@ namespace CAS
 
         //A way to do the same with only one rather than using both dict and list 
         public Dictionary<string, GameObject> filterSubOptionPanelsDict;
-        public List<GameObject> filterSubOptionPanelsList;
+        string currentFilterSubOptionPanelSelected; 
 
         // Start is called before the first frame update
         void Awake()
         {
             filterSubOptionPanelsDict = new Dictionary<string, GameObject>();
-            filterSubOptionPanelsList = new List<GameObject>(); 
         }
 
         // Update is called once per frame
@@ -33,22 +32,32 @@ namespace CAS
         }
 
         public void PopulateFilterOptions()
-        {            
+        {
             foreach (string key in filterAndGroupManager.GetOptionsUnderSpecificTypes().Keys)
             {
-                List<string> filterOptionsOfThisType = filterAndGroupManager.GetOptionsUnderSpecificTypes()[key]; 
+                List<string> filterOptionsOfThisType = filterAndGroupManager.GetOptionsUnderSpecificTypes()[key];
 
-                foreach(string filterOption in filterOptionsOfThisType)
+                foreach (string filterOption in filterOptionsOfThisType)
                 {
                     GameObject filterSubOptionPanel = Instantiate(filterAndGroupSubOptionPanelPrefab, filterAndGroupSubOptionPanelPrefabParent.transform);
-                    filterSubOptionPanel.GetComponent<CAS_FilterAndGroupSubOptionPanel>().SetFitlerOptionName(filterOption); 
+                    filterSubOptionPanel.GetComponent<CAS_FilterAndGroupSubOptionPanel>().SetFitlerOptionName(filterOption);
+                    filterSubOptionPanel.name = filterOption; 
                     filterSubOptionPanelsDict.Add(filterOption, filterSubOptionPanel);
-                    filterSubOptionPanelsList.Add(filterSubOptionPanel); 
-                    filterSubOptionPanel.SetActive(false);
+                    //filterSubOptionPanel.SetActive(false);
+                    filterSubOptionPanel.GetComponent<CAS_FilterAndGroupSubOptionPanel>().initialStatus = false;  
                 }
             }
 
-            filterSubOptionPanelsList[0].SetActive(true); 
+            currentFilterSubOptionPanelSelected = filterSubOptionPanelsDict.Keys.ToList()[0];
+            //filterSubOptionPanelsDict[currentFilterSubOptionPanelSelected].SetActive(true); 
+            filterSubOptionPanelsDict[currentFilterSubOptionPanelSelected].GetComponent<CAS_FilterAndGroupSubOptionPanel>().initialStatus = true;
+        }
+
+        public void SetfilterSubOptionPanelsSelected(string key)
+        {
+            filterSubOptionPanelsDict[currentFilterSubOptionPanelSelected].SetActive(false);
+            filterSubOptionPanelsDict[key].SetActive(true);
+            currentFilterSubOptionPanelSelected = key; 
         }
     }
 }

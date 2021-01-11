@@ -384,7 +384,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1666502075}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6081416555443894341}
+        m_MethodName: OnClickAddThisFilterButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1751005844
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,7 +578,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1981142941}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6081416555443894341}
+        m_MethodName: OnClickRemoveThisFilterButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &317464449498881943
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,7 +708,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 731993373255245894}
   m_HandleRect: {fileID: 6002021750469739751}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -756,7 +778,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Add this filter
+  m_text: Change this filter
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -943,7 +965,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3699487856540911477}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6081416555443894341}
+        m_MethodName: OnClickChangeThisFilterButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2287988800030780460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1063,7 +1096,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7150049929410189161}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999221
+  m_Size: 0.99994063
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1505,6 +1538,7 @@ MonoBehaviour:
   parentContentOfToggle: {fileID: 7486663826699571112}
   addFilterButton: {fileID: 1666502072}
   changeFilterButton: {fileID: 589071797230998162}
+  initialStatus: 0
 --- !u!1 &7486663826699571112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1539,7 +1573,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000027878683}
+  m_AnchoredPosition: {x: 0, y: -0.000031856733}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2552541442529131179

@@ -14,17 +14,22 @@ namespace CAS
         //Model Information 
         public Dictionary<string, GameObject> allModelsInformation;
 
+        public Material defaultMaterial; 
+
         [HideInInspector]
         public List<CAS_EachStepManager> stepParents;
 
         [HideInInspector]
         public int totalInitialNumberOfModels;
 
+        Vector3 originalScale; 
+
         private void Awake()
         {
             allModelsInformation = new Dictionary<string, GameObject>();
             stepParents = new List<CAS_EachStepManager>();
             modelsParent = transform.gameObject;
+            originalScale = transform.localScale; 
             InitialseStepParents();
         }
 
@@ -84,14 +89,14 @@ namespace CAS
             lastStepParent.RemoveFilteredModels(models); 
 
             stepParents.Add(stepModelManager);
-            stepParent.name = "Step" + (stepParents.Count);
+            stepParent.name = "Step" + (stepParents.Count-1);
         }
 
         public void RefreshStep(List<string> modelsId, int stepNumber)
         {
             //First add the models back, refresh the old step and then communicate with the new step 
-            CAS_EachStepManager stepParentManager = stepParents[stepNumber - 1];
-            CAS_EachStepManager lastStepParentManager = stepParents[stepNumber - 2];
+            CAS_EachStepManager stepParentManager = stepParents[stepNumber];    
+            CAS_EachStepManager lastStepParentManager = stepParents[stepNumber - 1];
 
             List<GameObject> modelsToAddBack = new List<GameObject>();
             foreach (string key in stepParentManager.GetModelsInThisStep().Keys)
@@ -107,7 +112,7 @@ namespace CAS
                 models.Add(allModelsInformation[id]);
             }
 
-            stepParentManager.SetModels(models);
+            stepParentManager.SetModelsRefresh(models);
             lastStepParentManager.RemoveFilteredModels(models);
         }
 
@@ -150,7 +155,18 @@ namespace CAS
             }
 
             totalInitialNumberOfModels = models.Count;
-            stepParents[0].SetModels(models);
+            stepParents[0].SetModels(models); 
+            stepParents[0].initial = true; 
+        }
+
+        public void SetTrueScale()
+        {
+            transform.localScale = Vector3.one; 
+        }
+
+        public void SetOriginalScale()
+        {
+            transform.localScale = originalScale; 
         }
     }
 }
