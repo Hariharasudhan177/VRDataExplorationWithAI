@@ -73,7 +73,6 @@ namespace CAS
             List<GameObject> models = new List<GameObject>(); 
             foreach(string id in modelsId)
             {
-                Debug.Log(id); 
                 models.Add(allModelsInformation[id]); 
             }
 
@@ -167,6 +166,12 @@ namespace CAS
         public void SetOriginalScale()
         {
             transform.localScale = originalScale; 
+        }
+
+        public void GroupByStep(Dictionary<string, List<string>> filteredPatientIdsGroupBy, int stepNumber)
+        {
+            CAS_EachStepManager stepParentManager = stepParents[stepNumber];
+            stepParentManager.GroupModels(filteredPatientIdsGroupBy); 
         }
     }
 }

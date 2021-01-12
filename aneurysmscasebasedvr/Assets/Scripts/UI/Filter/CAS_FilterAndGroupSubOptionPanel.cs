@@ -29,6 +29,7 @@ namespace CAS
         public GameObject addFilterButton;
         public GameObject changeFilterButton;
 
+        List<double> fromToValueOriginal;
         List<double> fromToValue;
 
         [HideInInspector]
@@ -73,11 +74,11 @@ namespace CAS
         {
 
             Type filterOptionDataType = filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName);
-            Debug.Log(filterOptionName + " " + filterOptionDataType);
 
             if (filterOptionDataType == System.Type.GetType("System.Double"))
             {
                 fromToValue = new List<double>();
+                fromToValueOriginal = new List<double>();
 
                 //UseLinq query and directly get the double value here 
                 List<object> filterSubOptions = filterAndGroupManager.manager.dataManager.GetFilterSubOptions(filterOptionName);
@@ -93,6 +94,10 @@ namespace CAS
                 double maxValue = filterSubOptionsDouble.Max();
                 fromToValue.Add(minValue);
                 fromToValue.Add(maxValue);
+
+                fromToValueOriginal.Add(minValue);
+                fromToValueOriginal.Add(maxValue);
+
                 GameObject filterSubOptionInteger = Instantiate(filterAndGroupManager.filterAndGroupSubOptions.filterSubOptionSliderPrefab, parentContentOfToggle.transform);
                 filterSubOptionInteger.GetComponent<CAS_EachFilterAndGroupSubOptionInteger>().SetEachFilterAndGroupSubOptionContent(minValue, maxValue); 
             }
@@ -138,10 +143,21 @@ namespace CAS
 
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
             {
-                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValue);
+                List<double> fromToValueSelected = new List<double>(); 
+                if ((fromToValue[0] != fromToValueOriginal[0]) && (fromToValue[1] != fromToValueOriginal[1]))
+                {
+                    addFilterButton.SetActive(false);
+                    changeFilterButton.SetActive(true);
+                    fromToValueSelected = fromToValue; 
+                }
+                else 
+                {
+                    stepNumberToWhichThisFilterIsApplied = -1;
+                    addFilterButton.SetActive(true);
+                    changeFilterButton.SetActive(false);
 
-                addFilterButton.SetActive(false);
-                changeFilterButton.SetActive(true);
+                }
+                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValueSelected);
             }
             else if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
             {
@@ -177,7 +193,22 @@ namespace CAS
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
             {
                 filterAndGroupManager.RemoveFilterFromActiveStepInteger(gameObject.name);
-                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValue);
+                List<double> fromToValueSelected = new List<double>();
+
+                if ((fromToValue[0] != fromToValueOriginal[0]) && (fromToValue[1] != fromToValueOriginal[1]))
+                {
+                    addFilterButton.SetActive(false);
+                    changeFilterButton.SetActive(true);
+                    fromToValueSelected = fromToValue; 
+                }
+                else
+                {
+                    stepNumberToWhichThisFilterIsApplied = -1;
+                    addFilterButton.SetActive(true);
+                    changeFilterButton.SetActive(false);
+                }
+
+                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValueSelected);
             }
             else if(filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
             {
@@ -232,6 +263,11 @@ namespace CAS
                 changeFilterButton.SetActive(false);
                 addFilterButton.SetActive(true);
             }
+        }
+
+        public void OnClickApplyGrouping()
+        {
+            filterAndGroupManager.AddGroupByToActiveStepInteger(gameObject.name);
         }
     }
 }

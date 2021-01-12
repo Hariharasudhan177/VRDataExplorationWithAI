@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq; 
 
 namespace CAS
 {
@@ -18,6 +19,8 @@ namespace CAS
         public bool initial = false; 
 
         int a = 0;
+
+        Color[] colorsForGroupBy = new Color[]{new Color(0.5f, 0f, 0f, 0f), new Color(0f, 0.5f, 0f, 0f), new Color(0f, 0f, 0.5f, 0f) , new Color(0.5f, 0.5f, 0f, 0f) , new Color(0.5f, 0f, 0.5f, 0f), new Color(0f, 0.5f, 0.5f, 0f)}; 
 
         private void Awake()
         {
@@ -183,6 +186,24 @@ namespace CAS
             }
 
             return returningRadius; 
+        }
+
+        public void GroupModels(Dictionary<string, List<string>> filteredPatientIdsGroupBy)
+        {
+            int index = 0;
+
+            foreach (string key in filteredPatientIdsGroupBy.Keys.ToList())
+            {
+                foreach (string value in filteredPatientIdsGroupBy[key])
+                {
+                    if (stepManager.allModelsInformation.ContainsKey(value))
+                    {
+                        //stepManager.allModelsInformation[value].GetComponentInChildren<MeshRenderer>().material.color = colorsForGroupBy[index];
+                        stepManager.allModelsInformation[value].GetComponentInChildren<CAS_ContolModel>().SetDefaultColor(colorsForGroupBy[index]);
+                    }
+                }
+                index++;
+            }
         }
     }
 }

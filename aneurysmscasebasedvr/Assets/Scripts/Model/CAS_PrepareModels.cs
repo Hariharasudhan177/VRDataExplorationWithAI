@@ -28,6 +28,8 @@ namespace CAS
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().enabled = false;
 
+            model.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().receiveShadows = false;
+
             model.gameObject.AddComponent<CAS_GrabInteractable>();
             model.GetComponent<CAS_GrabInteractable>().throwOnDetach = false;
         }

@@ -120,6 +120,12 @@ namespace CAS
         {
             eachFilterAndGroupSteps[activeAndCurrentStep].RemoveFilterFromThisStepInteger(filterKey);
         }
+
+        public void AddGroupByToActiveStepInteger(string filterKey)
+        {
+            eachFilterAndGroupSteps[activeAndCurrentStep].ApplyGroupbyThisStep(filterKey);
+        }
+
         public int GetCurrentAndActiveStep()
         {
             return activeAndCurrentStep; 

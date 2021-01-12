@@ -33,9 +33,12 @@ namespace CAS
 
         public Vector3 originalWorldPosition;
 
+        public Color currentDefaultColor; 
+
         // Start is called before the first frame update
         void Start()
         {
+            currentDefaultColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color; 
             stepManager = GetComponentInParent<CAS_StepManager>(); 
 
             //originalPosition = transform.localPosition;
@@ -174,6 +177,22 @@ namespace CAS
                 layerChangingForward = true;
                 originalWorldPosition = tobePosition;
             }      
+        }
+
+        public void SetDefaultColor(Color _defaultColor)
+        {
+            currentDefaultColor = _defaultColor;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
+        }
+
+        public void Highlight(Color currentDefaultColor)
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
+        }
+
+        public void DeHighlight()
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
         }
     }
 }

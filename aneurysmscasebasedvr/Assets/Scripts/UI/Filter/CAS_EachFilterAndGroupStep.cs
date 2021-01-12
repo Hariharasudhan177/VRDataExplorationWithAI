@@ -11,7 +11,7 @@ namespace CAS
         Inactive, 
         Active, 
         FilterAdded, 
-        Filtered
+        Filtered, 
     }
 
     public class CAS_EachFilterAndGroupStep : MonoBehaviour
@@ -30,7 +30,9 @@ namespace CAS
         public GameObject filterButton;
         public GameObject removeAllButton;
 
-        GameObject displayListGameObject; 
+        GameObject displayListGameObject;
+
+        public bool stepGrouped = false; 
 
         void Awake()
         {
@@ -90,7 +92,7 @@ namespace CAS
                     filterSubOptionsSelected.Remove(filterKey);
                 }
 
-                if((!(filterSubOptionsSelected.Count > 1)) && (filterStepStatus != FilterStepStatus.Filtered))
+                if((!(filterSubOptionsSelected.Count > 0)) && (filterStepStatus != FilterStepStatus.Filtered))
                 {
                     filterStepStatus = FilterStepStatus.Active;
                 }
@@ -117,7 +119,22 @@ namespace CAS
                 filterAndGroupManager.filterStepManager.ActivateStep(stepNumber-1);
             }
 
-            filterSubOptionsSelectedInteger.Add(filterKey, filterOptions);
+            if(filterOptions.Count > 0)
+            {
+                filterSubOptionsSelectedInteger.Add(filterKey, filterOptions);
+            }
+            else
+            {
+                if (filterSubOptionsSelectedInteger.ContainsKey(filterKey))
+                {
+                    filterSubOptionsSelectedInteger.Remove(filterKey);
+                }
+
+                if ((!(filterSubOptionsSelectedInteger.Count > 0)) && (filterStepStatus != FilterStepStatus.Filtered))
+                {
+                    filterStepStatus = FilterStepStatus.Active;
+                }
+            }
 
             string displayList = "";
             foreach (string filterOptionKey in filterSubOptionsSelectedInteger.Keys)
@@ -193,13 +210,15 @@ namespace CAS
                         filterOptionsValuesInteger.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger[key]);
                     }
                 }
-                
-                List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
 
-                List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
-                filteredPatientIds.AddRange(filteredPatientIdsFromString);
-                filteredPatientIds.AddRange(filteredPatientIdsFromInteger);
+                //List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
+                //List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
+
+                //List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
+                //filteredPatientIds.AddRange(filteredPatientIdsFromString);
+                //filteredPatientIds.AddRange(filteredPatientIdsFromInteger);
+
+                List<string> filteredPatientIds = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(filterOptions, filterOptionsValues, filterOptionsInteger, filterOptionsValuesInteger);
 
                 filterAndGroupManager.manager.stepManager.IncreaseSteps(filteredPatientIds);
                 filterStepStatus = FilterStepStatus.Filtered;
@@ -209,27 +228,35 @@ namespace CAS
                 List<string> filterOptions = new List<string>();
                 List<List<string>> filterOptionsValues = new List<List<string>>();
 
-                foreach (string key in filterSubOptionsSelected.Keys)
+                for (int i = 0; i <= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
                 {
-                    filterOptions.Add(key);
-                    filterOptionsValues.Add(filterSubOptionsSelected[key]);
+                    foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected.Keys)
+                    {
+                        filterOptions.Add(key);
+                        filterOptionsValues.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected[key]);
+                    }
                 }
 
                 List<string> filterOptionsInteger = new List<string>();
                 List<List<double>> filterOptionsValuesInteger = new List<List<double>>();
 
-                foreach (string key in filterSubOptionsSelectedInteger.Keys)
+                for (int i = 0; i <= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
                 {
-                    filterOptionsInteger.Add(key);
-                    filterOptionsValuesInteger.Add(filterSubOptionsSelectedInteger[key]);
+                    foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger.Keys)
+                    {
+                        filterOptionsInteger.Add(key);
+                        filterOptionsValuesInteger.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger[key]);
+                    }
                 }
 
-                List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-                List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
+                //List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
+                //List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
 
-                List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
-                filteredPatientIds.AddRange(filteredPatientIdsFromString);
-                filteredPatientIds.AddRange(filteredPatientIdsFromInteger);         
+                //List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
+                //filteredPatientIds.AddRange(filteredPatientIdsFromString);
+                //filteredPatientIds.AddRange(filteredPatientIdsFromInteger);
+
+                List<string> filteredPatientIds = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(filterOptions, filterOptionsValues, filterOptionsInteger, filterOptionsValuesInteger);
 
                 filterAndGroupManager.manager.stepManager.RefreshStep(filteredPatientIds, stepNumber);
 
@@ -254,6 +281,46 @@ namespace CAS
         {
             filterButton.GetComponent<Button>().interactable = true;
             removeAllButton.GetComponent<Button>().interactable = true;
+        }
+
+        public void ApplyGroupbyThisStep(string filterKey)
+        {
+            stepGrouped = false; 
+
+            List<string> filterOptions = new List<string>();
+            List<List<string>> filterOptionsValues = new List<List<string>>();
+
+            for (int i = 0; i <= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
+            {
+                foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected.Keys)
+                {
+                    filterOptions.Add(key);
+                    filterOptionsValues.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelected[key]);
+                }
+            }
+
+            List<string> filterOptionsInteger = new List<string>();
+            List<List<double>> filterOptionsValuesInteger = new List<List<double>>();
+
+            for (int i = 0; i <= filterAndGroupManager.filterStepManager.activeAndCurrentStep; i++)
+            {
+                foreach (string key in filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger.Keys)
+                {
+                    filterOptionsInteger.Add(key);
+                    filterOptionsValuesInteger.Add(filterAndGroupManager.filterStepManager.eachFilterAndGroupSteps[i].filterSubOptionsSelectedInteger[key]);
+                }
+            }
+
+            //List<string> filteredPatientIdsFromString = filterAndGroupManager.manager.dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
+            //List<string> filteredPatientIdsFromInteger = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsInteger(filterOptionsInteger, filterOptionsValuesInteger);
+
+            //List<string> filteredPatientIds = new List<string>(filteredPatientIdsFromString.Count + filteredPatientIdsFromInteger.Count);
+            //filteredPatientIds.AddRange(filteredPatientIdsFromString);
+            //filteredPatientIds.AddRange(filteredPatientIdsFromInteger);
+
+            Dictionary<string, List<string>> filteredPatientIdsGroupBy = filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsStringAndIntegerGroupBy(filterOptions, filterOptionsValues, filterOptionsInteger, filterOptionsValuesInteger, filterKey);
+
+            filterAndGroupManager.manager.stepManager.GroupByStep(filteredPatientIdsGroupBy, stepNumber - 1);
         }
     }
 }
