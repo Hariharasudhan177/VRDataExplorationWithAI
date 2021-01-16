@@ -152,7 +152,7 @@ namespace CAS
             }
 
             List<string> filteredPatientIds = dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
-            stepManager.IncreaseSteps(filteredPatientIds); 
+            //stepManager.IncreaseSteps(filteredPatientIds); 
         }
     }
 }

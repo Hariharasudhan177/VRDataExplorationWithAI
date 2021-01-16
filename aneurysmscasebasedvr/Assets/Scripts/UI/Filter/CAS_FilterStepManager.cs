@@ -1,139 +1,229 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
     public class CAS_FilterStepManager : MonoBehaviour
     {
-        CAS_TabGroup tabGroup; 
+        public CAS_FilterAndGroupManager filterAndGroupManager; 
+
+        CAS_TabGroup tabGroup;
+
         public CAS_TabButton[] tabButtons;
-
-        Dictionary<int, bool> eachStepStatus;
-        public Dictionary<int, CAS_EachFilterAndGroupStep> eachFilterAndGroupSteps;
-        public int activeAndCurrentStep = 0;
-
-        //string activeAndCurrentStep;
 
         public GameObject displayListPrefab;
 
+        [HideInInspector]
+        public List<CAS_FilterKeyValuesClass> filtersApplied;
+
+        [HideInInspector]
+        public List<CAS_EachFilterAndGroupStep> eachFilterAndGroupStepsAdded;
+
+        [HideInInspector]
+        public int currentStep = -1;
+
+        public GameObject filterLayerPagePrefab;
+        public GameObject filterLayerButtonPrefab;
+        public GameObject filterLayerPageParent;
+        public GameObject filterLayerButtonParent;
+        public List<GameObject> filterLayerPageList;
+        public List<GameObject> filterLayerButtonList;
         private void Awake()
         {
-            eachFilterAndGroupSteps = new Dictionary<int, CAS_EachFilterAndGroupStep>();
-            eachStepStatus = new Dictionary<int, bool>(); 
+            filtersApplied = new List<CAS_FilterKeyValuesClass>();
+            eachFilterAndGroupStepsAdded = new List<CAS_EachFilterAndGroupStep>();
+
+            filterLayerPageList = new List<GameObject>();
+            filterLayerButtonList = new List<GameObject>();
+
+            filterAndGroupManager = GetComponentInParent<CAS_FilterAndGroupManager>(); 
         }
 
         // Start is called before the first frame update
         void Start()
         {
             //tabButtons = GetComponentsInChildren<CAS_TabButton>();
-            tabGroup = GetComponentInChildren<CAS_TabGroup>();
-
-            int index = 0; 
-
-            foreach(CAS_TabButton button in tabButtons)
-            {
-                CAS_EachFilterAndGroupStep eachFilterAndGroupStep = tabGroup.ObjectsToSwap[index].GetComponent<CAS_EachFilterAndGroupStep>();
-                eachFilterAndGroupSteps.Add(index, eachFilterAndGroupStep);
-                eachFilterAndGroupStep.stepNumber = index+1;
-
-                if (index == 0)
-                {
-                    eachStepStatus.Add(index, true); 
-                }
-                else
-                {
-                    eachStepStatus.Add(index, false);
-                }
-
-                index++; 
-            }
-            
+            tabGroup = GetComponentInChildren<CAS_TabGroup>();         
         }
 
         // Update is called once per frame
         void Update()
         {
-            int index = 0; 
-            foreach(CAS_TabButton tabButton in tabButtons)
+       
+        }
+
+        public int GetCurrentStep()
+        {
+            return currentStep; 
+        }
+
+        public void AddFilter(string filterKey, List<string> filterValuesString,  List<double> filterValuesDouble, bool isString)
+        {
+            CAS_FilterKeyValuesClass filterKeyValuesClass = new CAS_FilterKeyValuesClass(filterKey, filterValuesString, filterValuesDouble, isString);
+            filtersApplied.Add(filterKeyValuesClass);
+
+            ApplyFilter(filtersApplied); 
+        }
+
+        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        {
+            //foreach (CAS_FilterKeyValuesClass eachKeyFilterValues in filtersApplied)
+            for(int i = 0; i < filtersApplied.Count; i++)
             {
-                if (tabGroup.selectedTab.name == tabButton.name)
+                CAS_FilterKeyValuesClass eachKeyFilterValues = filtersApplied[i];
+                if (eachKeyFilterValues.GetFilterName() == filterKey)
                 {
-                    activeAndCurrentStep = index; 
+                    if (isString)   
+                    {
+                        if (filterValuesString.Count > 0)
+                        {
+                            eachKeyFilterValues.SetStringValues(filterValuesString);
+                        }
+                        else
+                        {
+                            filtersApplied.Remove(eachKeyFilterValues);
+                        }
+                    }
+                    else
+                    {
+                        if(filterValuesDouble.Count > 0)
+                        {
+                            eachKeyFilterValues.SetDoubleValues(filterValuesDouble);
+                        }
+                        else
+                        {
+                            filtersApplied.Remove(eachKeyFilterValues);
+                        }
+                    }
                 }
+            }
+
+            ApplyFilter(filtersApplied); 
+        }
+
+        public CAS_EachFilterAndGroupStep CreateFilterLayer()
+        {
+            GameObject filterLayerPage = Instantiate(filterLayerPagePrefab, filterLayerPageParent.transform);
+            filterLayerPageList.Add(filterLayerPage);
+            tabGroup.SetObjectsToSwap(filterLayerPageList);
+
+            GameObject filterLayerButton = Instantiate(filterLayerButtonPrefab, filterLayerButtonParent.transform);
+            filterLayerButton.GetComponent<CAS_TabButton>().tabGroup = tabGroup;
+            filterLayerButtonList.Add(filterLayerButton);
+
+            CAS_EachFilterAndGroupStep eachFilterAndGroupStep = filterLayerPage.GetComponent<CAS_EachFilterAndGroupStep>();
+            
+            return eachFilterAndGroupStep; 
+        }
+
+        public void DeleteFilterLayer(int index)
+        {
+            Destroy(filterLayerPageList[index].gameObject); 
+            filterLayerPageList.RemoveAt(index);
+            tabGroup.SetObjectsToSwap(filterLayerPageList);
+
+            tabGroup.UnSubcribe(filterLayerButtonList[index].gameObject.GetComponent<CAS_TabButton>()); 
+            Destroy(filterLayerButtonList[index].gameObject);
+            filterLayerButtonList.RemoveAt(index);
+
+        }
+
+        public void OpenClose(bool status)
+        {
+            if (status)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0; 
+            }
+
+            GetComponent<CanvasGroup>().interactable = status;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
+        }
+
+        public void ApplyFilter(List<CAS_FilterKeyValuesClass> filterKeyValues)
+        {
+            List<CAS_FilterKeyValuesClass> incrementalStepFilterKeyValuesList = new List<CAS_FilterKeyValuesClass>();
+            List<List<string>> modeldsForThisStep = new List<List<string>>();
+
+            foreach (CAS_FilterKeyValuesClass eachStepFilterKeyValues in filterKeyValues)
+            {
+                incrementalStepFilterKeyValuesList.Add(eachStepFilterKeyValues);
+                modeldsForThisStep.Add(GetFilteredPatiendIds(incrementalStepFilterKeyValuesList));
+            }
+
+            filterAndGroupManager.manager.stepManager.SetFilteredModelsToEditLayers(modeldsForThisStep);
+
+            CreateAndEditFilterSteps(); 
+        }
+
+
+        public void CreateAndEditFilterSteps()
+        {
+            int index = -1;
+
+            List<CAS_FilterKeyValuesClass> filtersAppliedAtEachStep = new List<CAS_FilterKeyValuesClass>(); 
+            foreach (CAS_FilterKeyValuesClass filterKeyValuesClass in filtersApplied)
+            {
                 index++; 
-            }            
-        }
+                filtersAppliedAtEachStep.Add(filterKeyValuesClass); 
 
-        public void ActivateStep(int index)
-        {
-            Debug.Log(index); 
-            if(index > -1)
-            {
-                if(index < eachStepStatus.Count - 1)
+                if (index >= eachFilterAndGroupStepsAdded.Count)
                 {
-                    eachStepStatus[index] = true;
-                    eachFilterAndGroupSteps[index].ActivateThisStep();
+                    CAS_EachFilterAndGroupStep eachFilterAndGroupStep = CreateFilterLayer(); 
+                    eachFilterAndGroupStepsAdded.Add(eachFilterAndGroupStep);
+                    eachFilterAndGroupStep.SetDisplayContent(filtersAppliedAtEachStep);
+                }
+                else
+                {
+                    eachFilterAndGroupStepsAdded[index].SetDisplayContent(filtersAppliedAtEachStep);
+                }
+            }
+
+            //Remove unnecessary steps 
+            if (eachFilterAndGroupStepsAdded.Count - index > 1)
+            {
+                int stepsToDelete = eachFilterAndGroupStepsAdded.Count - index - 1;
+
+                int lastStep = eachFilterAndGroupStepsAdded.Count - 1;
+
+                for (int i = lastStep; i > lastStep - stepsToDelete; i--)
+                {
+                    DeleteFilterLayer(i);
                 }
             }
         }
 
-        public void ActivateStepButton(int index)
+        public List<string> GetFilteredPatiendIds(List<CAS_FilterKeyValuesClass> filterKeyValues)
         {
-            if (index > -1)
-            {
-                if (index < eachStepStatus.Count - 1)
-                {
-                    tabButtons[index].GetComponent<Button>().interactable = true;
-                }
-            }          
-        }
+            List<string> stringFilterKeys = new List<string>();
+            List<List<string>> stringFilterValues = new List<List<string>>();
+            List<string> doubleFilterKeys = new List<string>();
+            List<List<double>> doubleFilterValues = new List<List<double>>();
 
-        public void DeActivateStepButton(int index)
-        {
-            if (index > -1)
+            foreach (CAS_FilterKeyValuesClass filterKeyValue in filterKeyValues)
             {
-                if (index < eachStepStatus.Count - 1)
+                if (filterKeyValue.GetIsString())
                 {
-                    tabButtons[index].GetComponent<Button>().interactable = false;
+                    stringFilterKeys.Add(filterKeyValue.GetFilterName());
+                    stringFilterValues.Add(filterKeyValue.GetStringValues());
+                }
+                else
+                {
+                    doubleFilterKeys.Add(filterKeyValue.GetFilterName());
+                    doubleFilterValues.Add(filterKeyValue.GetDoubleValues());
                 }
             }
-        }
 
-        public void AddFilterToActiveStep(string filterKey, List<string> filterOptionsSelected)
-        {
-            eachFilterAndGroupSteps[activeAndCurrentStep].AddFilterToThisStep(filterKey, filterOptionsSelected); 
-        }
+            Debug.Log(stringFilterKeys.Count);
+            Debug.Log(doubleFilterKeys.Count);
 
-        public void AddFilterToActiveStepInteger(string filterKey, List<double> filterOptionsSelected)
-        {
-            eachFilterAndGroupSteps[activeAndCurrentStep].AddFilterToThisStepInteger(filterKey, filterOptionsSelected);
-        }
-
-        public void RemoveFilterFromActiveStep(string filterKey)
-        {
-            eachFilterAndGroupSteps[activeAndCurrentStep].RemoveFilterFromThisStep(filterKey);
-        }
-
-        public void RemoveFilterFromActiveStepInteger(string filterKey)
-        {
-            eachFilterAndGroupSteps[activeAndCurrentStep].RemoveFilterFromThisStepInteger(filterKey);
-        }
-
-        public void AddGroupByToActiveStepInteger(string filterKey)
-        {
-            eachFilterAndGroupSteps[activeAndCurrentStep].ApplyGroupbyThisStep(filterKey);
-        }
-
-        public int GetCurrentAndActiveStep()
-        {
-            return activeAndCurrentStep; 
-        }
-
-        public void SetCurrentAndActiveStep(int value)
-        {
-            activeAndCurrentStep = value; 
+            return filterAndGroupManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(stringFilterKeys, stringFilterValues, doubleFilterKeys, doubleFilterValues);
         }
     }
 }

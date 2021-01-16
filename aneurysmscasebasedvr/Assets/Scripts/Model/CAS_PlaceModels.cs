@@ -56,7 +56,7 @@ namespace CAS
         /// <summary>
         /// Picks every child models and places them in spherical wireframe
         /// </summary>
-        public void PickAndPlace(LayerChangeType layerChangeType)
+        public void PickAndPlace()
         {
             transform.GetComponentInParent<CAS_StepManager>().SetTrueScale(); 
 
@@ -87,26 +87,6 @@ namespace CAS
             //Looping through each child attached to the parent model object 
             foreach (Transform child in transform)
             {
-                //Centre of the small circle when z-value is the distance between small circles 
-                Vector3 centreOfSmallCircle = new Vector3(0f, 0f, currentDistanceBetweenEachSmallCircle);
-
-                //Position where model is to be placed 
-                Vector3 toBePosition = PointOnCircle(radiusOfSmallCircle, angleRequired, centreOfSmallCircle);
-                
-                /* Mesh is formed with vertices and triangles. So need to find the centre to position the mesh according to our needs
-                 The centre is found using Mesh bounds */
-                //Mesh bounds 
-                Bounds meshBounds = child.GetComponentInChildren<MeshFilter>().sharedMesh.bounds;
-                //Offset by which the model is to be placed correctly 
-                //child.transform.position = toBePosition - meshBounds.center;
-                //child.transform.position = toBePosition;
-                Vector3 startPosition = child.transform.position; 
-                //child.transform.position = Vector3.Lerp(startPosition, toBePosition, Time.deltaTime*0.5f);
-                positionOfTheModels.Add(child.name, toBePosition); 
-
-                //Not sure of this line 
-                child.GetChild(0).transform.localPosition = Vector3.zero - meshBounds.center;
-
                 //Prepare model 
                 if (!child.GetComponent<CAS_PrepareModels>())
                 {
@@ -119,7 +99,24 @@ namespace CAS
                     child.gameObject.AddComponent<CAS_ContolModel>();
                 }
 
-                child.gameObject.GetComponent<CAS_ContolModel>().SetStepOriginalPositionMoving(toBePosition, layerChangeType); 
+                //Centre of the small circle when z-value is the distance between small circles 
+                Vector3 centreOfSmallCircle = new Vector3(0f, 0f, currentDistanceBetweenEachSmallCircle);
+
+                //Position where model is to be placed 
+                Vector3 toBePosition = PointOnCircle(radiusOfSmallCircle, angleRequired, centreOfSmallCircle);
+                
+                /* Mesh is formed with vertices and triangles. So need to find the centre to position the mesh according to our needs
+                 The centre is found using Mesh bounds */
+                //Mesh bounds 
+                Bounds meshBounds = child.GetComponentInChildren<MeshFilter>().sharedMesh.bounds;
+
+                //child.transform.position = toBePosition;
+                child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition); 
+
+                //Not sure of this line - not useful for cubes but needed for meshes as the mesh is away from centre will be adjusted in the parent 
+                child.GetChild(0).transform.localPosition = Vector3.zero - meshBounds.center;
+
+                //child.gameObject.GetComponent<CAS_ContolModel>().SetStepOriginalPositionMoving(toBePosition, layerChangeType); 
 
                 index++;
                 angleRequired = (circleIndex * adjustmentAngle) + (eachAngle * index);
@@ -145,9 +142,7 @@ namespace CAS
                     //Debug.Log(radiusOfSmallCircle); 
                 }
             }
-            //transform.parent.localScale = originalScale;
             transform.GetComponentInParent<CAS_StepManager>().SetOriginalScale();
-            transform.GetComponent<CAS_EachStepManager>().SetOriginalPositionOfTheModels(positionOfTheModels); 
         }
 
         /// <summary>

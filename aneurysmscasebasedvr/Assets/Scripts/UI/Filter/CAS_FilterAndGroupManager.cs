@@ -34,31 +34,13 @@ namespace CAS
 
         }
 
-        public void OpenCloseFilterAndGroupUI()
+        public void OpenClose()
         {
             filterAndGroupUiVisibilityStatus = !filterAndGroupUiVisibilityStatus;
 
-            if (filterAndGroupUiVisibilityStatus)
-            {
-                filterStepManager.GetComponent<CanvasGroup>().alpha = 1;
-                filterAndGroupOptions.GetComponent<CanvasGroup>().alpha = 1;
-                filterAndGroupSubOptions.GetComponent<CanvasGroup>().alpha = 1;
-            }
-            else
-            {
-                filterStepManager.GetComponent<CanvasGroup>().alpha = 0;
-                filterAndGroupOptions.GetComponent<CanvasGroup>().alpha = 0;
-                filterAndGroupSubOptions.GetComponent<CanvasGroup>().alpha = 0;
-            }
-
-            filterStepManager.GetComponent<CanvasGroup>().interactable = filterAndGroupUiVisibilityStatus;
-            filterAndGroupOptions.GetComponent<CanvasGroup>().interactable = filterAndGroupUiVisibilityStatus;
-            filterAndGroupSubOptions.GetComponent<CanvasGroup>().interactable = filterAndGroupUiVisibilityStatus;
-
-            filterStepManager.GetComponent<TrackedDeviceGraphicRaycaster>().enabled = filterAndGroupUiVisibilityStatus;
-            filterAndGroupOptions.GetComponent<TrackedDeviceGraphicRaycaster>().enabled = filterAndGroupUiVisibilityStatus;
-            filterAndGroupSubOptions.GetComponent<TrackedDeviceGraphicRaycaster>().enabled = filterAndGroupUiVisibilityStatus;
-
+            filterStepManager.OpenClose(filterAndGroupUiVisibilityStatus);
+            filterAndGroupOptions.OpenClose(filterAndGroupUiVisibilityStatus);
+            filterAndGroupSubOptions.OpenClose(filterAndGroupUiVisibilityStatus);
         }
 
         public void PopulateFilterOptions()
@@ -77,34 +59,25 @@ namespace CAS
             return optionsUnderSpecificTypes;
         }
 
-        public void AddFilterToActiveStep(string filterKey, List<string> filterOptionsSelected)
-        {
-            filterStepManager.AddFilterToActiveStep(filterKey, filterOptionsSelected);
-        }
-
-        public void AddFilterToActiveStepInteger(string filterKey, List<double> filterOptionsSelectedInteger)
-        {
-            filterStepManager.AddFilterToActiveStepInteger(filterKey, filterOptionsSelectedInteger);
-        }
-
-        public void RemoveFilterFromActiveStep(string filterKey)
-        {
-            filterStepManager.RemoveFilterFromActiveStep(filterKey);
-        }
-
-        public void RemoveFilterFromActiveStepInteger(string filterKey)
-        {
-            filterStepManager.RemoveFilterFromActiveStepInteger(filterKey);
-        }
-
         public void AddGroupByToActiveStepInteger(string filterKey)
         {
-            filterStepManager.AddGroupByToActiveStepInteger(filterKey);
+            //filterStepManager.AddGroupByToActiveStepInteger(filterKey);
         }
 
         public void SetFilterOptionSelected(string key)
         {
             filterAndGroupSubOptions.SetfilterSubOptionPanelsSelected(key); 
+        }
+
+
+        public void AddFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        {
+            filterStepManager.AddFilter(filterKey, filterValuesString, filterValuesDouble, isString); 
+        }
+
+        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        {
+            filterStepManager.ChangeFilter(filterKey, filterValuesString, filterValuesDouble, isString);
         }
     }
 }

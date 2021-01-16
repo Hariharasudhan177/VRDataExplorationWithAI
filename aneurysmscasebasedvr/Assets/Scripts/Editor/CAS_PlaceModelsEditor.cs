@@ -41,7 +41,7 @@ namespace CAS
 
             if (GUILayout.Button("Update"))
             {
-                placeModels.PickAndPlace(LayerChangeType.Forward);
+                placeModels.PickAndPlace();
             }
 
             if (GUILayout.Button("TempUpdate"))

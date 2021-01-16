@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; 
+using TMPro;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
@@ -59,6 +60,21 @@ namespace CAS
         public TypeOfOptions FindTypeOfOptions(string columnHeading)
         {
             return filterAndGroupManager.manager.dataManager.GetColumnTypeOfOption(columnHeading); 
+        }
+
+        public void OpenClose(bool status)
+        {
+            if (status)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0;
+            }
+
+            GetComponent<CanvasGroup>().interactable = status;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
         }
     }
 }

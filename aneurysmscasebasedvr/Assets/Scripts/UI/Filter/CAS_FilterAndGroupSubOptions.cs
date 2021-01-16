@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq; 
+using System.Linq;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
@@ -58,6 +59,21 @@ namespace CAS
             filterSubOptionPanelsDict[currentFilterSubOptionPanelSelected].SetActive(false);
             filterSubOptionPanelsDict[key].SetActive(true);
             currentFilterSubOptionPanelSelected = key; 
+        }
+
+        public void OpenClose(bool status)
+        {
+            if (status)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0;
+            }
+
+            GetComponent<CanvasGroup>().interactable = status;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace CAS
 {
     public class CAS_ModelManager : MonoBehaviour
     {
-        //Model Information 
+        /*//Model Information 
         public Dictionary<string, GameObject> allModelsInformation;
 
         //Default Material 
@@ -79,7 +79,7 @@ namespace CAS
                     unfilteredModel.Value.transform.GetComponent<CAS_ContolModel>().MoveModelToOriginalLayer(); 
                 }
             }
-        }
+        }*/
 
     }
 }

@@ -464,6 +464,8 @@ namespace CAS
         public DataView QueryBuilderStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger)
         {
             string filter = "";
+            string integerFilter = "";
+            string stringFilter = "";
 
             int indexInteger = 0;
             foreach (string columnName in columnNamesInteger)
@@ -472,17 +474,12 @@ namespace CAS
 
                 if (indexInteger != 0)
                 {
-                    filter += " AND ";
+                    integerFilter += " AND ";
                 }
 
-                filter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+                integerFilter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
 
                 indexInteger++;
-            }
-
-            if(filter != "")
-            {
-                filter += " AND "; 
             }
 
             int indexString = 0;
@@ -490,11 +487,11 @@ namespace CAS
             {
                 if (indexString == 0)
                 {
-                    filter += columnName + " in (";
+                    stringFilter += columnName + " in (";
                 }
                 else
                 {
-                    filter += " AND " + columnName + " in (";
+                    stringFilter += " AND " + columnName + " in (";
                 }
 
                 List<string> valuesForThisColumnName = valuesString[indexString];
@@ -503,16 +500,27 @@ namespace CAS
                 {
                     if (subIndex == 0)
                     {
-                        filter += "'" + value + "'";
+                        stringFilter += "'" + value + "'";
                     }
                     else
                     {
-                        filter += "," + "'" + value + "'";
+                        stringFilter += "," + "'" + value + "'";
                     }
                     subIndex++;
                 }
-                filter += ")";
+                stringFilter += ")";
                 indexString++;
+            }
+
+            if(stringFilter != "" && integerFilter != "")
+            {
+                filter = integerFilter + " AND " + stringFilter; 
+            }else if(stringFilter != "")
+            {
+                filter = stringFilter; 
+            }else if(integerFilter != "")
+            {
+                filter = integerFilter; 
             }
 
             if (filter != "")

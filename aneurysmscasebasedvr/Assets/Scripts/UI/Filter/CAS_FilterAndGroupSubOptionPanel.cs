@@ -23,8 +23,8 @@ namespace CAS
 
         public GameObject parentContentOfToggle;
 
-        //bool filterApplied = false;
-        int stepNumberToWhichThisFilterIsApplied = -1; 
+        bool filterApplied = false;
+        //int stepNumberToWhichThisFilterIsApplied = -1; 
 
         public GameObject addFilterButton;
         public GameObject changeFilterButton;
@@ -34,6 +34,7 @@ namespace CAS
 
         [HideInInspector]
         public bool initialStatus; 
+
 
         // Start is called before the first frame update
         void Start()
@@ -50,29 +51,11 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-            if(stepNumberToWhichThisFilterIsApplied > -1)
-            {
-                if (filterAndGroupManager.filterStepManager.activeAndCurrentStep == stepNumberToWhichThisFilterIsApplied)
-                {
-                    addFilterButton.GetComponent<Button>().interactable = true;
-                    changeFilterButton.GetComponent<Button>().interactable = true;
-                }
-                else
-                {
-                    addFilterButton.GetComponent<Button>().interactable = false;
-                    changeFilterButton.GetComponent<Button>().interactable = false;
-                }
-            }
-            else
-            {
-                addFilterButton.GetComponent<Button>().interactable = true;
-                changeFilterButton.GetComponent<Button>().interactable = true;
-            }
+
         }
 
         public void PopulateFilterOptions()
         {
-
             Type filterOptionDataType = filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName);
 
             if (filterOptionDataType == System.Type.GetType("System.Double"))
@@ -80,7 +63,6 @@ namespace CAS
                 fromToValue = new List<double>();
                 fromToValueOriginal = new List<double>();
 
-                //UseLinq query and directly get the double value here 
                 List<object> filterSubOptions = filterAndGroupManager.manager.dataManager.GetFilterSubOptions(filterOptionName);
                 List<double> filterSubOptionsDouble = new List<double>();
                 foreach (var filterSubOption in filterSubOptions) {
@@ -105,7 +87,6 @@ namespace CAS
             {
                 List<object> filterSubOptions = filterAndGroupManager.manager.dataManager.GetFilterSubOptions(filterOptionName);
                 filterSubOptionsStatus = new Dictionary<string, bool>();
-                //filterSubOptionsName = new List<string>();
 
                 foreach (var filterSubOption in filterSubOptions)
                 {
@@ -113,10 +94,7 @@ namespace CAS
                     filterSubOptionInstantiatedToggle.name = filterSubOption.ToString();
                     filterSubOptionInstantiatedToggle.GetComponent<CAS_EachFilterAndGroupSubOption>().SetEachFilterAndGroupSubOptionContent(filterSubOption.ToString());
                     filterSubOptionsStatus.Add(filterSubOption.ToString(), false);
-                    //filterSubOptionsName.Add(filterSubOption.ToString()); 
                 }
-
-                //filterSubOptionsStatus = new bool[filterSubOptionsName.Count]; 
             }
         }
 
@@ -127,7 +105,6 @@ namespace CAS
 
         public void ToggledThisFilterSubOption(string name, bool value)
         {
-            Debug.Log(name + " " + value);
             filterSubOptionsStatus[name] = value;
         }
 
@@ -137,27 +114,32 @@ namespace CAS
         }
 
         //OnClick filter button - take all the filteroptionstatus values and send query 
-        public void OnClickAddThisFilterButton()
+        public void OnClickApplyThisFilterButton()
         {
-            stepNumberToWhichThisFilterIsApplied = filterAndGroupManager.filterStepManager.GetCurrentAndActiveStep();
+            bool blankFilter = false; 
 
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
             {
                 List<double> fromToValueSelected = new List<double>(); 
+
                 if ((fromToValue[0] != fromToValueOriginal[0]) && (fromToValue[1] != fromToValueOriginal[1]))
                 {
-                    addFilterButton.SetActive(false);
-                    changeFilterButton.SetActive(true);
                     fromToValueSelected = fromToValue; 
                 }
                 else 
                 {
-                    stepNumberToWhichThisFilterIsApplied = -1;
-                    addFilterButton.SetActive(true);
-                    changeFilterButton.SetActive(false);
-
+                    blankFilter = true; 
                 }
-                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValueSelected);
+
+                Debug.Log(fromToValueSelected.Count); 
+                if (filterApplied)
+                {
+                    filterAndGroupManager.ChangeFilter(gameObject.name, new List<string>(), fromToValueSelected, false);
+                }
+                else
+                {
+                    filterAndGroupManager.AddFilter(gameObject.name, new List<string>(), fromToValueSelected, false);
+                }
             }
             else if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
             {
@@ -171,97 +153,32 @@ namespace CAS
                     }
                 }
 
-                filterAndGroupManager.AddFilterToActiveStep(gameObject.name, filterSubOptionsSelected);
-
-                if(filterSubOptionsSelected.Count > 0)
+                if(filterSubOptionsSelected.Count == 0)
                 {
-                    addFilterButton.SetActive(false);
-                    changeFilterButton.SetActive(true);
+                    blankFilter = true;
+                }
+
+                if (filterApplied)
+                {
+                    filterAndGroupManager.ChangeFilter(gameObject.name, filterSubOptionsSelected, new List<double>(), true);
                 }
                 else
                 {
-                    stepNumberToWhichThisFilterIsApplied = -1; 
-                    addFilterButton.SetActive(true);
-                    changeFilterButton.SetActive(false);
+                    filterAndGroupManager.AddFilter(gameObject.name, filterSubOptionsSelected, new List<double>(), true);
                 }
             }
-        }
 
-        //OnClick filter button - take all the filteroptionstatus values and send query 
-        public void OnClickChangeThisFilterButton()
-        {
-            if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
+            if (blankFilter)
             {
-                filterAndGroupManager.RemoveFilterFromActiveStepInteger(gameObject.name);
-                List<double> fromToValueSelected = new List<double>();
-
-                if ((fromToValue[0] != fromToValueOriginal[0]) && (fromToValue[1] != fromToValueOriginal[1]))
-                {
-                    addFilterButton.SetActive(false);
-                    changeFilterButton.SetActive(true);
-                    fromToValueSelected = fromToValue; 
-                }
-                else
-                {
-                    stepNumberToWhichThisFilterIsApplied = -1;
-                    addFilterButton.SetActive(true);
-                    changeFilterButton.SetActive(false);
-                }
-
-                filterAndGroupManager.AddFilterToActiveStepInteger(gameObject.name, fromToValueSelected);
-            }
-            else if(filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
-            {
-                List<string> filterSubOptionsSelected = new List<string>();
-
-                foreach (string key in filterSubOptionsStatus.Keys)
-                {
-                    if (filterSubOptionsStatus[key])
-                    {
-                        filterSubOptionsSelected.Add(key);
-                    }
-                }
-
-                filterAndGroupManager.RemoveFilterFromActiveStep(gameObject.name);
-
-                Debug.Log(filterSubOptionsSelected.Count); 
-                filterAndGroupManager.AddFilterToActiveStep(gameObject.name, filterSubOptionsSelected);
-
-                if (filterSubOptionsSelected.Count > 0)
-                {
-                    addFilterButton.SetActive(false);
-                    changeFilterButton.SetActive(true);
-                }
-                else
-                {
-                    stepNumberToWhichThisFilterIsApplied = -1; 
-                    addFilterButton.SetActive(true);
-                    changeFilterButton.SetActive(false);
-                }
-            }
-        }
-
-        public void OnClickRemoveThisFilterButton()
-        {
-            if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
-            {
-                stepNumberToWhichThisFilterIsApplied = -1;
-
-                //Should do this only if the step is active. Otherwise the button should be inactive 
-                filterAndGroupManager.RemoveFilterFromActiveStepInteger(gameObject.name);
-
-                changeFilterButton.SetActive(false);
+                filterApplied = false;
                 addFilterButton.SetActive(true);
-            }
-            else if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
-            {
-                stepNumberToWhichThisFilterIsApplied = -1;
-
-                //Should do this only if the step is active. Otherwise the button should be inactive 
-                filterAndGroupManager.RemoveFilterFromActiveStep(gameObject.name);
-
                 changeFilterButton.SetActive(false);
-                addFilterButton.SetActive(true);
+            }
+            else
+            {
+                addFilterButton.SetActive(false);
+                changeFilterButton.SetActive(true);
+                filterApplied = true;
             }
         }
 

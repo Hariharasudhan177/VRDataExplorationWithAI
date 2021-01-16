@@ -7,7 +7,7 @@ namespace CAS
 {
     public class CAS_TabGroup : MonoBehaviour
     {
-        private List<CAS_TabButton> tabButtons;
+        public List<CAS_TabButton> tabButtons;
         public Sprite tabIdle;
         public Sprite tabHover;
         public Sprite tabActive;
@@ -22,6 +22,25 @@ namespace CAS
             }
 
             tabButtons.Add(button);
+        }
+
+        public void UnSubcribe(CAS_TabButton button)
+        {
+            if (tabButtons != null && tabButtons.Count > 0)
+            {
+                tabButtons.Remove(button);
+
+                if(tabButtons.Count > 0)
+                {
+                    selectedTab = tabButtons[0];
+                    OnTabSelected(tabButtons[0]);
+                }
+                else
+                {
+                    selectedTab = null;
+                }
+            }
+
         }
 
         public void OnTabEnter(CAS_TabButton button)
@@ -72,6 +91,11 @@ namespace CAS
         public CAS_TabButton GetCurrentSelectedButton()
         {
             return selectedTab; 
+        }
+
+        public void SetObjectsToSwap(List<GameObject> value)
+        {
+            ObjectsToSwap = value; 
         }
     }
 }
