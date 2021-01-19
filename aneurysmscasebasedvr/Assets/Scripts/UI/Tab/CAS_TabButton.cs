@@ -15,6 +15,8 @@ namespace CAS
 
         public Image background;
 
+        public TextMeshProUGUI buttonText;
+
         public void OnPointerClick(PointerEventData eventData)
         {
             if(tabButton.interactable) tabGroup.OnTabSelected(this);
@@ -42,6 +44,11 @@ namespace CAS
         void Update()
         {
 
+        }
+
+        public void SetButtonText(string text)
+        {
+            buttonText.text = text; 
         }
     }
 }

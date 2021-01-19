@@ -8,33 +8,21 @@ namespace CAS
 {
     public class CAS_EachFilterAndGroupStep : MonoBehaviour
     {
-        CAS_FilterAndGroupManager filterAndGroupManager;
-
-        Dictionary<string, List<string>> filterSubOptionsSelected;
-        Dictionary<string, List<double>> filterSubOptionsSelectedInteger;
-  
+        CAS_FilterAndGroupUIManager filterAndGroupUIManager;
 
         public Transform filterDisplayListParent;
-        
-        public int stepNumber;
-
-        public GameObject filterButton;
-        public GameObject removeAllButton;
-
+ 
         GameObject displayListGameObject;
-
-        public bool stepGrouped = false; 
 
         void Awake()
         {
-            filterSubOptionsSelected = new Dictionary<string, List<string>>();
-            filterSubOptionsSelectedInteger = new Dictionary<string, List<double>>();
-            filterAndGroupManager = GetComponentInParent<CAS_FilterAndGroupManager>(); 
+            filterAndGroupUIManager = GetComponentInParent<CAS_FilterAndGroupUIManager>(); 
         }
+
         // Start is called before the first frame update
         void Start()
         {
-            //filterAndGroupManager = GetComponentInParent<CAS_FilterAndGroupManager>(); 
+            
         }
 
         // Update is called once per frame
@@ -43,20 +31,58 @@ namespace CAS
 
         }
 
-        public void SetDisplayContent(List<CAS_FilterKeyValuesClass> filtersApplied)
+        public void SetDisplayContent(List<CAS_FilterAndGroupOptionKeyValuesClass> filtersApplied)
         {
-            string displayList = "";
-            foreach(CAS_FilterKeyValuesClass filterKeyValuesClass in filtersApplied)
+            string filterOptionHeadingText = "";
+            string filterOptionValuesText = "";
+
+            CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass = filtersApplied[filtersApplied.Count-1];
+            filterOptionHeadingText += filterKeyValuesClass.GetFilterName();
+
+            if (filterKeyValuesClass.GetIsString())
             {
-                displayList += filterKeyValuesClass.GetFilterName(); 
+                foreach (string filterValue in filterKeyValuesClass.GetStringValues())
+                {
+                    filterOptionValuesText += filterValue + "\n";
+                }
+            }
+            else
+            {
+                int index = 0;
+                foreach (double filterValue in filterKeyValuesClass.GetDoubleValues())
+                {
+                    if (index == 0)
+                    {
+                        if(filterKeyValuesClass.GetFilterName() == "age")
+                        {
+                            filterOptionValuesText += "Between " + ((int)Mathf.Ceil((float)filterValue)).ToString() + " and ";
+                        }
+                        else
+                        {
+                            filterOptionValuesText += "Between " + filterValue + " and ";
+                        }
+                    }
+                    else
+                    {
+                        if (filterKeyValuesClass.GetFilterName() == "age")
+                        {
+                            filterOptionValuesText += ((int)Mathf.Ceil((float)filterValue)).ToString();
+                        }
+                        else
+                        {
+                            filterOptionValuesText += filterValue;
+                        }
+                    }
+                    index++;
+                }
             }
 
-            if(!displayListGameObject)
+            if (!displayListGameObject)
             {
-                displayListGameObject = Instantiate(filterAndGroupManager.filterStepManager.displayListPrefab, filterDisplayListParent);
+                displayListGameObject = Instantiate(filterAndGroupUIManager.stepUI.displayListPrefab, filterDisplayListParent);
             }
  
-            displayListGameObject.GetComponent<CAS_EachDisplayList>().SetDisplayContent(displayList); 
+            displayListGameObject.GetComponent<CAS_FilterDisplayList>().SetDisplayContent(filterOptionHeadingText, filterOptionValuesText); 
         }
 
         public void ApplyGroupbyThisStep(string filterKey)

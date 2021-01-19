@@ -7,17 +7,20 @@ namespace CAS
 {
     public class CAS_EachFilterAndGroupSubOptionInteger : MonoBehaviour
     {
-        public CAS_FilterAndGroupSubOptionPanel filterAndGroupSubOptionPanel;
+        public CAS_EachFilterAndGroupSubOptionPanel subOptionPanel;
 
         public Slider fromSlider;
         public Slider toSlider;
+
+        double originalMinimum;
+        double originalMaximum; 
 
         bool settingValue = false; 
 
         // Start is called before the first frame update
         void Start()
         {
-            filterAndGroupSubOptionPanel = GetComponentInParent<CAS_FilterAndGroupSubOptionPanel>();
+            subOptionPanel = GetComponentInParent<CAS_EachFilterAndGroupSubOptionPanel>();
         }
 
         // Update is called once per frame
@@ -37,7 +40,10 @@ namespace CAS
             toSlider.maxValue = (float)max;
             toSlider.gameObject.SetActive(true);
             toSlider.value = (float)max;
-            settingValue = false; 
+            settingValue = false;
+
+            originalMinimum = min;
+            originalMaximum = max; 
         }
 
         public void ChageFromSliderValue(float value)
@@ -50,7 +56,7 @@ namespace CAS
                     return;
                 }
 
-                filterAndGroupSubOptionPanel.SetFromToSliderValue(0, value);
+                subOptionPanel.SetFromToSliderValue(0, value);
             }
         }
 
@@ -64,8 +70,14 @@ namespace CAS
                     return; 
                 }
 
-                filterAndGroupSubOptionPanel.SetFromToSliderValue(1, value);
+                subOptionPanel.SetFromToSliderValue(1, value);
             }
+        }
+
+        public void SetOriginalValues()
+        {
+            fromSlider.value = (float)originalMinimum; 
+            toSlider.value = (float)originalMaximum;
         }
     }
 

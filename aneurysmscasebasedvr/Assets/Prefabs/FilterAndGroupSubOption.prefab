@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 1666502075}
   - component: {fileID: 1666502074}
   m_Layer: 0
-  m_Name: AddFilter
+  m_Name: ApplyFilter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,7 +386,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6081416555443894341}
-        m_MethodName: OnClickApplyThisFilterButton
+        m_MethodName: ApplyThisFilter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -574,13 +574,13 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1981142941}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6081416555443894341}
-        m_MethodName: OnClickRemoveThisFilterButton
+        m_MethodName: RemoveFilter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1030,7 +1030,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6081416555443894341}
-        m_MethodName: OnClickApplyThisFilterButton
+        m_MethodName: ApplyThisFilter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2125,8 +2125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filterAndGroupManager: {fileID: 0}
   filterOptionName: 
-  parentContentOfToggle: {fileID: 7486663826699571112}
-  addFilterButton: {fileID: 1666502072}
+  parentContentOfSubOption: {fileID: 7486663826699571112}
+  applyFilterButton: {fileID: 1666502072}
   changeFilterButton: {fileID: 589071797230998162}
   initialStatus: 0
 --- !u!1 &7486663826699571112

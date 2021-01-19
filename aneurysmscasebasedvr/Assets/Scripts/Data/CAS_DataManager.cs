@@ -195,7 +195,7 @@ namespace CAS
 
             Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
 
-            manager.filterAndGroupManager.PopulateFilterOptions();   
+            manager.filterAndGroupUIManager.PopulateFilterOptions();   
         }
 
         public bool CheckIfCorrespondingModelIsPresent(string patientId)
@@ -291,7 +291,7 @@ namespace CAS
             optionsUnderSpecificTypes.Add("morphological", morphological);
             optionsUnderSpecificTypes.Add("others", others);
 
-            manager.filterAndGroupManager.SetOptionsUnderSpecificTypes(optionsUnderSpecificTypes); 
+            manager.filterAndGroupUIManager.SetOptionsUnderSpecificTypes(optionsUnderSpecificTypes); 
         }
 
         //Column Names

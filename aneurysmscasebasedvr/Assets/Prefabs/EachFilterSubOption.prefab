@@ -109,8 +109,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e82b6b8477cf6541a43727f2958b94a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filterAndGroupSubOptionPanel: {fileID: 0}
+  eachSubOptionPanel: {fileID: 0}
   label: {fileID: 2255591878873198301}
+  toggle: {fileID: 2355400222708061036}
 --- !u!1 &6717479733071283148
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,6 +391,6 @@ MonoBehaviour:
   m_margin: {x: 8.523464, y: -3.4197564, z: 0, w: -21.373388}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}

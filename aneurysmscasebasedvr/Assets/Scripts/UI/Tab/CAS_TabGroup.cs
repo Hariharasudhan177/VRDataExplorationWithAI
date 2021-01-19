@@ -22,6 +22,18 @@ namespace CAS
             }
 
             tabButtons.Add(button);
+
+            if (selectedTab != null)
+            {
+                selectedTab.background.sprite = tabActive;
+                ResetTabs();
+            }
+            else
+            {
+                selectedTab = tabButtons[0];
+                selectedTab.background.sprite = tabActive;
+                ResetTabs();
+            }            
         }
 
         public void UnSubcribe(CAS_TabButton button)
@@ -95,7 +107,29 @@ namespace CAS
 
         public void SetObjectsToSwap(List<GameObject> value)
         {
-            ObjectsToSwap = value; 
+            ObjectsToSwap = value;
+
+            int index;
+            if (selectedTab != null)
+            {
+                index = selectedTab.transform.GetSiblingIndex();
+            }
+            else
+            {
+                index = 0;               
+            }
+
+            for (int i = 0; i < ObjectsToSwap.Count; i++)
+            {
+                if (i == index)
+                {
+                    ObjectsToSwap[i].SetActive(true);
+                }
+                else
+                {
+                    ObjectsToSwap[i].SetActive(false);
+                }
+            }
         }
     }
 }

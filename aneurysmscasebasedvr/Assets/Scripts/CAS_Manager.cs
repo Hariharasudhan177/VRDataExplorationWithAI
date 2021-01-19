@@ -8,8 +8,7 @@ namespace CAS
     {
         public CAS_DataManager dataManager;
         public CAS_StepManager stepManager;
-        public CAS_ModelManager modelManager;
-        public CAS_FilterAndGroupManager filterAndGroupManager;
+        public CAS_FilterAndGroupUIManager filterAndGroupUIManager;
 
         // Start is called before the first frame update
         void Start()
