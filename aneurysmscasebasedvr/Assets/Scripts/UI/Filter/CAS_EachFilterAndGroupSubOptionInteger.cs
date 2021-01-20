@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using TMPro; 
 
 namespace CAS
 {
@@ -11,9 +12,11 @@ namespace CAS
 
         public Slider fromSlider;
         public Slider toSlider;
+        public TextMeshProUGUI fromValueDisplayText;
+        public TextMeshProUGUI toValueDisplayText;
 
-        double originalMinimum;
-        double originalMaximum; 
+        float originalMinimum;
+        float originalMaximum; 
 
         bool settingValue = false; 
 
@@ -39,45 +42,56 @@ namespace CAS
             toSlider.minValue = (float)min;
             toSlider.maxValue = (float)max;
             toSlider.gameObject.SetActive(true);
-            toSlider.value = (float)max;
+            //toSlider.value = (float)max; //Reversed to slider - not needed 
             settingValue = false;
 
-            originalMinimum = min;
-            originalMaximum = max; 
+            originalMinimum = (float) min;
+            originalMaximum = (float) max;
+
+            fromValueDisplayText.text = originalMinimum.ToString();
+            toValueDisplayText.text = originalMaximum.ToString(); 
         }
 
         public void ChageFromSliderValue(float value)
         {
+            float convertedToValueSinceReversed = originalMaximum - (toSlider.value - originalMinimum);
+
             if (!settingValue)
             {
-                if (value > toSlider.value)
+                if (value > convertedToValueSinceReversed)
                 {
-                    fromSlider.value = toSlider.value;
+                    fromSlider.value = convertedToValueSinceReversed;
                     return;
                 }
 
                 subOptionPanel.SetFromToSliderValue(0, value);
             }
+
+            fromValueDisplayText.text = fromSlider.value.ToString(); 
         }
 
         public void ChageToSliderValue(float value)
         {
+            float convertedToValueSinceReversed = originalMaximum - (value - originalMinimum); 
+
             if (!settingValue)
             {
-                if(value < fromSlider.value)
+                if(convertedToValueSinceReversed < fromSlider.value)
                 {
-                    toSlider.value = fromSlider.value; 
+                    toSlider.value = originalMaximum + originalMinimum - fromSlider.value; 
                     return; 
                 }
 
-                subOptionPanel.SetFromToSliderValue(1, value);
+                subOptionPanel.SetFromToSliderValue(1, convertedToValueSinceReversed);
             }
+
+            toValueDisplayText.text = convertedToValueSinceReversed.ToString();
         }
 
         public void SetOriginalValues()
         {
-            fromSlider.value = (float)originalMinimum; 
-            toSlider.value = (float)originalMaximum;
+            fromSlider.value = originalMinimum; 
+            toSlider.value = originalMaximum;
         }
     }
 

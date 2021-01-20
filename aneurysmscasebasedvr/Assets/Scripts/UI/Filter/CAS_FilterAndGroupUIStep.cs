@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using TMPro; 
 
 namespace CAS
 {
@@ -30,6 +31,8 @@ namespace CAS
         public GameObject filterLayerButtonParent;
         public List<GameObject> filterLayerPageList;
         public List<GameObject> filterLayerButtonList;
+
+        public TextMeshProUGUI groupingOptionName; 
 
         private void Awake()
         {
@@ -106,6 +109,59 @@ namespace CAS
             ApplyFilter(filtersApplied); 
         }
 
+        public void ApplyFilter(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
+        {
+            List<CAS_FilterAndGroupOptionKeyValuesClass> incrementalStepFilterKeyValuesList = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
+            List<List<string>> modeldsForThisStep = new List<List<string>>();
+
+            foreach (CAS_FilterAndGroupOptionKeyValuesClass eachStepFilterKeyValues in filterKeyValues)
+            {
+                incrementalStepFilterKeyValuesList.Add(eachStepFilterKeyValues);
+                modeldsForThisStep.Add(GetFilteredPatiendIds(incrementalStepFilterKeyValuesList));
+            }
+
+            filterAndGroupUIManager.manager.stepManager.SetFilteredModelsToEditLayers(modeldsForThisStep);
+
+            CreateAndEditFilterSteps();
+        }
+
+        public void CreateAndEditFilterSteps()
+        {
+            int index = -1;
+
+            List<CAS_FilterAndGroupOptionKeyValuesClass> filtersAppliedAtEachStep = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
+            foreach (CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass in filtersApplied)
+            {
+                index++;
+                filtersAppliedAtEachStep.Add(filterKeyValuesClass);
+
+                if (index >= eachFilterAndGroupStepsAdded.Count)
+                {
+                    CAS_EachFilterAndGroupStep eachFilterAndGroupStep = CreateFilterLayer();
+                    eachFilterAndGroupStepsAdded.Add(eachFilterAndGroupStep);
+                    eachFilterAndGroupStep.SetFilterDisplayContent(filtersAppliedAtEachStep);
+                }
+                else
+                {
+                    eachFilterAndGroupStepsAdded[index].SetFilterDisplayContent(filtersAppliedAtEachStep);
+                }
+            }
+
+            //Remove unnecessary steps 
+            if (eachFilterAndGroupStepsAdded.Count - index > 1)
+            {
+                int stepsToDelete = eachFilterAndGroupStepsAdded.Count - index - 1;
+
+                int lastStep = eachFilterAndGroupStepsAdded.Count - 1;
+
+
+                for (int i = lastStep; i > lastStep - stepsToDelete; i--)
+                {
+                    DeleteFilterLayer(i);
+                }
+            }
+        }
+
         public CAS_EachFilterAndGroupStep CreateFilterLayer()
         {
             GameObject filterLayerButton = Instantiate(filterLayerButtonPrefab, filterLayerButtonParent.transform);
@@ -137,6 +193,25 @@ namespace CAS
             filterLayerButtonList.RemoveAt(index);
         }
 
+        //Grouping 
+        public void ApplyGrouping(string filterKey)
+        {
+            //filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(filtersApplied, filterKey));
+            //For now removing the filtering from grouping. Use the above code if needed later
+            List<CAS_FilterAndGroupOptionKeyValuesClass> blankFilter = new List<CAS_FilterAndGroupOptionKeyValuesClass>(); 
+
+            filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(blankFilter, filterKey));
+
+            groupingOptionName.text = filterKey;
+        }
+
+        public void RemoveGrouping()
+        {
+            filterAndGroupUIManager.manager.stepManager.RemoveGroupByModelsToEditLayers();
+
+            groupingOptionName.text = ""; 
+        }
+
         public void OpenClose(bool status)
         {
             if (status)
@@ -152,61 +227,21 @@ namespace CAS
             GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
         }
 
-        public void ApplyFilter(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
-        {
-            List<CAS_FilterAndGroupOptionKeyValuesClass> incrementalStepFilterKeyValuesList = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
-            List<List<string>> modeldsForThisStep = new List<List<string>>();
-
-            foreach (CAS_FilterAndGroupOptionKeyValuesClass eachStepFilterKeyValues in filterKeyValues)
-            {
-                incrementalStepFilterKeyValuesList.Add(eachStepFilterKeyValues);
-                modeldsForThisStep.Add(GetFilteredPatiendIds(incrementalStepFilterKeyValuesList));
-            }
-
-            filterAndGroupUIManager.manager.stepManager.SetFilteredModelsToEditLayers(modeldsForThisStep);
-
-            CreateAndEditFilterSteps(); 
-        }
-
-
-        public void CreateAndEditFilterSteps()
-        {
-            int index = -1;
-
-            List<CAS_FilterAndGroupOptionKeyValuesClass> filtersAppliedAtEachStep = new List<CAS_FilterAndGroupOptionKeyValuesClass>(); 
-            foreach (CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass in filtersApplied)
-            {
-                index++; 
-                filtersAppliedAtEachStep.Add(filterKeyValuesClass);
-
-                if (index >= eachFilterAndGroupStepsAdded.Count)
-                {
-                    CAS_EachFilterAndGroupStep eachFilterAndGroupStep = CreateFilterLayer(); 
-                    eachFilterAndGroupStepsAdded.Add(eachFilterAndGroupStep);
-                    eachFilterAndGroupStep.SetDisplayContent(filtersAppliedAtEachStep);
-                }
-                else
-                {
-                    eachFilterAndGroupStepsAdded[index].SetDisplayContent(filtersAppliedAtEachStep);
-                }
-            }
-
-            //Remove unnecessary steps 
-            if (eachFilterAndGroupStepsAdded.Count - index > 1)
-            {
-                int stepsToDelete = eachFilterAndGroupStepsAdded.Count - index - 1;
-
-                int lastStep = eachFilterAndGroupStepsAdded.Count - 1;
-
-
-                for (int i = lastStep; i > lastStep - stepsToDelete; i--)
-                {
-                    DeleteFilterLayer(i);
-                }
-            }
-        }
-
         public List<string> GetFilteredPatiendIds(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
+        {
+            var keyValuePairs = GetKeyValuePairs(filterKeyValues);
+
+            return filterAndGroupUIManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4);
+        }
+
+        public Dictionary<string, List<string>> GetGroupedByPatiendIds(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues, string filterKey)
+        {
+            var keyValuePairs = GetKeyValuePairs(filterKeyValues); 
+
+            return filterAndGroupUIManager.manager.dataManager.GetFilteredPatientIdsStringAndIntegerGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey);
+        }
+
+        public (List<string>, List<List<string>>, List<string>, List<List<double>>) GetKeyValuePairs(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
         {
             List<string> stringFilterKeys = new List<string>();
             List<List<string>> stringFilterValues = new List<List<string>>();
@@ -230,7 +265,7 @@ namespace CAS
             Debug.Log(stringFilterKeys.Count);
             Debug.Log(doubleFilterKeys.Count);
 
-            return filterAndGroupUIManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(stringFilterKeys, stringFilterValues, doubleFilterKeys, doubleFilterValues);
+            return (stringFilterKeys, stringFilterValues, doubleFilterKeys, doubleFilterValues); 
         }
     }
 }

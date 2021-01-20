@@ -59,11 +59,6 @@ namespace CAS
             return optionsUnderSpecificTypes;
         }
 
-        public void AddGroupByToActiveStepInteger(string filterKey)
-        {
-            //filterStepManager.AddGroupByToActiveStepInteger(filterKey);
-        }
-
         public void SetFilterOptionSelected(string key)
         {
             subOptionsUI.SetfilterSubOptionPanelsSelected(key); 
@@ -77,6 +72,16 @@ namespace CAS
         public void ChangeFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
         {
             stepUI.ChangeFilter(filterKey, filterValuesString, filterValuesDouble, isString);
+        }
+
+        public void ApplyGrouping(string filterKey)
+        {
+            stepUI.ApplyGrouping(filterKey);
+        }
+
+        public void RemoveGrouping()
+        {
+            stepUI.RemoveGrouping();
         }
     }
 }

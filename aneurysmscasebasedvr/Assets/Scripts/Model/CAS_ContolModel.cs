@@ -18,7 +18,8 @@ namespace CAS
 
         Quaternion originalRotation;
 
-        Color currentDefaultColor;
+        Color initialOriginalColour;
+        Color currentOriginalColor;
 
         int layerIndex;
 
@@ -29,7 +30,8 @@ namespace CAS
         // Start is called before the first frame update
         void Start()
         {
-            currentDefaultColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
+            initialOriginalColour = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
+            currentOriginalColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
             
             stepManager = GetComponentInParent<CAS_StepManager>(); 
 
@@ -68,22 +70,6 @@ namespace CAS
             }
         }
 
-        public void PushToOriginalPosition()
-        {
-            pushingToOriginalPosition = true; 
-            transform.localRotation = originalRotation;
-        }
-
-        public void ChangeLayer()
-        {
-            stepManager.SetTrueScale(); 
-            //should use something like backward step index 
-            layerIndex = GetComponentInParent<CAS_EachStepManager>().stepIndex;
-            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex*1f));
-            moving = true;
-            stepManager.SetOriginalScale();
-        }
-
         public void SetPosition(Vector3 position)
         {
             toBeWorldPosition = position;
@@ -91,20 +77,42 @@ namespace CAS
             moving = true;
         }
 
-        public void SetDefaultColor(Color _defaultColor)
+        public void ChangeLayer()
         {
-            currentDefaultColor = _defaultColor;
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
+            stepManager.SetTrueScale();
+            //should use something like backward step index 
+            layerIndex = GetComponentInParent<CAS_EachStepManager>().stepIndex;
+            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f));
+            moving = true;
+            stepManager.SetOriginalScale();
         }
 
-        public void Highlight(Color currentDefaultColor)
+        public void PushToOriginalPosition()
         {
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
+            pushingToOriginalPosition = true; 
+            transform.localRotation = originalRotation;
+        }
+
+        public void UnSetGroupByColour()
+        {
+            currentOriginalColor = initialOriginalColour;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+        }
+
+        public void SetGroupByColour(Color groupByColour)
+        {
+            currentOriginalColor = groupByColour;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+        }
+
+        public void Highlight(Color highlightedColor)
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", highlightedColor);
         }
 
         public void DeHighlight()
         {
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentDefaultColor);
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
         }
 
         Vector3 LerpWithoutClamp(Vector3 originPosition, Vector3 currentPosition, float factor)

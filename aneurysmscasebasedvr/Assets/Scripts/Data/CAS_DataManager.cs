@@ -644,7 +644,6 @@ namespace CAS
             DataView filteredView = QueryBuilderStringAndIntegerGroupBy(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
             if (filteredView == null)
             {
-                Debug.Log(filterIdsGroupBy.Count + "Hari");
                 return filterIdsGroupBy;
             }
 

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using TMPro; 
 
 namespace CAS
 {
@@ -31,7 +32,9 @@ namespace CAS
         public GameObject changeFilterButton;
 
         [HideInInspector]
-        public bool initialStatus; 
+        public bool initialStatus;
+
+        public TextMeshProUGUI filterOptionNameTextBox; 
 
         // Start is called before the first frame update
         void Start()
@@ -54,6 +57,7 @@ namespace CAS
         public void PopulateFilterOptions()
         {
             Type filterOptionDataType = filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName);
+            filterOptionNameTextBox.text = filterOptionName; 
 
             if (filterOptionDataType == System.Type.GetType("System.Double"))
             {
@@ -182,11 +186,6 @@ namespace CAS
             }
         }
 
-        public void OnClickApplyGrouping()
-        {
-            filterAndGroupManager.AddGroupByToActiveStepInteger(gameObject.name);
-        }
-
         public void RemoveFilter()
         {
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
@@ -206,5 +205,20 @@ namespace CAS
 
             ApplyThisFilter();
         }
+
+        public void ApplyGrouping()
+        {
+            //To Remove existing grouping 
+            RemoveGrouping(); 
+
+            filterAndGroupManager.ApplyGrouping(gameObject.name);
+        }
+
+        public void RemoveGrouping()
+        {
+            filterAndGroupManager.RemoveGrouping();
+        }
+
+
     }
 }
