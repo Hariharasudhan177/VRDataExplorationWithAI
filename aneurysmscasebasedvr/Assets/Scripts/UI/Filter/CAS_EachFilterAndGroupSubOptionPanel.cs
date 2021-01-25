@@ -34,7 +34,8 @@ namespace CAS
         [HideInInspector]
         public bool initialStatus;
 
-        public TextMeshProUGUI filterOptionNameTextBox; 
+        public TextMeshProUGUI filterOptionNameTextBox;
+        public Image filterOptionStatus;
 
         // Start is called before the first frame update
         void Start()
@@ -183,6 +184,15 @@ namespace CAS
                 applyFilterButton.SetActive(false);
                 changeFilterButton.SetActive(true);
                 filterApplied = true;
+            }
+
+            if (filterApplied)
+            {
+                filterOptionStatus.color = Color.green; 
+            }
+            else
+            {
+                filterOptionStatus.color = Color.red;
             }
         }
 

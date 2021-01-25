@@ -6,7 +6,7 @@ namespace CAS
 {
     public class CAS_StepManager : MonoBehaviour
     {
-        public GameObject manager; 
+        public CAS_Manager manager; 
 
         //Super parent of the models 
         GameObject modelsParent;
@@ -23,17 +23,6 @@ namespace CAS
         public int totalInitialNumberOfModels;
 
         Vector3 originalScale;
-
-        //Red, Green, Blue, Orange, Yellow, Teal, Pink, Lavender, Apricot, Brown, Maroon, Olive, Beige, Cyan, Mint, Purple, Lime, 
-        //DarkOliveGreen, Palevioletred, Goldenrod, Darkslategray
-        Color[] colorsForGroupBy = new Color[] { new Color(0.901f, 0.098f, 0.294f, 0f), new Color(0.235f, 0.705f, 0.294f, 0f), 
-            new Color(0.262f, 0.388f, 0.847f, 0f), new Color(0.960f, 0.509f, 0.192f, 0f), new Color(1f, 0.882f, 0.098f, 0f), 
-            new Color(0.274f, 0.6f, 0.564f, 0f), new Color(0.862f, 0.745f, 1f, 0f), new Color(0.980f, 0.745f, 0.831f, 0f), 
-            new Color(1f, 0.847f, 0.694f, 0f), new Color(0.603f, 0.388f, 0.141f, 0f), new Color(0.603f, 0.388f, 0.141f, 0f), 
-            new Color(0.501f, 0f, 0f, 0f), new Color(0.501f, 0.501f, 0f, 0f), new Color(1f, 0.980f, 0.784f, 0f), 
-            new Color(0.258f, 0.831f, 0.956f, 0f), new Color(0.666f, 1f, 0.764f, 0f), new Color(0.568f, 0.117f, 0.705f, 0f),
-            new Color(0.749f, 0.937f, 0.270f, 0f), new Color(0.333f, 0.419f, 0.184f, 0f), new Color(0.858f, 0.439f, 0.576f, 0f),
-            new Color(0.854f, 0.647f, 0.125f, 0f), new Color(0.184f, 0.309f, 0.309f, 0f)};
 
         private void Awake()
         {
@@ -184,11 +173,11 @@ namespace CAS
                 {
                     if (allModelsInformation.ContainsKey(value))
                     {
-                        if(index >= colorsForGroupBy.Length)
+                        if(index >= manager.dataManager.colorsForGrouping.Length)
                         {
                             index = 0; 
                         }
-                        allModelsInformation[value].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(colorsForGroupBy[index]);                
+                        allModelsInformation[value].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(manager.dataManager.colorsForGrouping[index]);                
                     }
                 }
                 index++;

@@ -22,10 +22,13 @@ namespace CAS
 
         }
 
-        public void SetDisplayContent(string filterOptionHeadingText, string filterOptionValuesText)
+        public void SetDisplayContent(string filterOptionHeadingText, string filterOptionValuesText, int optionsSize)
         {
             filterOptionHeading.text = filterOptionHeadingText;
             filterOptionValues.text = filterOptionValuesText;
+
+            RectTransform rt = filterOptionValues.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x, rt.sizeDelta.y*optionsSize);
         }
     }
 }

@@ -12,8 +12,6 @@ namespace CAS
         CAS_FilterAndGroupUIManager filterAndGroupUIManager;
 
         public Transform filterDisplayListParent;
-        GameObject displayListGameObject;
-
 
         void Awake()
         {
@@ -32,58 +30,70 @@ namespace CAS
 
         }
 
-        public void SetFilterDisplayContent(List<CAS_FilterAndGroupOptionKeyValuesClass> filtersApplied)
+        public void SetFilterDisplayContent(List<CAS_FilterAndGroupOptionKeyValuesClass> filtersApplied, List<List<string>> modelsForAllSteps)
         {
-            string filterOptionHeadingText = "";
-            string filterOptionValuesText = "";
-
-            CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass = filtersApplied[filtersApplied.Count-1];
-            filterOptionHeadingText += filterKeyValuesClass.GetFilterName();
-
-            if (filterKeyValuesClass.GetIsString())
+            foreach (Transform child in filterDisplayListParent)
             {
-                foreach (string filterValue in filterKeyValuesClass.GetStringValues())
-                {
-                    filterOptionValuesText += filterValue + "\n";
-                }
+                Destroy(child.gameObject); 
             }
-            else
+
+            int filtersAppliedCount = 0; 
+
+            foreach (CAS_FilterAndGroupOptionKeyValuesClass filterAndGroupOptionKeyValueClass in filtersApplied)
             {
-                int index = 0;
-                foreach (double filterValue in filterKeyValuesClass.GetDoubleValues())
+
+                string filterOptionHeadingText = "";
+                string filterOptionValuesText = "";
+                int filterOptionsSize = 0;
+
+                CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass = filterAndGroupOptionKeyValueClass;
+                filterOptionHeadingText += filterKeyValuesClass.GetFilterName() + " - " + modelsForAllSteps[filtersAppliedCount].Count + " selected";
+
+                if (filterKeyValuesClass.GetIsString())
                 {
-                    if (index == 0)
+                    foreach (string filterValue in filterKeyValuesClass.GetStringValues())
                     {
-                        if(filterKeyValuesClass.GetFilterName() == "age")
+                        filterOptionValuesText += filterValue + "\n";
+                        filterOptionsSize++; 
+                    }
+                }
+                else
+                {
+                    int index = 0;
+                    foreach (double filterValue in filterKeyValuesClass.GetDoubleValues())
+                    {
+                        if (index == 0)
                         {
-                            filterOptionValuesText += "Between " + ((int)Mathf.Ceil((float)filterValue)).ToString() + " and ";
+                            if (filterKeyValuesClass.GetFilterName() == "age")
+                            {
+                                filterOptionValuesText += "from " + "\n" + ((int)Mathf.Ceil((float)filterValue)).ToString() + "\n" + " to " + "\n";
+                            }
+                            else
+                            {
+                                filterOptionValuesText += "from " + "\n" + filterValue + "\n" + "to " + "\n";
+                            }
                         }
                         else
                         {
-                            filterOptionValuesText += "Between " + filterValue + " and ";
+                            if (filterKeyValuesClass.GetFilterName() == "age")
+                            {
+                                filterOptionValuesText += ((int)Mathf.Ceil((float)filterValue)).ToString();
+                            }
+                            else
+                            {
+                                filterOptionValuesText += filterValue;
+                            }
                         }
+                        index++;
                     }
-                    else
-                    {
-                        if (filterKeyValuesClass.GetFilterName() == "age")
-                        {
-                            filterOptionValuesText += ((int)Mathf.Ceil((float)filterValue)).ToString();
-                        }
-                        else
-                        {
-                            filterOptionValuesText += filterValue;
-                        }
-                    }
-                    index++;
+                    filterOptionsSize = 4; 
                 }
-            }
 
-            if (!displayListGameObject)
-            {
-                displayListGameObject = Instantiate(filterAndGroupUIManager.stepUI.displayListPrefab, filterDisplayListParent);
+                GameObject displayListGameObject = Instantiate(filterAndGroupUIManager.stepUI.displayListPrefab, filterDisplayListParent);
+                displayListGameObject.GetComponent<CAS_FilterDisplayList>().SetDisplayContent(filterOptionHeadingText, filterOptionValuesText, filterOptionsSize);
+
+                filtersAppliedCount++; 
             }
- 
-            displayListGameObject.GetComponent<CAS_FilterDisplayList>().SetDisplayContent(filterOptionHeadingText, filterOptionValuesText); 
         }
     }
 }

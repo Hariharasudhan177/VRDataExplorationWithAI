@@ -34,6 +34,17 @@ namespace CAS
         //From where data should be loaded
         public string inputPath = "/Data/GlobalRecords.csv";
 
+        //Red, Green, Blue, Orange, Yellow, Teal, Pink, Lavender, Apricot, Brown, Maroon, Olive, Beige, Cyan, Mint, Purple, Lime, 
+        //DarkOliveGreen, Palevioletred, Goldenrod, Darkslategray
+        public Color[] colorsForGrouping = new Color[] { new Color(0.901f, 0.098f, 0.294f, 1f), new Color(0.235f, 0.705f, 0.294f, 1f),
+            new Color(0.262f, 0.388f, 0.847f, 1f), new Color(0.960f, 0.509f, 0.192f, 1f), new Color(1f, 0.882f, 0.098f, 1f),
+            new Color(0.274f, 0.6f, 0.564f, 1f), new Color(0.862f, 0.745f, 1f, 1f), new Color(0.980f, 0.745f, 0.831f, 1f),
+            new Color(1f, 0.847f, 0.694f, 1f), new Color(0.603f, 0.388f, 0.141f, 1f), new Color(0.603f, 0.388f, 0.141f, 1f),
+            new Color(0.501f, 0f, 0f, 1f), new Color(0.501f, 0.501f, 0f, 1f), new Color(1f, 0.980f, 0.784f, 1f),
+            new Color(0.258f, 0.831f, 0.956f, 1f), new Color(0.666f, 1f, 0.764f, 1f), new Color(0.568f, 0.117f, 0.705f, 1f),
+            new Color(0.749f, 0.937f, 0.270f, 1f), new Color(0.333f, 0.419f, 0.184f, 1f), new Color(0.858f, 0.439f, 0.576f, 1f),
+            new Color(0.854f, 0.647f, 0.125f, 1f), new Color(0.184f, 0.309f, 0.309f, 1f)};
+
         public void Start()
         {
             string path = Application.streamingAssetsPath + inputPath;
@@ -637,14 +648,12 @@ namespace CAS
         }
 
         //Distinct values from providing column names 
-        public Dictionary<string, List<string>> GetFilteredPatientIdsStringAndIntegerGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger, string columnNamesGroupBy)
+        public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger, string columnNamesGroupBy)
         {
-            Dictionary<string, List<string>> filterIdsGroupBy = new Dictionary<string, List<string>>(); 
-
             DataView filteredView = QueryBuilderStringAndIntegerGroupBy(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
             if (filteredView == null)
             {
-                return filterIdsGroupBy;
+                return new Dictionary<string, List<string>>();
             }
 
             string[] requiredColumn = { "id", columnNamesGroupBy };
@@ -654,6 +663,25 @@ namespace CAS
             DataView filteredViewSorted = filteredTable.DefaultView;
             filteredViewSorted.Sort = columnNamesGroupBy + " desc";
             DataTable datatableSorted = filteredViewSorted.ToTable();
+
+            Type filterOptionDataType = GetColumnType(columnNamesGroupBy);
+
+            if (filterOptionDataType == System.Type.GetType("System.Double"))
+            {
+                return GetPatientIdsGroupByDouble(datatableSorted, columnNamesGroupBy);
+            }
+            
+            if (filterOptionDataType == System.Type.GetType("System.String"))
+            {
+                return GetPatientIdsGroupByString(datatableSorted, columnNamesGroupBy); 
+            }
+
+            return new Dictionary<string, List<string>>(); 
+        }
+
+        public Dictionary<string, List<string>> GetPatientIdsGroupByString(DataTable datatableSorted, string columnNamesGroupBy)
+        {
+            Dictionary<string, List<string>> filterIdsGroupBy = new Dictionary<string, List<string>>();
 
             string previousFilterOption = "";
             string currentFilterOption = "";
@@ -668,7 +696,7 @@ namespace CAS
                 //Debug.Log(previousFilterOption + " " + currentFilterOption);
 
                 if (previousFilterOption == currentFilterOption)
-                {                    
+                {
                     filterIdsGroupedByIds.Add(row["id"].ToString());
                 }
                 else
@@ -677,7 +705,7 @@ namespace CAS
                     if (previousFilterOption != "")
                     {
                         filterIdsGroupBy.Add(previousFilterOption, filterIdsGroupedByIds);
-                        filterIdsGroupedByIds = new List<string>();  
+                        filterIdsGroupedByIds = new List<string>();
                         filterIdsGroupedByIds.Add(row["id"].ToString());
                     }
                 }
@@ -687,9 +715,59 @@ namespace CAS
 
             if (!filterIdsGroupBy.ContainsKey(currentFilterOption)) filterIdsGroupBy.Add(currentFilterOption, filterIdsGroupedByIds);
 
-            
-
             return filterIdsGroupBy;
+        }
+
+        //using clustering to groupby numeric columns 
+        public Dictionary<string, List<string>> GetPatientIdsGroupByDouble(DataTable datatableSorted, string columnNamesGroupBy)
+        {
+            Dictionary<string, List<string>> filterIdsGroupBy = new Dictionary<string, List<string>>();
+
+            int clustersCount = 4;
+            int iterations = 50;
+
+            string[] patientIds = new string[datatableSorted.Rows.Count];
+            double[] coloumnValues = new double[datatableSorted.Rows.Count]; 
+            double[][] toClusterData = new double[datatableSorted.Rows.Count][]; 
+
+
+            int index = 0; 
+            foreach (DataRow row in datatableSorted.Rows)
+            {
+                toClusterData[index] = new double[] { 1, double.Parse(row[columnNamesGroupBy].ToString()) };
+                patientIds[index] = row["id"].ToString();
+                coloumnValues[index] = double.Parse(row[columnNamesGroupBy].ToString());
+                index++; 
+            }
+
+            KMeansResults result = KMeans.Cluster(toClusterData, clustersCount, iterations, 0);
+
+            List<List<string>> patientIdsClusterList = new List<List<string>>();
+            List<List<double>> coloumnValuesClusterList = new List<List<double>>();
+
+            for (int i = 0; i < result.clusters.Length; i++)
+            {
+                patientIdsClusterList.Add(new List<string>());
+                coloumnValuesClusterList.Add(new List<double>()); 
+
+                for (int j = 0; j < result.clusters[i].Length; j++)
+                {
+                    patientIdsClusterList[i].Add(patientIds[result.clusters[i][j]]);
+                    coloumnValuesClusterList[i].Add(coloumnValues[result.clusters[i][j]]); 
+                }
+            }
+
+            index = 0; 
+            foreach(List<double> coloumnValuesCluster in coloumnValuesClusterList)
+            {
+                double minValue = coloumnValuesCluster.Min<double>();
+                double maxValue = coloumnValuesCluster.Max<double>();
+                string key = minValue + " to " + maxValue;
+                filterIdsGroupBy.Add(key, patientIdsClusterList[index]);
+                index++; 
+            }  
+
+            return filterIdsGroupBy; 
         }
 
         public DataView QueryBuilderStringAndIntegerGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger)

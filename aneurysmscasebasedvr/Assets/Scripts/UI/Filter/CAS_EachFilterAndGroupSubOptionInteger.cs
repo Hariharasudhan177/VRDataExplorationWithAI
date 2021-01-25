@@ -90,8 +90,9 @@ namespace CAS
 
         public void SetOriginalValues()
         {
-            fromSlider.value = originalMinimum; 
-            toSlider.value = originalMaximum;
+            fromSlider.value = originalMinimum;
+            //toSlider.value = originalMaximum; because of conversion
+            toSlider.value = originalMinimum;
         }
     }
 

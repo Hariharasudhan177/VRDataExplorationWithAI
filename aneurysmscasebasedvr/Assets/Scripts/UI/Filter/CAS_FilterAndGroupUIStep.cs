@@ -20,6 +20,9 @@ namespace CAS
         public List<CAS_FilterAndGroupOptionKeyValuesClass> filtersApplied;
 
         [HideInInspector]
+        public List<List<string>> modelsForAllSteps; 
+
+        [HideInInspector]
         public List<CAS_EachFilterAndGroupStep> eachFilterAndGroupStepsAdded;
 
         [HideInInspector]
@@ -32,7 +35,9 @@ namespace CAS
         public List<GameObject> filterLayerPageList;
         public List<GameObject> filterLayerButtonList;
 
-        public TextMeshProUGUI groupingOptionName; 
+        public TextMeshProUGUI groupingOptionName;
+        public GameObject eachGroupedSetAndDetailsPrefab;
+        public GameObject parentContentOfEachGroupedSetAndDetailsPrefab; 
 
         private void Awake()
         {
@@ -112,15 +117,15 @@ namespace CAS
         public void ApplyFilter(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
         {
             List<CAS_FilterAndGroupOptionKeyValuesClass> incrementalStepFilterKeyValuesList = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
-            List<List<string>> modeldsForThisStep = new List<List<string>>();
+            modelsForAllSteps = new List<List<string>>();
 
             foreach (CAS_FilterAndGroupOptionKeyValuesClass eachStepFilterKeyValues in filterKeyValues)
             {
                 incrementalStepFilterKeyValuesList.Add(eachStepFilterKeyValues);
-                modeldsForThisStep.Add(GetFilteredPatiendIds(incrementalStepFilterKeyValuesList));
+                modelsForAllSteps.Add(GetFilteredPatiendIds(incrementalStepFilterKeyValuesList));
             }
 
-            filterAndGroupUIManager.manager.stepManager.SetFilteredModelsToEditLayers(modeldsForThisStep);
+            filterAndGroupUIManager.manager.stepManager.SetFilteredModelsToEditLayers(modelsForAllSteps);
 
             CreateAndEditFilterSteps();
         }
@@ -139,11 +144,11 @@ namespace CAS
                 {
                     CAS_EachFilterAndGroupStep eachFilterAndGroupStep = CreateFilterLayer();
                     eachFilterAndGroupStepsAdded.Add(eachFilterAndGroupStep);
-                    eachFilterAndGroupStep.SetFilterDisplayContent(filtersAppliedAtEachStep);
+                    eachFilterAndGroupStep.SetFilterDisplayContent(filtersAppliedAtEachStep, modelsForAllSteps);
                 }
                 else
                 {
-                    eachFilterAndGroupStepsAdded[index].SetFilterDisplayContent(filtersAppliedAtEachStep);
+                    eachFilterAndGroupStepsAdded[index].SetFilterDisplayContent(filtersAppliedAtEachStep, modelsForAllSteps);
                 }
             }
 
@@ -198,9 +203,14 @@ namespace CAS
         {
             //filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(filtersApplied, filterKey));
             //For now removing the filtering from grouping. Use the above code if needed later
-            List<CAS_FilterAndGroupOptionKeyValuesClass> blankFilter = new List<CAS_FilterAndGroupOptionKeyValuesClass>(); 
+            List<CAS_FilterAndGroupOptionKeyValuesClass> blankFilter = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
 
-            filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(blankFilter, filterKey));
+            Dictionary<string, List<string>> groupedByPatientIds = GetGroupedByPatiendIds(blankFilter, filterKey); 
+
+            //Set group colours to models 
+            filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(groupedByPatientIds);
+            //Set group details to UI
+            SetGroupingDetails(groupedByPatientIds); 
 
             groupingOptionName.text = filterKey;
         }
@@ -208,8 +218,26 @@ namespace CAS
         public void RemoveGrouping()
         {
             filterAndGroupUIManager.manager.stepManager.RemoveGroupByModelsToEditLayers();
-
+            SetGroupingDetails(new Dictionary<string, List<string>>()); 
             groupingOptionName.text = ""; 
+        }
+
+        public void SetGroupingDetails(Dictionary<string, List<string>> groupedByPatientIds)
+        {
+            int index = 0;
+
+            CAS_EachGroupedSetAndDetails[] toDestroy = parentContentOfEachGroupedSetAndDetailsPrefab.GetComponentsInChildren<CAS_EachGroupedSetAndDetails>(); 
+            foreach (CAS_EachGroupedSetAndDetails child in toDestroy)
+            {
+                Destroy(child.gameObject); 
+            }
+
+            foreach (string key in groupedByPatientIds.Keys)
+            {
+                GameObject eachGroupedSetAndDetailsObject = Instantiate(eachGroupedSetAndDetailsPrefab, parentContentOfEachGroupedSetAndDetailsPrefab.transform);
+                eachGroupedSetAndDetailsObject.GetComponent<CAS_EachGroupedSetAndDetails>().SetGroupedDetailsContent(filterAndGroupUIManager.manager.dataManager.colorsForGrouping[index], key, groupedByPatientIds[key].Count);
+                index++;
+            }
         }
 
         public void OpenClose(bool status)
@@ -238,7 +266,7 @@ namespace CAS
         {
             var keyValuePairs = GetKeyValuePairs(filterKeyValues); 
 
-            return filterAndGroupUIManager.manager.dataManager.GetFilteredPatientIdsStringAndIntegerGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey);
+            return filterAndGroupUIManager.manager.dataManager.GetPatientIdsGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey);
         }
 
         public (List<string>, List<List<string>>, List<string>, List<List<double>>) GetKeyValuePairs(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
