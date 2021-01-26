@@ -12,9 +12,15 @@ namespace CAS
         GameObject modelsParent;
 
         //Model Information 
-        public Dictionary<string, GameObject> allModelsInformation;
+        [HideInInspector]
+        public Dictionary<string, GameObject> allModelsInformationByRecordName;
+        [HideInInspector]
+        public Dictionary<string, GameObject> allModelsInformationByGameObjectName;
+        [HideInInspector]
+        public Dictionary<string, List<string>> allModelsInformationGameobjectRecordName;
 
-        public Material defaultMaterial; 
+        public Material defaultMaterial;
+        public Material boundingBoxLineMaterial;
 
         [HideInInspector]
         public List<CAS_EachStepManager> stepParents;
@@ -24,9 +30,14 @@ namespace CAS
 
         Vector3 originalScale;
 
+        string gameObjectForWhichDataIsDisplayed = ""; 
+
         private void Awake()
         {
-            allModelsInformation = new Dictionary<string, GameObject>();
+            allModelsInformationByRecordName = new Dictionary<string, GameObject>();
+            allModelsInformationByGameObjectName = new Dictionary<string, GameObject>();
+            allModelsInformationGameobjectRecordName = new Dictionary<string, List<string>>();
+
             stepParents = new List<CAS_EachStepManager>();
 
             modelsParent = transform.gameObject;
@@ -131,7 +142,7 @@ namespace CAS
 
             foreach (string id in modelsId)
             {
-                models.Add(allModelsInformation[id]);
+                models.Add(allModelsInformationByRecordName[id]);
             }
 
             return models; 
@@ -141,9 +152,9 @@ namespace CAS
         {
             List<GameObject> models = new List<GameObject>();
 
-            foreach (string id in allModelsInformation.Keys)
+            foreach (string id in allModelsInformationByRecordName.Keys)
             {
-                models.Add(allModelsInformation[id]);
+                models.Add(allModelsInformationByRecordName[id]);
             }
 
             return models;
@@ -171,13 +182,13 @@ namespace CAS
             {
                 foreach (string value in filteredPatientIdsGroupBy[key])
                 {
-                    if (allModelsInformation.ContainsKey(value))
+                    if (allModelsInformationByRecordName.ContainsKey(value))
                     {
                         if(index >= manager.dataManager.colorsForGrouping.Length)
                         {
                             index = 0; 
                         }
-                        allModelsInformation[value].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(manager.dataManager.colorsForGrouping[index]);                
+                        allModelsInformationByRecordName[value].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(manager.dataManager.colorsForGrouping[index]);                
                     }
                 }
                 index++;
@@ -186,9 +197,9 @@ namespace CAS
 
         public void RemoveGroupByModelsToEditLayers()
         {
-            foreach (string value in allModelsInformation.Keys)
+            foreach (string value in allModelsInformationByRecordName.Keys)
             {
-                allModelsInformation[value].GetComponentInChildren<CAS_ContolModel>().UnSetGroupByColour();
+                allModelsInformationByRecordName[value].GetComponentInChildren<CAS_ContolModel>().UnSetGroupByColour();
             }           
         }
 
@@ -200,6 +211,45 @@ namespace CAS
         public void SetOriginalScale()
         {
             transform.localScale = originalScale;
+        }
+
+        public void SetAllModelsInformation(Dictionary<string, GameObject> allModelsInformation)
+        {
+            allModelsInformationByRecordName = allModelsInformation;
+
+            foreach (string id in allModelsInformationByRecordName.Keys)
+            {
+
+                if (!allModelsInformationByGameObjectName.ContainsKey(allModelsInformation[id].name))
+                {
+                    allModelsInformationByGameObjectName.Add(allModelsInformation[id].name, allModelsInformation[id]);
+                }
+
+                if (allModelsInformationGameobjectRecordName.ContainsKey(allModelsInformation[id].name))
+                {
+                    allModelsInformationGameobjectRecordName[allModelsInformation[id].name].Add(id); 
+                }
+                else
+                {
+                    List<string> idList = new List<string>();
+                    idList.Add(id);
+                    allModelsInformationGameobjectRecordName.Add(allModelsInformation[id].name, idList);
+                }
+                 
+            }
+        }
+
+        public void DisplayThisModelData(string name)
+        {
+            manager.displayPatientDetailsUIManager.showDataUI.PopulateData(allModelsInformationGameobjectRecordName[name][0]);
+        }
+
+        public void HighlightModelForWhichDataIsDisplayed(string gameObjectName)
+        {
+            if(gameObjectForWhichDataIsDisplayed != "")
+                allModelsInformationByRecordName[gameObjectForWhichDataIsDisplayed].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(false);
+            gameObjectForWhichDataIsDisplayed = gameObjectName;
+            allModelsInformationByRecordName[gameObjectName].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(true); 
         }
     }
 }

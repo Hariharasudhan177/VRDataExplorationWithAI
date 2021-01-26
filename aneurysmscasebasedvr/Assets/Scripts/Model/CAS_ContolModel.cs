@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DimBoxes;
 
 namespace CAS
 {
@@ -113,6 +114,11 @@ namespace CAS
         public void DeHighlight()
         {
             transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+        }
+
+        public void HighlightModelSinceSelected(bool selected)
+        {
+            transform.GetChild(0).GetComponent<BoundBox>().enabled = selected; 
         }
 
         Vector3 LerpWithoutClamp(Vector3 originPosition, Vector3 currentPosition, float factor)

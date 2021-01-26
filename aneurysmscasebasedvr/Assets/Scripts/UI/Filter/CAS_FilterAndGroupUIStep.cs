@@ -68,7 +68,7 @@ namespace CAS
             return currentStep; 
         }
 
-        public void AddFilter(string filterKey, List<string> filterValuesString,  List<double> filterValuesDouble, bool isString)
+        public void AddFilter(string filterKey, List<string> filterValuesString,  List<List<double>> filterValuesDouble, bool isString)
         {
             if(filterValuesString.Count > 0 || filterValuesDouble.Count > 0){
                 CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass = new CAS_FilterAndGroupOptionKeyValuesClass(filterKey, filterValuesString, filterValuesDouble, isString);
@@ -78,7 +78,7 @@ namespace CAS
             ApplyFilter(filtersApplied); 
         }
 
-        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<List<double>> filterValuesDouble, bool isString)
         {
             //foreach (CAS_FilterKeyValuesClass eachKeyFilterValues in filtersApplied)
             for(int i = 0; i < filtersApplied.Count; i++)
@@ -269,12 +269,12 @@ namespace CAS
             return filterAndGroupUIManager.manager.dataManager.GetPatientIdsGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey);
         }
 
-        public (List<string>, List<List<string>>, List<string>, List<List<double>>) GetKeyValuePairs(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
+        public (List<string>, List<List<string>>, List<string>, List<List<List<double>>>) GetKeyValuePairs(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)
         {
             List<string> stringFilterKeys = new List<string>();
             List<List<string>> stringFilterValues = new List<List<string>>();
             List<string> doubleFilterKeys = new List<string>();
-            List<List<double>> doubleFilterValues = new List<List<double>>();
+            List<List<List<double>>> doubleFilterValues = new List<List<List<double>>>();
 
             foreach (CAS_FilterAndGroupOptionKeyValuesClass filterKeyValue in filterKeyValues)
             {

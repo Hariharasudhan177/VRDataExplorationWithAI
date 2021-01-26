@@ -60,6 +60,12 @@ namespace CAS
             ConvertCSVToDatatable(dataCSV.text);
         }
 
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
         void ConvertCSVToDatatable(string data)
         {
 
@@ -188,7 +194,7 @@ namespace CAS
                 index++;
             }
 
-            manager.stepManager.allModelsInformation = allModelsInformation;
+            manager.stepManager.SetAllModelsInformation(allModelsInformation);
 
             Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
 
@@ -206,7 +212,8 @@ namespace CAS
 
             Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
 
-            manager.filterAndGroupUIManager.PopulateFilterOptions();   
+            manager.filterAndGroupUIManager.PopulateFilterOptions();
+            manager.displayPatientDetailsUIManager.PopulatePatientDisplay();
         }
 
         public bool CheckIfCorrespondingModelIsPresent(string patientId)
@@ -331,20 +338,15 @@ namespace CAS
         }
 
         //Distinct values from providing column names 
-        public List<string> GetFilteredPatientIds(List<string> columnNames, List<List<string>> values)
+        public List<string> GetUniquePatientIds()
         {
             List<string> idList = new List<string>();
-            DataView filteredView = QueryBuilder(columnNames, values);
-            if(filteredView == null)
-            {
-                return idList; 
-            }
 
-            string[] requiredColumn = { "id" }; 
-            DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
+            string[] requiredColumn = { "id" };
+            DataView view = new DataView(patientDetails);
+            DataTable uniqueIdTable = view.ToTable(true, requiredColumn);
 
-           
-            foreach (DataRow row in filteredTable.Rows)
+            foreach (DataRow row in uniqueIdTable.Rows)
             {
                 idList.Add(row["id"].ToString());
             }
@@ -353,7 +355,7 @@ namespace CAS
         }
 
         //Distinct values from providing column names 
-        public List<string> GetFilteredPatientIdsStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger)
+        public List<string> GetFilteredPatientIdsStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
             List<string> idList = new List<string>();
             DataView filteredView = QueryBuilderStringAndInteger(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
@@ -373,48 +375,6 @@ namespace CAS
             return idList;
         }
 
-        //Distinct values from providing column names 
-        public List<string> GetFilteredPatientIdsInteger(List<string> columnNames, List<List<double>> values)
-        {
-            List<string> idList = new List<string>();
-            DataView filteredView = QueryBuilderInteger(columnNames, values);
-            if (filteredView == null)
-            {
-                return idList;
-            }
-
-            string[] requiredColumn = { "id" };
-            DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
-
-            foreach (DataRow row in filteredTable.Rows)
-            {
-                idList.Add(row["id"].ToString());
-            }
-
-            return idList;
-        }
-
-        //Distinct values from providing column names with selectable columns 
-        public List<object> GetFilteredPatientRequiredColumns(List<string> columnNames, List<List<string>> values, string[] requiredColumns)
-        {
-
-            DataView filteredView = QueryBuilder(columnNames, values);
-            if (filteredView == null)
-            {
-                return null;
-            }
-
-            DataTable filteredTable = filteredView.ToTable(true, requiredColumns);
-
-            //returning rows itself 
-            List<object> tableToStringList = new List<object>();
-            foreach (DataRow row in filteredTable.Rows)
-            {
-                tableToStringList.Add(row);
-            }
-
-            return tableToStringList;
-        }
 
         //Entire row from patient id 
         public Dictionary<string, string> GetPatientRecordWithId(string id)
@@ -448,31 +408,7 @@ namespace CAS
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            //Test GetFilteredPatientIds
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                List<string> columns = new List<string>();
-                columns.Add("aneurysmLocation");
-                columns.Add("institution"); 
-                List<string> value1 = new List<string>();
-                value1.Add("MCA-Bif");
-                List<string> value2 = new List<string>();
-                value2.Add("UniversityHospitalMagdeburg");
-                List<List<string>> values = new List<List<string>>();
-                values.Add(value1);
-                values.Add(value2);
-                List<string> filterRows = GetFilteredPatientIds(columns, values);
-                foreach(object row in filterRows)
-                {
-                    Debug.Log(row); 
-                }
-            }
-        }
-
-        public DataView QueryBuilderStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger)
+        public DataView QueryBuilderStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
             string filter = "";
             string integerFilter = "";
@@ -481,14 +417,27 @@ namespace CAS
             int indexInteger = 0;
             foreach (string columnName in columnNamesInteger)
             {
-                List<double> valuesForThisColumnName = valuesInteger[indexInteger];
-
                 if (indexInteger != 0)
                 {
                     integerFilter += " AND ";
                 }
 
-                integerFilter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+                List<List<double>> valuesForThisColumnName = valuesInteger[indexInteger];
+
+                int numberOfConditionsForThisColumn = 0;
+                integerFilter += "( ";
+                foreach (List<double> valueForThisColumnName in valuesForThisColumnName)
+                {
+                    if (numberOfConditionsForThisColumn != 0)
+                    {
+                        integerFilter += " OR ";
+                    }
+
+                    integerFilter += "( " + columnName + " >= " + valueForThisColumnName[0] + " AND " + columnName + " <= " + valueForThisColumnName[1] + " )";
+
+                    numberOfConditionsForThisColumn++; 
+                }
+                integerFilter += " )";
 
                 indexInteger++;
             }
@@ -553,102 +502,13 @@ namespace CAS
             return filteredView;
         }
 
-        public DataView QueryBuilderInteger(List<string> columnNames, List<List<double>> values)
-        {
-            int index = 0;
-            string filter = "";
-            foreach (string columnName in columnNames)
-            {
-                List<double> valuesForThisColumnName = values[index];
-
-                if (index != 0)
-                {
-                    filter += " AND "; 
-                }
-                
-                filter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )"; 
-
-                index++;
-            }
-
-            if(filter != "")
-            {
-                filter += " AND (modelPresent = true)";
-            }
-            
-            Debug.Log(filter); 
-
-            if(filter == "")
-            {
-                return null; 
-            }
-
-            //Creating a view for filter
-            DataView filteredView = new DataView(patientDetails);
-            filteredView.RowFilter = filter;
-
-            return filteredView; 
-        }
-
-        public DataView QueryBuilder(List<string> columnNames, List<List<string>> values)
-        {
-            int index = 0;
-            string filter = "";
-            foreach (string columnName in columnNames)
-            {
-                if (index == 0)
-                {
-                    filter += columnName + " in (";
-                }
-                else
-                {
-                    filter += " AND " + columnName + " in (";
-                }
-
-                List<string> valuesForThisColumnName = values[index];
-                int subIndex = 0;
-                foreach (string value in valuesForThisColumnName)
-                {
-                    if (subIndex == 0)
-                    {
-                        filter += "'" + value + "'";
-                    }
-                    else
-                    {
-                        filter += "," + "'" + value + "'";
-                    }
-                    subIndex++;
-                }
-                filter += ")";
-                index++;
-            }
-
-            if (filter != "")
-            {
-                filter += " AND (modelPresent = true)";
-            }
-
-            Debug.Log(filter);
-
-            if (filter == "")
-            {
-                return null;
-            }
-
-            //Creating a view for filter
-            DataView filteredView = new DataView(patientDetails);
-            filteredView.RowFilter = filter;
-
-            return filteredView;
-        }
-
         public TypeOfOptions GetColumnTypeOfOption(string columnHeading)
         {
             return columnTypeOfOption[columnHeading]; 
         }
 
         //Distinct values from providing column names 
-        public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger, string columnNamesGroupBy)
+        public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger, string columnNamesGroupBy)
         {
             DataView filteredView = QueryBuilderStringAndIntegerGroupBy(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
             if (filteredView == null)
@@ -770,34 +630,185 @@ namespace CAS
             return filterIdsGroupBy; 
         }
 
-        public DataView QueryBuilderStringAndIntegerGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<double>> valuesInteger)
+        //Unnecessary - check later 
+        public DataView QueryBuilderStringAndIntegerGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
             string filter = "";
+            string integerFilter = "";
+            string stringFilter = "";
 
             int indexInteger = 0;
             foreach (string columnName in columnNamesInteger)
             {
-                List<double> valuesForThisColumnName = valuesInteger[indexInteger];
-
                 if (indexInteger != 0)
                 {
-                    filter += " AND ";
+                    integerFilter += " AND ";
                 }
 
-                filter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+                List<List<double>> valuesForThisColumnName = valuesInteger[indexInteger];
+
+                int numberOfConditionsForThisColumn = 0;
+                integerFilter += "( ";
+                foreach (List<double> valueForThisColumnName in valuesForThisColumnName)
+                {
+                    if (numberOfConditionsForThisColumn != 0)
+                    {
+                        integerFilter += " OR ";
+                    }
+
+                    integerFilter += "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+
+                    numberOfConditionsForThisColumn++;
+                }
+                integerFilter += " )";
 
                 indexInteger++;
-            }
-
-            if (filter != "")
-            {
-                filter += " AND ";
             }
 
             int indexString = 0;
             foreach (string columnName in columnNamesString)
             {
                 if (indexString == 0)
+                {
+                    stringFilter += columnName + " in (";
+                }
+                else
+                {
+                    stringFilter += " AND " + columnName + " in (";
+                }
+
+                List<string> valuesForThisColumnName = valuesString[indexString];
+                int subIndex = 0;
+                foreach (string value in valuesForThisColumnName)
+                {
+                    if (subIndex == 0)
+                    {
+                        stringFilter += "'" + value + "'";
+                    }
+                    else
+                    {
+                        stringFilter += "," + "'" + value + "'";
+                    }
+                    subIndex++;
+                }
+                stringFilter += ")";
+                indexString++;
+            }
+
+            if (stringFilter != "" && integerFilter != "")
+            {
+                filter = integerFilter + " AND " + stringFilter;
+            }
+            else if (stringFilter != "")
+            {
+                filter = stringFilter;
+            }
+            else if (integerFilter != "")
+            {
+                filter = integerFilter;
+            }
+
+            if (filter != "")
+            {
+                filter += " AND (modelPresent = true)";
+            }
+
+            Debug.Log(filter);
+
+            //Creating a view for filter
+            DataView filteredView = new DataView(patientDetails);
+            filteredView.RowFilter = filter;
+
+            return filteredView;
+        }
+
+        //Distinct values from providing column names 
+        public List<string> GetFilteredPatientIdsInteger(List<string> columnNames, List<List<double>> values)
+        {
+            List<string> idList = new List<string>();
+            DataView filteredView = QueryBuilderInteger(columnNames, values);
+            if (filteredView == null)
+            {
+                return idList;
+            }
+
+            string[] requiredColumn = { "id" };
+            DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
+
+            foreach (DataRow row in filteredTable.Rows)
+            {
+                idList.Add(row["id"].ToString());
+            }
+
+            return idList;
+        }
+
+        //Distinct values from providing column names with selectable columns 
+        public List<object> GetFilteredPatientRequiredColumns(List<string> columnNames, List<List<string>> values, string[] requiredColumns)
+        {
+
+            DataView filteredView = QueryBuilder(columnNames, values);
+            if (filteredView == null)
+            {
+                return null;
+            }
+
+            DataTable filteredTable = filteredView.ToTable(true, requiredColumns);
+
+            //returning rows itself 
+            List<object> tableToStringList = new List<object>();
+            foreach (DataRow row in filteredTable.Rows)
+            {
+                tableToStringList.Add(row);
+            }
+
+            return tableToStringList;
+        }
+
+        public DataView QueryBuilderInteger(List<string> columnNames, List<List<double>> values)
+        {
+            int index = 0;
+            string filter = "";
+            foreach (string columnName in columnNames)
+            {
+                List<double> valuesForThisColumnName = values[index];
+
+                if (index != 0)
+                {
+                    filter += " AND ";
+                }
+
+                filter = "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+
+                index++;
+            }
+
+            if (filter != "")
+            {
+                filter += " AND (modelPresent = true)";
+            }
+
+            Debug.Log(filter);
+
+            if (filter == "")
+            {
+                return null;
+            }
+
+            //Creating a view for filter
+            DataView filteredView = new DataView(patientDetails);
+            filteredView.RowFilter = filter;
+
+            return filteredView;
+        }
+
+        public DataView QueryBuilder(List<string> columnNames, List<List<string>> values)
+        {
+            int index = 0;
+            string filter = "";
+            foreach (string columnName in columnNames)
+            {
+                if (index == 0)
                 {
                     filter += columnName + " in (";
                 }
@@ -806,7 +817,7 @@ namespace CAS
                     filter += " AND " + columnName + " in (";
                 }
 
-                List<string> valuesForThisColumnName = valuesString[indexString];
+                List<string> valuesForThisColumnName = values[index];
                 int subIndex = 0;
                 foreach (string value in valuesForThisColumnName)
                 {
@@ -821,7 +832,7 @@ namespace CAS
                     subIndex++;
                 }
                 filter += ")";
-                indexString++;
+                index++;
             }
 
             if (filter != "")
@@ -833,7 +844,7 @@ namespace CAS
 
             if (filter == "")
             {
-                filter = "modelPresent = true"; 
+                return null;
             }
 
             //Creating a view for filter

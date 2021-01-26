@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using CAS;
-using UnityEditor; 
+using UnityEditor;
+using DimBoxes; 
 
 namespace CAS
 {
@@ -24,6 +25,9 @@ namespace CAS
 
 
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
+            model.transform.GetChild(0).gameObject.AddComponent<BoundBox>();
+            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = GetComponentInParent<CAS_StepManager>().boundingBoxLineMaterial;
+            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = false; 
             model.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().enabled = false;

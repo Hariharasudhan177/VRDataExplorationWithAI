@@ -14,7 +14,7 @@ namespace CAS
         public GameObject eachFieldOfData;
         public GameObject parentContent;
 
-        public CAS_DataManager dataManager;
+        public CAS_DisplayPatientDetailsUIManager displayPatientDetailsUIManager;
 
         bool visible = false;
 
@@ -59,13 +59,15 @@ namespace CAS
                     Destroy(toDelete.gameObject); 
                 }
 
-                Dictionary<string, string> patientRecord = dataManager.GetPatientRecordWithId(id);
+                Dictionary<string, string> patientRecord = displayPatientDetailsUIManager.manager.dataManager.GetPatientRecordWithId(id);
 
                 foreach (KeyValuePair<string, string> entry in patientRecord)
                 {
                     GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfData, parentContent.transform);
                     eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(entry.Key, entry.Value);
                 }
+                displayPatientDetailsUIManager.patientIdListUI.SetSelectedPatientId(id);
+                displayPatientDetailsUIManager.manager.stepManager.HighlightModelForWhichDataIsDisplayed(id); 
             }
 
         }
@@ -80,6 +82,23 @@ namespace CAS
                 }
             }
 
+        }
+
+        public void OpenClose(bool status)
+        {
+            visible = status;
+
+            if (status)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0;
+            }
+
+            GetComponent<CanvasGroup>().interactable = status;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
         }
     }
 }

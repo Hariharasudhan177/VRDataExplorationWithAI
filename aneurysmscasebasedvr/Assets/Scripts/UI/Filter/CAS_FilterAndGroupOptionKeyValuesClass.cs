@@ -8,10 +8,10 @@ namespace CAS
     {
         string filterName; 
         List<string> stringValues;
-        List<double> doubleValues;
+        List<List<double>> doubleValues;
         bool isString;
 
-        public CAS_FilterAndGroupOptionKeyValuesClass(string filterName, List<string> stringValues, List<double> doubleValues, bool isString)
+        public CAS_FilterAndGroupOptionKeyValuesClass(string filterName, List<string> stringValues, List<List<double>> doubleValues, bool isString)
         {
             this.filterName = filterName;
             this.isString = isString; 
@@ -44,7 +44,7 @@ namespace CAS
             }
         }
 
-        public List<double> GetDoubleValues()
+        public List<List<double>> GetDoubleValues()
         {
             if (!isString)
             {
@@ -53,7 +53,7 @@ namespace CAS
             else
             {
                 Debug.LogError("Asking string filter suboptions to double filter option");
-                return new List<double>();
+                return new List<List<double>>();
             }
         }
 
@@ -74,7 +74,7 @@ namespace CAS
             }
         }
 
-        public void SetDoubleValues(List<double> doubleValues)
+        public void SetDoubleValues(List<List<double>> doubleValues)
         {
             if (!isString)
             {

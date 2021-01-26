@@ -59,34 +59,41 @@ namespace CAS
                 }
                 else
                 {
-                    int index = 0;
-                    foreach (double filterValue in filterKeyValuesClass.GetDoubleValues())
+                    int filterValueConditionIndex = 0; 
+                    foreach (List<double> filterValueCondition in filterKeyValuesClass.GetDoubleValues())
                     {
-                        if (index == 0)
+                        int index = 0;
+                        foreach (double filterValue in filterValueCondition)
                         {
-                            if (filterKeyValuesClass.GetFilterName() == "age")
+                            if (index == 0)
                             {
-                                filterOptionValuesText += "from " + "\n" + ((int)Mathf.Ceil((float)filterValue)).ToString() + "\n" + " to " + "\n";
+                                if (filterKeyValuesClass.GetFilterName() == "age")
+                                {
+                                    filterOptionValuesText += "from " + "\n" + ((int)Mathf.Ceil((float)filterValue)).ToString() + "\n" + " to " + "\n";
+                                }
+                                else
+                                {
+                                    filterOptionValuesText += "from " + "\n" + filterValue + "\n" + "to " + "\n";
+                                }
                             }
                             else
                             {
-                                filterOptionValuesText += "from " + "\n" + filterValue + "\n" + "to " + "\n";
+                                if (filterKeyValuesClass.GetFilterName() == "age")
+                                {
+                                    filterOptionValuesText += ((int)Mathf.Ceil((float)filterValue)).ToString() + "\n\n";
+                                }
+                                else
+                                {
+                                    filterOptionValuesText += filterValue + "\n\n";
+                                }
                             }
+                            index++;
                         }
-                        else
-                        {
-                            if (filterKeyValuesClass.GetFilterName() == "age")
-                            {
-                                filterOptionValuesText += ((int)Mathf.Ceil((float)filterValue)).ToString();
-                            }
-                            else
-                            {
-                                filterOptionValuesText += filterValue;
-                            }
-                        }
-                        index++;
+                        filterValueConditionIndex++; 
                     }
-                    filterOptionsSize = 4; 
+
+                   
+                    filterOptionsSize = 5 * (filterValueConditionIndex+1); 
                 }
 
                 GameObject displayListGameObject = Instantiate(filterAndGroupUIManager.stepUI.displayListPrefab, filterDisplayListParent);

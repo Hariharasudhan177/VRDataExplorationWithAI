@@ -25,7 +25,7 @@ namespace CAS
         Color highlightedColor = Color.magenta;
 
         //ShowData
-        public CAS_ShowDataUI showDataUI; 
+        public CAS_Manager manager; 
 
         // Start is called before the first frame update
         void Start()
@@ -69,14 +69,14 @@ namespace CAS
                 //interactable.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", highlightedColor);
                 if(interactable.transform.GetComponent<CAS_ContolModel>())
                     interactable.transform.GetComponent<CAS_ContolModel>().Highlight(highlightedColor);
-                showDataUI.PopulateData(interactable.transform.GetChild(0).GetComponentInParent<CAS_GrabInteractable>().gameObject.name); 
+                manager.stepManager.DisplayThisModelData(interactable.transform.GetChild(0).GetComponentInParent<CAS_GrabInteractable>().gameObject.name); 
             }
         //meshRenderer.material.SetColor("_Color", highlightedColor);
         }
 
         void DeHighlightOnHoverExit(XRBaseInteractable interactable)
         {
-            showDataUI.UnPopulateData();
+            //manager.displayPatientDetailsUIManager.showDataUI.UnPopulateData();
             if (interactable.GetComponent<CAS_PrepareModels>())
             {
                 //interactable.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", defaultColor);

@@ -18,7 +18,11 @@ namespace CAS
         float originalMinimum;
         float originalMaximum; 
 
-        bool settingValue = false; 
+        bool settingValue = false;
+
+        int subOptionIntegerIndex;
+
+        public TextMeshProUGUI conditionNumber; 
 
         // Start is called before the first frame update
         void Start()
@@ -32,8 +36,17 @@ namespace CAS
 
         }
 
-        public void SetEachFilterAndGroupSubOptionContent(double min, double max)
+        public void SetEachFilterAndGroupSubOptionContent(double min, double max, int index)
         {
+            subOptionIntegerIndex = index;
+
+            if(index > 0)
+            {
+                conditionNumber.gameObject.SetActive(true); 
+                conditionNumber.text = "Condition " + (subOptionIntegerIndex+1);
+            }
+
+
             settingValue = true; 
             fromSlider.minValue = (float)min;
             fromSlider.maxValue = (float)max;
@@ -64,7 +77,7 @@ namespace CAS
                     return;
                 }
 
-                subOptionPanel.SetFromToSliderValue(0, value);
+                subOptionPanel.SetFromToSliderValue(0, value, subOptionIntegerIndex);
             }
 
             fromValueDisplayText.text = fromSlider.value.ToString(); 
@@ -82,7 +95,7 @@ namespace CAS
                     return; 
                 }
 
-                subOptionPanel.SetFromToSliderValue(1, convertedToValueSinceReversed);
+                subOptionPanel.SetFromToSliderValue(1, convertedToValueSinceReversed, subOptionIntegerIndex);
             }
 
             toValueDisplayText.text = convertedToValueSinceReversed.ToString();
@@ -95,5 +108,4 @@ namespace CAS
             toSlider.value = originalMinimum;
         }
     }
-
 }

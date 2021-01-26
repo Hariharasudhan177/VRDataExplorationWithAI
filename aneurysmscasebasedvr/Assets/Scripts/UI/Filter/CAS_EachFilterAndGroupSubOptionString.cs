@@ -18,6 +18,9 @@ namespace CAS
         void Start()
         {
             eachSubOptionPanel = GetComponentInParent<CAS_EachFilterAndGroupSubOptionPanel>(); 
+
+            RectTransform rt = GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x, 100f); 
         }
 
         // Update is called once per frame

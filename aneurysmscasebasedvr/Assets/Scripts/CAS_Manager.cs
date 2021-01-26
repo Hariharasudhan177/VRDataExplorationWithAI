@@ -9,6 +9,7 @@ namespace CAS
         public CAS_DataManager dataManager;
         public CAS_StepManager stepManager;
         public CAS_FilterAndGroupUIManager filterAndGroupUIManager;
+        public CAS_DisplayPatientDetailsUIManager displayPatientDetailsUIManager;
 
         // Start is called before the first frame update
         void Start()

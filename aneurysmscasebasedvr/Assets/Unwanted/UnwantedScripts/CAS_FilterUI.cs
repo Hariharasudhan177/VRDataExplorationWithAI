@@ -151,7 +151,7 @@ namespace CAS
                 }
             }
 
-            List<string> filteredPatientIds = dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
+            //List<string> filteredPatientIds = dataManager.GetFilteredPatientIds(filterOptions, filterOptionsValues);
             //stepManager.IncreaseSteps(filteredPatientIds); 
         }
     }

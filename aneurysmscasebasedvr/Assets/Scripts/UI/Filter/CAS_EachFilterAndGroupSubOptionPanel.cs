@@ -23,8 +23,7 @@ namespace CAS
 
         //For double filters 
         List<double> fromToValueOriginal;
-        List<double> fromToValue;
-        CAS_EachFilterAndGroupSubOptionInteger filterAndGroupSubOptionInteger; 
+        List<List<double>> fromToValue;
 
         public GameObject parentContentOfSubOption;
 
@@ -36,6 +35,9 @@ namespace CAS
 
         public TextMeshProUGUI filterOptionNameTextBox;
         public Image filterOptionStatus;
+        public Button addIntegerOptionButton;
+
+        List<CAS_EachFilterAndGroupSubOptionInteger> filterAndGroupSubOptionIntegerList; 
 
         // Start is called before the first frame update
         void Start()
@@ -62,7 +64,9 @@ namespace CAS
 
             if (filterOptionDataType == System.Type.GetType("System.Double"))
             {
-                fromToValue = new List<double>();
+                filterAndGroupSubOptionIntegerList = new List<CAS_EachFilterAndGroupSubOptionInteger>();
+                fromToValue = new List<List<double>>();
+                fromToValue.Add(new List<double>()); 
                 fromToValueOriginal = new List<double>();
 
                 List<object> filterSubOptions = filterAndGroupManager.manager.dataManager.GetFilterSubOptions(filterOptionName);
@@ -76,15 +80,20 @@ namespace CAS
 
                 double minValue = filterSubOptionsDouble.Min(); 
                 double maxValue = filterSubOptionsDouble.Max();
-                fromToValue.Add(minValue);
-                fromToValue.Add(maxValue);
+                fromToValue[0].Add(minValue);
+                fromToValue[0].Add(maxValue);
 
                 fromToValueOriginal.Add(minValue);
                 fromToValueOriginal.Add(maxValue);
 
                 GameObject filterSubOptionInteger = Instantiate(filterAndGroupManager.subOptionsUI.filterSubOptionSliderPrefab, parentContentOfSubOption.transform);
-                filterSubOptionInteger.GetComponent<CAS_EachFilterAndGroupSubOptionInteger>().SetEachFilterAndGroupSubOptionContent(minValue, maxValue);
-                filterAndGroupSubOptionInteger = filterSubOptionInteger.GetComponent<CAS_EachFilterAndGroupSubOptionInteger>(); 
+                CAS_EachFilterAndGroupSubOptionInteger filterAndGroupSubOptionInteger = filterSubOptionInteger.GetComponent<CAS_EachFilterAndGroupSubOptionInteger>();
+                filterAndGroupSubOptionIntegerList.Add(filterAndGroupSubOptionInteger);
+                filterAndGroupSubOptionInteger.SetEachFilterAndGroupSubOptionContent(minValue, maxValue, filterAndGroupSubOptionIntegerList.Count-1);
+
+                addIntegerOptionButton.gameObject.SetActive(true);
+
+                parentContentOfSubOption.GetComponent<VerticalLayoutGroup>().childControlHeight = true;
             }
             else if(filterOptionDataType == System.Type.GetType("System.String"))
             {
@@ -113,30 +122,32 @@ namespace CAS
             filterSubOptionsStatus[name].SetToggleStatus(value); 
         }
 
-        public void SetFromToSliderValue(int index, float value)
+        public void SetFromToSliderValue(int index, float value, int subOptionIntegerIndex)
         {
-            fromToValue[index] = (double)value; 
+            fromToValue[subOptionIntegerIndex][index] = (double)value; 
         }
 
         //OnClick filter button - take all the filteroptionstatus values and send query 
         public void ApplyThisFilter()
         {
-            bool blankFilter = false; 
+            bool blankFilter = true; 
 
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
             {
-                List<double> fromToValueSelected = new List<double>(); 
 
-                if ((fromToValue[0] != fromToValueOriginal[0]) || (fromToValue[1] != fromToValueOriginal[1]))
+                List<List<double>> fromToValueSelected = new List<List<double>>(); 
+
+                foreach(List<double> subFromToValue in fromToValue)
                 {
-                    fromToValueSelected = fromToValue; 
-                }
-                else 
-                {
-                    blankFilter = true; 
+                    if ((subFromToValue[0] != fromToValueOriginal[0]) || (subFromToValue[1] != fromToValueOriginal[1]))
+                    {
+                        fromToValueSelected.Add(subFromToValue);
+                        blankFilter = false;
+                    }
                 }
 
                 Debug.Log(fromToValueSelected.Count); 
+
                 if (filterApplied)
                 {
                     filterAndGroupManager.ChangeFilter(gameObject.name, new List<string>(), fromToValueSelected, false);
@@ -155,21 +166,17 @@ namespace CAS
                     if (filterSubOptionsStatus[key].GetToggleStatus())
                     {
                         filterSubOptionsSelected.Add(key);
+                        blankFilter = false;
                     }
-                }
-
-                if(filterSubOptionsSelected.Count == 0)
-                {
-                    blankFilter = true;
                 }
 
                 if (filterApplied)
                 {
-                    filterAndGroupManager.ChangeFilter(gameObject.name, filterSubOptionsSelected, new List<double>(), true);
+                    filterAndGroupManager.ChangeFilter(gameObject.name, filterSubOptionsSelected, new List<List<double>>(), true);
                 }
                 else
                 {
-                    filterAndGroupManager.AddFilter(gameObject.name, filterSubOptionsSelected, new List<double>(), true);
+                    filterAndGroupManager.AddFilter(gameObject.name, filterSubOptionsSelected, new List<List<double>>(), true);
                 }
             }
 
@@ -200,9 +207,16 @@ namespace CAS
         {
             if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.Double"))
             {
-                fromToValue[0] = fromToValueOriginal[0];
-                fromToValue[1] = fromToValueOriginal[1];
-                filterAndGroupSubOptionInteger.SetOriginalValues(); 
+                foreach (List<double> subFromToValue in fromToValue)
+                {
+                    subFromToValue[0] = fromToValueOriginal[0];
+                    subFromToValue[1] = fromToValueOriginal[1];
+                }
+
+                foreach (CAS_EachFilterAndGroupSubOptionInteger filterAndGroupSubOptionInteger in filterAndGroupSubOptionIntegerList)
+                {
+                    filterAndGroupSubOptionInteger.SetOriginalValues();
+                }
             }
             else if (filterAndGroupManager.manager.dataManager.GetColumnType(filterOptionName) == System.Type.GetType("System.String"))
             {
@@ -229,6 +243,16 @@ namespace CAS
             filterAndGroupManager.RemoveGrouping();
         }
 
+        public void AddAnotherSubOptionInteger()
+        {
+            GameObject filterSubOptionInteger = Instantiate(filterAndGroupManager.subOptionsUI.filterSubOptionSliderPrefab, parentContentOfSubOption.transform);
+            CAS_EachFilterAndGroupSubOptionInteger filterAndGroupSubOptionInteger = filterSubOptionInteger.GetComponent<CAS_EachFilterAndGroupSubOptionInteger>();
+            filterAndGroupSubOptionIntegerList.Add(filterAndGroupSubOptionInteger);
+            filterAndGroupSubOptionInteger.SetEachFilterAndGroupSubOptionContent(fromToValueOriginal[0], fromToValueOriginal[1], filterAndGroupSubOptionIntegerList.Count-1);
 
+            fromToValue.Add(new List<double>());
+            fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[0]);
+            fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[1]);
+        }
     }
 }

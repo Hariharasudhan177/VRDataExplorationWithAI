@@ -100,7 +100,7 @@ namespace CAS
                 }
 
                 //Centre of the small circle when z-value is the distance between small circles 
-                Vector3 centreOfSmallCircle = new Vector3(0f, 0f, currentDistanceBetweenEachSmallCircle);
+                Vector3 centreOfSmallCircle = new Vector3(0f, 0.05f, currentDistanceBetweenEachSmallCircle);
 
                 //Position where model is to be placed 
                 Vector3 toBePosition = PointOnCircle(radiusOfSmallCircle, angleRequired, centreOfSmallCircle);

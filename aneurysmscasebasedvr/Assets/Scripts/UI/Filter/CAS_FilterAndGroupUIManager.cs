@@ -64,12 +64,12 @@ namespace CAS
             subOptionsUI.SetfilterSubOptionPanelsSelected(key); 
         }
 
-        public void AddFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        public void AddFilter(string filterKey, List<string> filterValuesString, List<List<double>> filterValuesDouble, bool isString)
         {
             stepUI.AddFilter(filterKey, filterValuesString, filterValuesDouble, isString); 
         }
 
-        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<double> filterValuesDouble, bool isString)
+        public void ChangeFilter(string filterKey, List<string> filterValuesString, List<List<double>> filterValuesDouble, bool isString)
         {
             stepUI.ChangeFilter(filterKey, filterValuesString, filterValuesDouble, isString);
         }
