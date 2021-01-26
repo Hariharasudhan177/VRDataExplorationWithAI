@@ -656,7 +656,7 @@ namespace CAS
                         integerFilter += " OR ";
                     }
 
-                    integerFilter += "( " + columnName + " >= " + valuesForThisColumnName[0] + " AND " + columnName + " <= " + valuesForThisColumnName[1] + " )";
+                    integerFilter += "( " + columnName + " >= " + valueForThisColumnName[0] + " AND " + columnName + " <= " + valueForThisColumnName[1] + " )";
 
                     numberOfConditionsForThisColumn++;
                 }

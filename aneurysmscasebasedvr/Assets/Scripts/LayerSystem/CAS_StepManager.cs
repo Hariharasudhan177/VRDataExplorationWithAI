@@ -176,6 +176,8 @@ namespace CAS
 
         public void SetGroupByModelsToEditLayers(Dictionary<string, List<string>> filteredPatientIdsGroupBy)
         {
+            RemoveGroupByModelsToEditLayers(); 
+
             int index = 0;
 
             foreach (string key in filteredPatientIdsGroupBy.Keys)

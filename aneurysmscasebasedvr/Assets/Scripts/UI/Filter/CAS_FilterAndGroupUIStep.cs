@@ -37,7 +37,10 @@ namespace CAS
 
         public TextMeshProUGUI groupingOptionName;
         public GameObject eachGroupedSetAndDetailsPrefab;
-        public GameObject parentContentOfEachGroupedSetAndDetailsPrefab; 
+        public GameObject parentContentOfEachGroupedSetAndDetailsPrefab;
+
+        string groupedByKey = "";
+        bool groupingWithFilter = true; 
 
         private void Awake()
         {
@@ -128,6 +131,11 @@ namespace CAS
             filterAndGroupUIManager.manager.stepManager.SetFilteredModelsToEditLayers(modelsForAllSteps);
 
             CreateAndEditFilterSteps();
+
+            if (groupedByKey != "")
+            {
+                ApplyGrouping(groupedByKey);
+            }
         }
 
         public void CreateAndEditFilterSteps()
@@ -201,11 +209,17 @@ namespace CAS
         //Grouping 
         public void ApplyGrouping(string filterKey)
         {
+            groupedByKey = filterKey; 
             //filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(filtersApplied, filterKey));
             //For now removing the filtering from grouping. Use the above code if needed later
-            List<CAS_FilterAndGroupOptionKeyValuesClass> blankFilter = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
+            List<CAS_FilterAndGroupOptionKeyValuesClass> filterForGrouping = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
 
-            Dictionary<string, List<string>> groupedByPatientIds = GetGroupedByPatiendIds(blankFilter, filterKey); 
+            if (groupingWithFilter)
+            {
+                filterForGrouping = filtersApplied; 
+            }
+
+            Dictionary<string, List<string>> groupedByPatientIds = GetGroupedByPatiendIds(filterForGrouping, filterKey); 
 
             //Set group colours to models 
             filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(groupedByPatientIds);
@@ -217,9 +231,27 @@ namespace CAS
 
         public void RemoveGrouping()
         {
+            groupedByKey = "";
             filterAndGroupUIManager.manager.stepManager.RemoveGroupByModelsToEditLayers();
             SetGroupingDetails(new Dictionary<string, List<string>>()); 
             groupingOptionName.text = ""; 
+        }
+
+        public void OnClickGroupingWithOrWithoutFilterSwitch(float value)
+        {
+            if(value == 0)
+            {
+                groupingWithFilter = true; 
+            }
+            else
+            {
+                groupingWithFilter = false; 
+            }
+
+            if (groupedByKey != "")
+            {
+                ApplyGrouping(groupedByKey);
+            }
         }
 
         public void SetGroupingDetails(Dictionary<string, List<string>> groupedByPatientIds)
