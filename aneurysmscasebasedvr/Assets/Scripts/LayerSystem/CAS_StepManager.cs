@@ -30,7 +30,12 @@ namespace CAS
 
         Vector3 originalScale;
 
-        string gameObjectForWhichDataIsDisplayed = ""; 
+        string gameObjectForWhichDataIsDisplayed = "";
+
+        public Mesh defaultMesh;
+
+        [Range(50000, 800000)]
+        public int thresholdTriangleCountForCubeConversion = 50000; 
 
         private void Awake()
         {
@@ -41,11 +46,28 @@ namespace CAS
             stepParents = new List<CAS_EachStepManager>();
 
             modelsParent = transform.gameObject;
-            originalScale = transform.localScale; 
+            originalScale = transform.localScale;
+
+            ChangeMeshIfMoreTriangles(); 
 
             InitialseStepParents();
         }
 
+        void ChangeMeshIfMoreTriangles()
+        {
+            MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+            foreach (MeshFilter meshFilter in meshFilters)
+            {
+                Mesh mesh = meshFilter.sharedMesh;
+                int numberOfTriangles = mesh.triangles.Length / 3;
+
+                if (numberOfTriangles > thresholdTriangleCountForCubeConversion)
+                {
+                    meshFilter.sharedMesh = defaultMesh;
+                    meshFilter.transform.localScale = Vector3.one / 50f;
+                }
+            }
+        }
         // Start is called before the first frame update
         void Start()
         {
