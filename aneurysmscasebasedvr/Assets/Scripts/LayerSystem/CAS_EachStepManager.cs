@@ -60,11 +60,11 @@ namespace CAS
         {        
             if(!placeModels) placeModels = GetComponent<CAS_PlaceModels>();
 
-            placeModels.numberOfModelsAtFirstCircle = 24;
-            placeModels.adjustmentDistance = 0.002f;
-            placeModels.distanceBetweenSmallCircles = 0.0725f;
-            placeModels.adjustmentAngle = 0f; 
-            placeModels.radiusOfTheSphere = 0.75f;
+            placeModels.numberOfModelsAtFirstCircle = 23;
+            placeModels.adjustmentDistance = 0.0012f;
+            placeModels.distanceBetweenSmallCircles = 0.0375f; 
+            placeModels.adjustmentAngle = 0f;
+            placeModels.radiusOfTheSphere = 0.40f; 
             placeModels.PickAndPlace();
         }
 

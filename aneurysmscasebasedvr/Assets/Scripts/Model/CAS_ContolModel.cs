@@ -26,13 +26,14 @@ namespace CAS
 
         bool pushingToOriginalPosition = false; 
         bool moving = false;
- 
+
+        string colourInMaterialName = "_Edgecolor"; 
 
         // Start is called before the first frame update
         void Start()
         {
-            initialOriginalColour = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
-            currentOriginalColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
+            initialOriginalColour = transform.GetChild(0).GetComponent<MeshRenderer>().material.GetColor(colourInMaterialName);
+            currentOriginalColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.GetColor(colourInMaterialName);
             
             stepManager = GetComponentInParent<CAS_StepManager>(); 
 
@@ -97,23 +98,23 @@ namespace CAS
         public void UnSetGroupByColour()
         {
             currentOriginalColor = initialOriginalColour;
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
         }
 
         public void SetGroupByColour(Color groupByColour)
         {
             currentOriginalColor = groupByColour;
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
         }
 
         public void Highlight(Color highlightedColor)
         {
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", highlightedColor);
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, highlightedColor);
         }
 
         public void DeHighlight()
         {
-            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", currentOriginalColor);
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
         }
 
         public void HighlightModelSinceSelected(bool selected)
