@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6849859196181659487}
   - component: {fileID: 6849859196181659485}
   - component: {fileID: 6849859196181659486}
+  - component: {fileID: 4006481340848094551}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -133,6 +134,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4006481340848094551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6849859196181659472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 967cca9227a3ff04881abb6be5427cae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6849859197816611644
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,6 +159,7 @@ GameObject:
   - component: {fileID: 6849859197816611640}
   - component: {fileID: 6849859197816611641}
   - component: {fileID: 6849859197816611642}
+  - component: {fileID: 1223649824409742820}
   m_Layer: 0
   m_Name: StepButtonPrefab
   m_TagString: Untagged
@@ -200,8 +214,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d7aeb38ff88dc3c44bb7f20a21008220, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -269,3 +283,15 @@ MonoBehaviour:
   tabButton: {fileID: 0}
   background: {fileID: 0}
   buttonText: {fileID: 6849859196181659486}
+--- !u!114 &1223649824409742820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6849859197816611644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2146c7eaca4405479d0acbb98839376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

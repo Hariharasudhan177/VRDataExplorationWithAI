@@ -337,6 +337,19 @@ namespace CAS
             return patientDetails.Columns[columnName].DataType; 
         }
 
+        //Column type
+        public List<string> GetAllColumnNames()
+        {
+            List<string> coloumnNames = new List<string>(); 
+            
+            foreach(DataColumn coloumn in patientDetails.Columns)
+            {
+                coloumnNames.Add(coloumn.ColumnName.ToString()); 
+            }
+
+            return coloumnNames; 
+        }
+
         //Distinct values from providing column names 
         public List<string> GetUniquePatientIds()
         {
@@ -408,6 +421,37 @@ namespace CAS
 
         }
 
+        //Entire row from patient id 
+        public List<string> GetPatientRecordWithIdWithoutKeys(string id)
+        {
+            List<string> columnNames = new List<string>();
+            columnNames.Add("id");
+
+            List<string> value = new List<string>();
+            value.Add(id);
+
+            List<List<string>> values = new List<List<string>>();
+            values.Add(value);
+
+            DataView filteredView = QueryBuilder(columnNames, values);
+
+            if (filteredView == null)
+            {
+                return null;
+            }
+
+            DataTable filteredTable = filteredView.ToTable(false);
+
+            //returning row as key value pair 
+            List<string> listOfRowValues = new List<string>();
+            foreach (var column in filteredTable.Columns)
+            {
+                listOfRowValues.Add(filteredTable.Rows[0][column.ToString()].ToString());
+            }
+
+            return listOfRowValues;
+
+        }
         public DataView QueryBuilderStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
             string filter = "";

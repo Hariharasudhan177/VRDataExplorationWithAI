@@ -600,6 +600,7 @@ GameObject:
   - component: {fileID: 7074586620853059375}
   - component: {fileID: 7074586620853059369}
   - component: {fileID: 7074586620853059368}
+  - component: {fileID: 2073012459077782176}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -647,7 +648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5254902, g: 0.6627451, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -663,6 +664,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2073012459077782176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074586620853059374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7074586620968193020
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,6 +879,7 @@ GameObject:
   - component: {fileID: 7074586621399019870}
   - component: {fileID: 7074586621399019869}
   - component: {fileID: 7074586621399019868}
+  - component: {fileID: 4177534402424952270}
   m_Layer: 0
   m_Name: Scrollbar Horizontal
   m_TagString: Untagged
@@ -914,7 +928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.57254905, g: 0.7176471, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -973,11 +987,23 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7074586620853059375}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4177534402424952270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074586621399019858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7074586621474071176
 GameObject:
   m_ObjectHideFlags: 0
@@ -1097,6 +1123,7 @@ GameObject:
   - component: {fileID: 7074586621482887202}
   - component: {fileID: 7074586621482887212}
   - component: {fileID: 7074586621482887203}
+  - component: {fileID: 4496827148086846033}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -1144,7 +1171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5254902, g: 0.6627451, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1160,6 +1187,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4496827148086846033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074586621482887201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7074586621501584979
 GameObject:
   m_ObjectHideFlags: 0
@@ -1271,6 +1310,7 @@ GameObject:
   - component: {fileID: 7074586622267622053}
   - component: {fileID: 7074586622267622052}
   - component: {fileID: 7074586622267622235}
+  - component: {fileID: 6011656393471800101}
   m_Layer: 0
   m_Name: Scrollbar Vertical
   m_TagString: Untagged
@@ -1319,7 +1359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.57254905, g: 0.7176471, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1383,6 +1423,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6011656393471800101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074586622267622233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7074586622268013768
 GameObject:
   m_ObjectHideFlags: 0

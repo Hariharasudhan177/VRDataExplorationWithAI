@@ -27,7 +27,8 @@ namespace CAS
         bool pushingToOriginalPosition = false; 
         bool moving = false;
 
-        string colourInMaterialName = "_Edgecolor"; 
+        //string colourInMaterialName = "_Edgecolor"; 
+        string colourInMaterialName = "_Color"; 
 
         // Start is called before the first frame update
         void Start()

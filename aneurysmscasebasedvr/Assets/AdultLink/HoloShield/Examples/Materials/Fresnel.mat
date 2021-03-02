@@ -98,7 +98,7 @@ Material:
     - _Invert: 1
     - _Invertmaintexture: 1
     - _Invertsecondarytexture: 0
-    - _Maintextureintensity: 0
+    - _Maintextureintensity: 1
     - _Metallic: 0
     - _Mode: 0
     - _Noisescale: 100
@@ -133,8 +133,8 @@ Material:
     - _Edgecolor: {r: 0.13099271, g: 0.36320707, b: 1.137255, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MainPanningspeed: {r: 0, g: -0.1, b: 0, a: 0}
-    - _Maincolor: {r: 0, g: 1, b: 0.43290615, a: 1}
-    - _Mainpanningspeed: {r: 0, g: -0.05, b: 0, a: 0}
+    - _Maincolor: {r: 1, g: 1, b: 1, a: 1}
+    - _Mainpanningspeed: {r: 0, g: 0, b: 0, a: 0}
     - _Noisespeed: {r: 0, g: 1, b: 0, a: 0}
     - _Panningspeed: {r: 0, g: 0.1, b: 0, a: 0}
     - _Secondarycolor: {r: 0.26470578, g: 0.9695739, b: 1, a: 1}

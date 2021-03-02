@@ -194,6 +194,7 @@ GameObject:
   - component: {fileID: 5757196080685334987}
   - component: {fileID: 5757196080685334985}
   - component: {fileID: 5757196080685334984}
+  - component: {fileID: 5212293277661235412}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -241,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5254902, g: 0.6627451, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -257,6 +258,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5212293277661235412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196080685334986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5757196081000213636
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,6 +747,7 @@ GameObject:
   - component: {fileID: 5757196081933948558}
   - component: {fileID: 5757196081933948553}
   - component: {fileID: 5757196081933948552}
+  - component: {fileID: 5044798342037578251}
   m_Layer: 0
   m_Name: Scrollbar Horizontal
   m_TagString: Untagged
@@ -782,7 +796,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.57254905, g: 0.7176471, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -840,12 +854,24 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5757196082334543378}
   m_HandleRect: {fileID: 5757196082334543389}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5044798342037578251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196081933948554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5757196082004196254
 GameObject:
   m_ObjectHideFlags: 0
@@ -935,6 +961,7 @@ GameObject:
   - component: {fileID: 5757196082187240270}
   - component: {fileID: 5757196082187240265}
   - component: {fileID: 5757196082187240264}
+  - component: {fileID: 3672307073789098748}
   m_Layer: 0
   m_Name: Scrollbar Vertical
   m_TagString: Untagged
@@ -983,7 +1010,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.57254905, g: 0.7176471, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1041,12 +1068,24 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5757196080685334984}
   m_HandleRect: {fileID: 5757196080685334987}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3672307073789098748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196082187240266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5757196082261138521
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,6 +1216,7 @@ GameObject:
   - component: {fileID: 5757196082334543389}
   - component: {fileID: 5757196082334543379}
   - component: {fileID: 5757196082334543378}
+  - component: {fileID: 1215680285638472418}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -1224,7 +1264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5235849, g: 0.6589869, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1240,3 +1280,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1215680285638472418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196082334543388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
