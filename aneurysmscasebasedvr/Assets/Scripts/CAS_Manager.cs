@@ -11,18 +11,6 @@ namespace CAS
         public CAS_FilterAndGroupUIManager filterAndGroupUIManager;
         public CAS_DisplayPatientDetailsUIManager displayPatientDetailsUIManager;
         public CAS_CompareManager compareManager;
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        public CAS_AIManager aiManager; 
     }
-
 }

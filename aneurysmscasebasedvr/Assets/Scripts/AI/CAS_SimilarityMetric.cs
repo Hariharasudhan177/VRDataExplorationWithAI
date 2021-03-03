@@ -20,11 +20,11 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            /*if (Input.GetKeyDown(KeyCode.A))
             {
                 patientDetails = dataManager.GetPatientDetails();
                 CalculateSimilarity(); 
-            }
+            }*/
         }
 
         public void CalculateSimilarity()
@@ -35,14 +35,16 @@ namespace CAS
             //Later can be considered 
 
             string filter = "";
+
             List<string> requiredDoubleColumns = new List<string>();
             List<string> requiredStringColumns = new List<string>();
 
             int index = 0;
+
             foreach (DataColumn column in patientDetails.Columns)
             {
                 //Like this remove column when necessary 
-                if (column.ColumnName == "manualAddedOthersFromCode" || column.ColumnName == "morphoPresent" || column.ColumnName == "modality" || column.ColumnName == "sex" || column.ColumnName == "id")
+                if (column.ColumnName == "manualAddedOthersFromCode" || column.ColumnName == "morphoPresent" || column.ColumnName == "id")
                 {
                     continue;
                 }
@@ -52,19 +54,22 @@ namespace CAS
                     filter += " AND ";
                 }
 
-
                 if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.Double"))
                 {
                     filter += "( " + column.ColumnName + " <> -1 )";
                     requiredDoubleColumns.Add(column.ColumnName);
                 }
-                else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.String")) {
+                else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.String")) 
+                {
                     filter += "( " + column.ColumnName + " <> 'N/A' )";
                     requiredStringColumns.Add(column.ColumnName);
-                } else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.Boolean")) {
+                } 
+                else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.Boolean")) 
+                {
                     filter += "( " + column.ColumnName + " = true )";
                 }
-                else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.Int32")) {
+                else if (dataManager.GetColumnType(column.ColumnName) == System.Type.GetType("System.Int32")) 
+                {
                     filter += "( " + column.ColumnName + " <> -1 )";
                 }
 

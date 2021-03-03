@@ -70,6 +70,7 @@ namespace CAS
         {
 
             patientDetails.Clear();
+            List<CAS_ObjectOfInterest> objectsOfInterest = new List<CAS_ObjectOfInterest>(); 
 
             //Split data into rows 
             string[] rowsOfInputData = data.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -78,6 +79,7 @@ namespace CAS
             int numberOfDataWithoutModel = 0;
 
             int index = 0;
+            int exampleIndex = 0; 
             foreach (string row in rowsOfInputData)
             {
                 string[] content = row.Split(new[] { ',' });
@@ -120,12 +122,19 @@ namespace CAS
                     {
                         DataColumn column = new DataColumn("morphoPresent");
                         column.DataType = System.Type.GetType("System.Boolean");
-                        patientDetails.Columns.Add(column); 
+                        patientDetails.Columns.Add(column);
                     }
 
                     //To know if corresponding morpho is present
                     {
                         DataColumn column = new DataColumn("modelPresent");
+                        column.DataType = System.Type.GetType("System.Boolean");
+                        patientDetails.Columns.Add(column);
+                    }
+
+                    //For Example
+                    {
+                        DataColumn column = new DataColumn("notExample");
                         column.DataType = System.Type.GetType("System.Boolean");
                         patientDetails.Columns.Add(column);
                     }
@@ -187,6 +196,34 @@ namespace CAS
                         numberOfDataWithoutModel++; 
                     }
 
+                    newRow["notExample"] = true; 
+                    if (modelPresent)
+                    {
+                        if(exampleIndex < 2)
+                        {
+                            bool qualifiedForExample = true;
+                            
+                            foreach(var item in newRow.ItemArray)
+                            {
+                                if(item.ToString() == "N/A" || item.ToString() == "-1")
+                                {
+                                    qualifiedForExample = false; 
+                                } 
+                            }
+
+                            if (qualifiedForExample)
+                            {
+                                newRow["notExample"] = false;
+                                GameObject matchingModel = GameObject.Find(content[0]);
+                                matchingModel.AddComponent<CAS_ObjectOfInterest>(); 
+                                objectsOfInterest.Add(matchingModel.GetComponent<CAS_ObjectOfInterest>());
+                                matchingModel.transform.parent = manager.aiManager.transform;
+                                matchingModel.SetActive(false); 
+                                exampleIndex++;
+                            }
+                        }
+                    }
+
                     patientDetails.Rows.Add(newRow);
 
                 }
@@ -194,6 +231,7 @@ namespace CAS
                 index++;
             }
 
+            manager.aiManager.SetObjectsOfInterest(objectsOfInterest); 
             manager.stepManager.SetAllModelsInformation(allModelsInformation);
 
             Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
@@ -452,6 +490,60 @@ namespace CAS
             return listOfRowValues;
 
         }
+
+
+        //Entire row from patient id 
+        public DataRow GetPatientRecordOfInterest(string id)
+        {
+            Debug.Log(id); 
+            List<string> columnNames = new List<string>();
+            columnNames.Add("id");
+
+            List<string> value = new List<string>();
+            value.Add(id);
+
+            List<List<string>> values = new List<List<string>>();
+            values.Add(value);
+
+            DataView filteredView = QueryBuilder(columnNames, values);
+
+            if (filteredView == null)
+            {
+                return null;
+            }
+
+            DataTable filteredTable = filteredView.ToTable(false);
+
+            return filteredTable.Rows[0];
+
+        }
+
+        //Entire row from patient id 
+        public string GetTargetValue(string id)
+        {
+            Debug.Log(id);
+            List<string> columnNames = new List<string>();
+            columnNames.Add("id");
+
+            List<string> value = new List<string>();
+            value.Add(id);
+
+            List<List<string>> values = new List<List<string>>();
+            values.Add(value);
+
+            DataView filteredView = QueryBuilder(columnNames, values);
+
+            if (filteredView == null)
+            {
+                return null;
+            }
+
+            DataTable filteredTable = filteredView.ToTable(false);
+
+            return filteredTable.Rows[0]["ruptureStatus"].ToString();
+
+        }
+
         public DataView QueryBuilderStringAndInteger(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
             string filter = "";
@@ -529,7 +621,7 @@ namespace CAS
 
             if (filter != "")
             {
-                filter += " AND (modelPresent = true)";
+                filter += " AND (modelPresent = true) AND (notExample = true)";
             }
 
             Debug.Log(filter);
@@ -674,6 +766,151 @@ namespace CAS
             return filterIdsGroupBy; 
         }
 
+        //For AI 
+        public DataTable DataForSimilarityCalculation(List<string> filteredPatientIds, string[] ignoredColumns)
+        {
+            string filter = "";
+            int index = 0;
+
+            foreach (DataColumn column in patientDetails.Columns)
+            {
+                //Like this remove column when necessary 
+                bool columnIgnored = false;
+                foreach (string ignoredColumn in ignoredColumns)
+                {
+                    if (column.ColumnName == ignoredColumn)
+                    {
+                        columnIgnored = true;
+                    }
+                }
+                //Like this remove column when necessary 
+                if (columnIgnored)
+                {
+                    continue;
+                }
+                //
+
+                if (index > 0)
+                {
+                    filter += " AND ";
+                }
+
+                if (GetColumnType(column.ColumnName) == System.Type.GetType("System.Double"))
+                {
+                    filter += "( " + column.ColumnName + " <> -1 )";
+                }
+                else if (GetColumnType(column.ColumnName) == System.Type.GetType("System.String"))
+                {
+                    filter += "( " + column.ColumnName + " <> 'N/A' )";
+                }
+                else if (GetColumnType(column.ColumnName) == System.Type.GetType("System.Boolean"))
+                {
+                    filter += "( " + column.ColumnName + " = true )";
+                }
+                else if (GetColumnType(column.ColumnName) == System.Type.GetType("System.Int32"))
+                {
+                    filter += "( " + column.ColumnName + " <> -1 )";
+                }
+
+                index++;
+            }
+
+            //For PatientIds in filter 
+            if(filter != "")
+            {
+                filter += " AND id in (";
+            }
+            else
+            {
+                filter += "id in (";
+            }
+
+            int subIndex = 0; 
+            foreach(string filteredPatientId in filteredPatientIds)
+            {
+                if (subIndex == 0)
+                {
+                    filter += "'" + filteredPatientId + "'";
+                }
+                else
+                {
+                    filter += "," + "'" + filteredPatientId + "'";
+                }
+                subIndex++;
+            }
+
+            filter += ")";
+
+            Debug.Log(filter); 
+
+            //Creating a view for filter
+            DataView filteredView = new DataView(patientDetails);
+            filteredView.RowFilter = filter;
+            DataTable filteredTable = filteredView.ToTable();
+
+            return filteredTable; 
+        }
+
+        public List<string> GetDoubleColumns(string[] ignoredColumns)
+        {
+            List<string> requiredColumns = new List<string>();
+
+            foreach (DataColumn column in patientDetails.Columns)
+            {
+                bool columnIgnored = false; 
+                foreach(string ignoredColumn in ignoredColumns)
+                {
+                    if(column.ColumnName == ignoredColumn)
+                    {
+                        columnIgnored = true; 
+                    }
+                }
+
+                //Like this remove column when necessary 
+                if (columnIgnored)
+                {
+                    continue;
+                }
+
+                if (GetColumnType(column.ColumnName) == System.Type.GetType("System.Double"))
+                {
+                    requiredColumns.Add(column.ColumnName);
+                }
+            }
+
+            return requiredColumns; 
+        }
+
+        public List<string> GetStringColumns(string[] ignoredColumns)
+        {
+            List<string> requiredColumns = new List<string>();
+
+            foreach (DataColumn column in patientDetails.Columns)
+            {
+                bool columnIgnored = false;
+                foreach (string ignoredColumn in ignoredColumns)
+                {
+                    if (column.ColumnName == ignoredColumn)
+                    {
+                        columnIgnored = true;
+                    }
+                }
+
+                //Like this remove column when necessary 
+                if (columnIgnored)
+                {
+                    continue;
+                }
+
+                if (GetColumnType(column.ColumnName) == System.Type.GetType("System.String"))
+                {
+                    requiredColumns.Add(column.ColumnName);
+                }
+            }
+
+            return requiredColumns;
+        }
+
         //Unnecessary - check later 
         public DataView QueryBuilderStringAndIntegerGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger)
         {
@@ -754,7 +991,7 @@ namespace CAS
 
             if (filter != "")
             {
-                filter += " AND (modelPresent = true)";
+                filter += " AND (modelPresent = true) AND (notExample = true)";
             }
 
             Debug.Log(filter);
@@ -829,7 +1066,7 @@ namespace CAS
 
             if (filter != "")
             {
-                filter += " AND (modelPresent = true)";
+                filter += " AND (modelPresent = true) AND (notExample = true)";
             }
 
             Debug.Log(filter);
