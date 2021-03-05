@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
@@ -29,7 +30,9 @@ namespace CAS
 
         public RenderTexture[] renderTextures;
 
-        bool initialized = false; 
+        bool initialized = false;
+
+        bool compareUIVisibilityStatus = true; 
 
         // Start is called before the first frame update
         void Start()
@@ -122,7 +125,10 @@ namespace CAS
         {
             if(!(patientIdsInCompareList.Count > maxNumber))
             {
-                patientIdsInCompareList.Add(patientId); 
+                if (!patientIdsInCompareList.Contains(patientId))
+                {
+                    patientIdsInCompareList.Add(patientId);
+                }
             }
 
             PopulateData();
@@ -143,6 +149,23 @@ namespace CAS
             }
 
             PopulateData();
+        }
+
+        public void OpenClose()
+        {
+            compareUIVisibilityStatus = !compareUIVisibilityStatus;
+
+            if (compareUIVisibilityStatus)
+            {
+                GetComponentInChildren<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponentInChildren<CanvasGroup>().alpha = 0;
+            }
+
+            GetComponentInChildren<CanvasGroup>().interactable = compareUIVisibilityStatus;
+            GetComponentInChildren<TrackedDeviceGraphicRaycaster>().enabled = compareUIVisibilityStatus;
         }
     }
 }

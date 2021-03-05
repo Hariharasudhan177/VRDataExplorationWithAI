@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
+using TMPro;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
@@ -73,14 +74,28 @@ namespace CAS
         {
             if(dropDownIndex != 0)
             {
-                PopulateData(dropDownOptions[dropDownIndex]);
-                aiUI.aiManager.SetObjectOfInterest(dropDownIndex);
+                PopulateData(dropDownOptions[dropDownIndex-1]);
+                aiUI.aiManager.SetObjectOfInterest(dropDownIndex-1);
             }
             else
             {
                 UnPopulateData();
                 aiUI.aiManager.UnSetObjectOfInterest();
             }
+        }
+
+        public void ActivatePanel(bool _visible)
+        {
+            if (_visible)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0;
+            }
+            GetComponent<CanvasGroup>().interactable = _visible;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = _visible;
         }
     }
 }

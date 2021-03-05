@@ -12,6 +12,7 @@ namespace CAS
         {
             if (collision.collider.GetComponent<CAS_ContolModel>())
             {
+               //Debug.Log("Hari");
                manager.compareManager.AddIdToList(manager.stepManager.allModelsInformationGameobjectRecordName[collision.collider.transform.parent.gameObject.name][0]); 
             }
         }

@@ -40,7 +40,9 @@ namespace CAS
         public GameObject parentContentOfEachGroupedSetAndDetailsPrefab;
 
         string groupedByKey = "";
-        bool groupingWithFilter = true; 
+        bool groupingWithFilter = true;
+
+        bool filterAndGroupUIVisibilityStatus = true; 
 
         private void Awake()
         {
@@ -272,9 +274,11 @@ namespace CAS
             }
         }
 
-        public void OpenClose(bool status)
+        public void OpenClose()
         {
-            if (status)
+            filterAndGroupUIVisibilityStatus = !filterAndGroupUIVisibilityStatus; 
+
+            if (filterAndGroupUIVisibilityStatus)
             {
                 GetComponent<CanvasGroup>().alpha = 1;
             }
@@ -283,8 +287,8 @@ namespace CAS
                 GetComponent<CanvasGroup>().alpha = 0; 
             }
 
-            GetComponent<CanvasGroup>().interactable = status;
-            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
+            GetComponent<CanvasGroup>().interactable = filterAndGroupUIVisibilityStatus;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = filterAndGroupUIVisibilityStatus;
         }
 
         public List<string> GetFilteredPatiendIds(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)

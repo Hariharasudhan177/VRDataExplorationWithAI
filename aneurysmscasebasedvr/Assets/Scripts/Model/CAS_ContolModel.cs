@@ -127,5 +127,12 @@ namespace CAS
         {
             return originPosition + (currentPosition - originPosition) * factor;
         }
+
+        public void ChangeMaterialForSwitch(Material material, string materialColourName)
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material = material;
+            colourInMaterialName = materialColourName;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
+        }
     }
 }

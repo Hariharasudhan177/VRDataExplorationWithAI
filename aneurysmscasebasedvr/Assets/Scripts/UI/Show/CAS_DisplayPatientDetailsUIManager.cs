@@ -11,7 +11,7 @@ namespace CAS
         public CAS_ShowDataUI showDataUI;
         public CAS_PatientIdListUI patientIdListUI;
 
-        bool displayPatientDetailsUIVisibilityStatus = false; 
+        bool displayPatientDetailsUIVisibilityStatus = true; 
 
         // Start is called before the first frame update
         void Start()

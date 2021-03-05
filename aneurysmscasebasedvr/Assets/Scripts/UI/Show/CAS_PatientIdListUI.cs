@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 using UnityEngine.UI;
-using TMPro; 
+using TMPro;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
@@ -79,6 +80,20 @@ namespace CAS
         public void SetSelectedPatientId(string selectedPatientId)
         {
             selectedPatientIdTextBox.text = selectedPatientId; 
+        }
+
+        void ActivatePanel(bool _visible)
+        {
+            if (_visible)
+            {
+                GetComponent<CanvasGroup>().alpha = 1;
+            }
+            else
+            {
+                GetComponent<CanvasGroup>().alpha = 0;
+            }
+            GetComponent<CanvasGroup>().interactable = _visible;
+            GetComponent<TrackedDeviceGraphicRaycaster>().enabled = _visible;
         }
     }
 }

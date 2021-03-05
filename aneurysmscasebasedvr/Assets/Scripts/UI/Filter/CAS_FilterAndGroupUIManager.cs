@@ -13,7 +13,7 @@ namespace CAS
         public CAS_FilterAndGroupUISubOptions subOptionsUI;
         public CAS_FilterAndGroupUIStep stepUI;
 
-        bool filterAndGroupUIVisibilityStatus = false;
+        bool filterAndGroupUIVisibilityStatus = true;
 
         Dictionary<string, List<string>> optionsUnderSpecificTypes;
 
@@ -38,7 +38,7 @@ namespace CAS
         {
             filterAndGroupUIVisibilityStatus = !filterAndGroupUIVisibilityStatus;
 
-            stepUI.OpenClose(filterAndGroupUIVisibilityStatus);
+            //stepUI.OpenClose(filterAndGroupUIVisibilityStatus);
             optionsUI.OpenClose(filterAndGroupUIVisibilityStatus);
             subOptionsUI.OpenClose(filterAndGroupUIVisibilityStatus);
         }
