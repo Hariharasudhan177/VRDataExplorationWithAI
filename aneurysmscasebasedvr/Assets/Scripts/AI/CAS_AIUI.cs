@@ -15,6 +15,9 @@ namespace CAS
 
         bool aiUIVisibilityStatus = true;
 
+        public GameObject similartiyVisualisation;
+        public GameObject similartiyContent;
+        public Camera cameraForRadialChart; 
         // Start is called before the first frame update
         void Start()
         {
@@ -43,6 +46,24 @@ namespace CAS
             }
             aiUIParent.GetComponent<CanvasGroup>().interactable = aiUIVisibilityStatus;
             aiUIParent.GetComponent<TrackedDeviceGraphicRaycaster>().enabled = aiUIVisibilityStatus;
+        }
+
+        public void OnClickVisualisationOfSimilarity(float value)
+        {
+            if (value == 0)
+            {
+                similartiyVisualisation.SetActive(false);
+                similartiyContent.SetActive(true);
+                cameraForRadialChart.gameObject.SetActive(false); 
+                aiManager.DeActivateSimilarityVisualisation();
+            }
+            else
+            {
+                similartiyVisualisation.SetActive(true);
+                similartiyContent.SetActive(false);
+                cameraForRadialChart.gameObject.SetActive(true);
+                aiManager.ActivateSimilartiyVisualisation();
+            }
         }
     }
 }

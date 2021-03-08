@@ -44,6 +44,7 @@ namespace CAS
         public void SetModels(List<GameObject> models)
         {
             modelsInThisStep = new Dictionary<string, GameObject>();
+
             foreach (GameObject model in models)
             {
                 modelsInThisStep.Add(model.name, model);

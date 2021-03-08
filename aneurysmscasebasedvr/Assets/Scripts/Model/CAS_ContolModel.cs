@@ -28,7 +28,13 @@ namespace CAS
         bool moving = false;
 
         //string colourInMaterialName = "_Edgecolor"; 
-        string colourInMaterialName = "_Color"; 
+        string colourInMaterialName = "_Color";
+
+        bool moveForSimilartiy = false; 
+        double similartiy = 0f;
+        Vector3 similartiyPosition;
+        //1 - mostInteresting; 2 - lessInteresting; 3 - notInteresting;
+        int interest = 2; 
 
         // Start is called before the first frame update
         void Start()
@@ -45,14 +51,13 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-
             //Pushing 
             float stepPush = speedPush * Time.deltaTime;
             if (pushingToOriginalPosition)
             {
                 transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalLocalPosition, stepPush);
 
-                if (Vector3.Distance(transform.localPosition, originalLocalPosition) < stepPush && Vector3.Distance(transform.localPosition, originalLocalPosition) > (stepPush * -1f)) pushingToOriginalPosition = false;
+                if (Vector3.Distance(transform.localPosition, originalLocalPosition) < 0.01f && Vector3.Distance(transform.localPosition, originalLocalPosition) > (-0.01f)) pushingToOriginalPosition = false;
             }
 
             //Moving 
@@ -60,7 +65,7 @@ namespace CAS
             if (moving)
             {
                 stepManager.SetTrueScale();
-                if (Vector3.Distance(transform.position, toBeWorldPosition) < stepMoveToLayer && Vector3.Distance(transform.position, toBeWorldPosition) > (stepMoveToLayer * -1f)) 
+                if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f)) 
                 {
                     moving = false;
                 }
@@ -70,6 +75,21 @@ namespace CAS
                     originalLocalPosition = transform.localPosition;
                 }
                 stepManager.SetOriginalScale(); 
+            }
+
+            if (moveForSimilartiy)
+            {
+                stepManager.SetTrueScale();
+                if (Vector3.Distance(transform.position, similartiyPosition) < 0.01f && Vector3.Distance(transform.position, similartiyPosition) > (-0.01f))
+                {
+                    moveForSimilartiy = false;
+                }
+                else
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, similartiyPosition, stepMoveToLayer);
+                    originalLocalPosition = transform.localPosition;
+                }
+                stepManager.SetOriginalScale();
             }
         }
 
@@ -132,6 +152,35 @@ namespace CAS
         {
             transform.GetChild(0).GetComponent<MeshRenderer>().material = material;
             colourInMaterialName = materialColourName;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
+        }
+
+        public void SetSimilarity(double value, int interestStatus)
+        {
+            similartiy = value;
+            interest = interestStatus; 
+        }
+
+        public double GetSimilarity()
+        {
+            return similartiy; 
+        }
+
+        //Similarity values already set. So now active this setting by having a visualise button in the tab. Switch on off in the smilartis script written today 
+        public void ActivateSimilartiySettings(Vector3 position, Color similartiyColor)
+        {
+            similartiyPosition = position;
+            moveForSimilartiy = true;
+            currentOriginalColor = similartiyColor;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
+        }
+
+        public void DeActivateSimilartiySettings()
+        {
+            similartiyPosition = toBeWorldPosition;
+            moveForSimilartiy = false;
+            moving = true;
+            currentOriginalColor = initialOriginalColour;
             transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
         }
     }

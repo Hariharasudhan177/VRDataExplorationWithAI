@@ -16,7 +16,22 @@ namespace CAS
 
         int currentIndexOfInterest = -1;
 
-        double[] similarity; 
+        double[] similarity;
+
+        List<CAS_ContolModel> interestingLayer1;
+        List<CAS_ContolModel> interestingLayer2;
+        List<CAS_ContolModel> interestingLayer3;
+        List<CAS_ContolModel> interestingLayer4;
+        List<CAS_ContolModel> interestingLayer5;
+
+        List<CAS_ContolModel> unInterestingModels;
+
+        double similartiyMax = 0.5f;
+        double similartiyMin = 0f;
+
+        float uninterestedSimilartiy = 1.5f;
+
+        bool similarityVisualisationStatus =  false; 
 
         // Start is called before the first frame update
         void Start()
@@ -35,6 +50,16 @@ namespace CAS
             if (Input.GetKeyDown(KeyCode.B))
             {
                 SetObjectOfInterest(0);
+            }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                ActivateSimilartiyVisualisation(); 
+            }
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                DeActivateSimilarityVisualisation();
             }
         }
 
@@ -105,6 +130,8 @@ namespace CAS
 
             aiUI.similarityUI.PopulateData(similarityWithPatientIdOrdered);
             GetNearestNeighbours(similarityWithPatientIdOrdered, 4);
+            SetSimilartiySettings(similarityWithPatientIdOrdered); 
+
             return similarityWithPatientIdOrdered; 
         }
 
@@ -283,14 +310,193 @@ namespace CAS
 
         public List<string> GetFilteredPatientIds()
         {
-            List<string> filteredLayerPatientIds = new List<string>();
+            List<string> frontLayerPatientIds = new List<string>();
 
-            foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys)
+            foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
             {
-                filteredLayerPatientIds.Add(manager.stepManager.allModelsInformationGameobjectRecordName[patientId][0]);
+                frontLayerPatientIds.Add(manager.stepManager.allModelsInformationGameobjectRecordName[patientId][0]);
             }
 
-            return filteredLayerPatientIds; 
+            return frontLayerPatientIds; 
+        }
+
+        public void SetSimilartiySettings(Dictionary<string, double> similarityWithPatientIdOrdered)
+        {
+            interestingLayer1 = new List<CAS_ContolModel>();
+            interestingLayer2 = new List<CAS_ContolModel>();
+            interestingLayer3 = new List<CAS_ContolModel>();
+            interestingLayer4 = new List<CAS_ContolModel>();
+            interestingLayer5 = new List<CAS_ContolModel>();
+
+            unInterestingModels = new List<CAS_ContolModel>();
+
+            foreach (CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
+            {
+                foreach (string patientId in eachStepParent.GetModelsInThisStep().Keys.ToList())
+                {
+                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+                    controlModel.SetSimilarity(uninterestedSimilartiy, 3);
+                    unInterestingModels.Add(controlModel);
+                }
+            }
+
+            List<string> patientIdKeys = similarityWithPatientIdOrdered.Keys.ToList(); 
+
+            foreach (string patientId in patientIdKeys)
+            {
+                if (manager.stepManager.stepParents[0].GetModelsInThisStep().ContainsKey(patientId))
+                {
+                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+
+                    if (interestingLayer1.Count < 5)
+                    {
+                        controlModel.SetSimilarity(similarityWithPatientIdOrdered[patientId], 1);
+                        interestingLayer1.Add(controlModel);
+                    }
+                    else if (interestingLayer2.Count < 10)
+                    {
+                        controlModel.SetSimilarity(similarityWithPatientIdOrdered[patientId], 1);
+                        interestingLayer2.Add(controlModel);
+                    }
+                    else if (interestingLayer3.Count < 15)
+                    {
+                        controlModel.SetSimilarity(similarityWithPatientIdOrdered[patientId], 1);
+                        interestingLayer3.Add(controlModel);
+                    }
+                    else if (interestingLayer4.Count < 20)
+                    {
+                        controlModel.SetSimilarity(similarityWithPatientIdOrdered[patientId], 1);
+                        interestingLayer4.Add(controlModel);
+                    }
+                    else
+                    {
+                        controlModel.SetSimilarity(similarityWithPatientIdOrdered[patientId], 2);
+                        interestingLayer5.Add(controlModel);
+                    }
+
+                    if (unInterestingModels.Contains(controlModel)) unInterestingModels.Remove(controlModel); 
+                }
+            }
+
+            similartiyMin = similarityWithPatientIdOrdered[patientIdKeys[0]];
+            similartiyMax = similarityWithPatientIdOrdered[patientIdKeys[patientIdKeys.Count - 1]]; 
+        }
+
+        public void ActivateSimilartiyVisualisation()
+        {
+            int index = 0; 
+
+            foreach(CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
+            {
+    
+                if (index == 0)
+                {
+                    PlaceObjectsWithLayer();
+                }
+                else
+                {
+                    foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
+                    {
+                        manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>().ActivateSimilartiySettings(new Vector3(0f,0f,0f), Color.white);
+                    }
+                }
+
+                index++; 
+            }
+        }
+
+        public void DeActivateSimilarityVisualisation()
+        {
+            foreach (CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
+            {
+                foreach (string patientId in eachStepParent.GetModelsInThisStep().Keys.ToList())
+                {
+                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+                    controlModel.DeActivateSimilartiySettings();
+                }
+            }
+        }
+
+        public void PlaceObjectsWithLayer()
+        {
+            PlaceObjects(interestingLayer1);
+            PlaceObjects(interestingLayer2);
+            PlaceObjects(interestingLayer3);
+            PlaceObjects(interestingLayer4);
+            PlaceObjects(interestingLayer5);
+
+            PlaceObjects(unInterestingModels);
+        }
+
+        public void PlaceObjects(List<CAS_ContolModel> models)
+        {
+            int totalNumberOfModels = models.Count;
+
+            float angleRequired = 90f / (totalNumberOfModels/2f);
+            float radius = 1f;
+
+            int index = 0;
+            int leftIndex = 0;
+            int rightIndex = 0;
+            bool toIncreaseLeft = false;
+
+            foreach (CAS_ContolModel model in models)
+            {
+                float currentAngle = 90f;
+
+                if (toIncreaseLeft)
+                {
+                    currentAngle -= (leftIndex * angleRequired);
+                }
+                else
+                {
+                    currentAngle += (rightIndex * angleRequired);
+                } 
+
+                float adjustLengthOfRadius = radius * (float)model.GetSimilarity() * 1.5f;
+
+                model.ActivateSimilartiySettings(new Vector3(
+                    adjustLengthOfRadius * Mathf.Cos(currentAngle * (Mathf.PI / 180f)),
+                    0.1f,
+                    adjustLengthOfRadius * Mathf.Sin(currentAngle * (Mathf.PI / 180f))),
+                    InterpolateScaleColour((float)model.GetSimilarity())); 
+
+                index++;
+
+                if (toIncreaseLeft)
+                {
+                    toIncreaseLeft = false;
+                    rightIndex++;
+                }
+                else
+                {
+                    toIncreaseLeft = true;
+                    leftIndex++;
+                }
+
+            }
+        }
+
+        public Color InterpolateScaleColour(float similartiy)
+        {
+
+            float a = 1f;
+
+            float rMax = 1f;
+            float rMin = 0.65f;
+
+            float gMax = 0.95f;
+            float gMin = 0.25f;
+
+            float bMax = 0.75f;
+            float bMin = 0f;
+
+            float g = gMax - ((((float)similartiyMax - similartiy) / ((float)similartiyMax - (float)similartiyMin)) * (gMax - gMin));
+            float b = bMax - ((((float)similartiyMax - similartiy) / ((float)similartiyMax - (float)similartiyMin)) * (bMax - bMin));
+            float r = rMax - ((((float)similartiyMax - similartiy) / ((float)similartiyMax - (float)similartiyMin)) * (rMax - rMin));
+
+            return new Color(r, g, b, a);
+
         }
     }
 }
