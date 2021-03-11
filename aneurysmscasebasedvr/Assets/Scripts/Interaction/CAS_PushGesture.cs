@@ -85,7 +85,10 @@ namespace CAS
                 {
                     //Debug.DrawRay(devicePosition, forwardVector * hit.distance, Color.yellow);
                     //Debug.Log(hit.transform.gameObject.name + " is pushed");
-                    hit.transform.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition(); 
+                    if (hit.transform.parent.gameObject.GetComponent<CAS_ContolModel>() != null)
+                    {
+                        hit.transform.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition();
+                    }
                 }
 
                 //DirectPush
@@ -102,8 +105,11 @@ namespace CAS
             //Debug.Log(other.gameObject + "" + checkForPush  + pushHappening);
             if (checkForPush && pushHappening)
             {
-                //Debug.Log(other.transform.parent.gameObject.name + " is pushed"); 
-                other.transform.parent.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition();
+                if(other.transform.parent.gameObject.GetComponent<CAS_ContolModel>() != null)
+                {
+                    //Debug.Log(other.transform.parent.gameObject.name + " is pushed"); 
+                    other.transform.parent.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition();
+                }
             }
         }
 
@@ -112,8 +118,11 @@ namespace CAS
             //Debug.Log(other.gameObject + "" + checkForPush + pushHappening);
             if (checkForPush && pushHappening)
             {
-                //Debug.Log(other.transform.parent.gameObject.name + " is pushed");
-                other.transform.parent.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition();
+                if (other.transform.parent.gameObject.GetComponent<CAS_ContolModel>() != null)
+                {
+                    //Debug.Log(other.transform.parent.gameObject.name + " is pushed"); 
+                    other.transform.parent.gameObject.GetComponent<CAS_ContolModel>().PushToOriginalPosition();
+                }
             }
         }
 

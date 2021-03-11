@@ -36,6 +36,8 @@ namespace CAS
         public TextMeshProUGUI filterOptionNameTextBox;
         public Image filterOptionStatus;
         public Button addIntegerOptionButton;
+        public TextMeshProUGUI applyGroupOrClusterText;
+        public TextMeshProUGUI removeGroupOrClusterText;
 
         List<CAS_EachFilterAndGroupSubOptionInteger> filterAndGroupSubOptionIntegerList; 
 
@@ -92,6 +94,8 @@ namespace CAS
                 filterAndGroupSubOptionInteger.SetEachFilterAndGroupSubOptionContent(minValue, maxValue, filterAndGroupSubOptionIntegerList.Count-1);
 
                 addIntegerOptionButton.gameObject.SetActive(true);
+                applyGroupOrClusterText.text = "Apply Clustering";
+                removeGroupOrClusterText.text = "Remove Clustering";
 
                 parentContentOfSubOption.GetComponent<VerticalLayoutGroup>().childControlHeight = true;
             }

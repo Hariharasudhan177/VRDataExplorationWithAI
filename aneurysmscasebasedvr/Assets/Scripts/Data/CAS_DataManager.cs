@@ -719,21 +719,33 @@ namespace CAS
         {
             Dictionary<string, List<string>> filterIdsGroupBy = new Dictionary<string, List<string>>();
 
+            List<string> dataNotAvailable = new List<string>();
+            DataView dataNotAvailableView = new DataView(datatableSorted);
+            string filter = "( " + columnNamesGroupBy + " <> -1 )";
+            dataNotAvailableView.RowFilter = filter;
+            DataTable datatableSortedWithoutNAdata = dataNotAvailableView.ToTable();
+
             int clustersCount = 4;
             int iterations = 50;
 
-            string[] patientIds = new string[datatableSorted.Rows.Count];
-            double[] coloumnValues = new double[datatableSorted.Rows.Count]; 
-            double[][] toClusterData = new double[datatableSorted.Rows.Count][]; 
-
+            string[] patientIds = new string[datatableSortedWithoutNAdata.Rows.Count];
+            double[] coloumnValues = new double[datatableSortedWithoutNAdata.Rows.Count];
+            double[][] toClusterData = new double[datatableSortedWithoutNAdata.Rows.Count][];
 
             int index = 0; 
             foreach (DataRow row in datatableSorted.Rows)
             {
-                toClusterData[index] = new double[] { 1, double.Parse(row[columnNamesGroupBy].ToString()) };
-                patientIds[index] = row["id"].ToString();
-                coloumnValues[index] = double.Parse(row[columnNamesGroupBy].ToString());
-                index++; 
+                if(double.Parse(row[columnNamesGroupBy].ToString()) != -1)
+                {
+                    toClusterData[index] = new double[] { 1, double.Parse(row[columnNamesGroupBy].ToString()) };
+                    patientIds[index] = row["id"].ToString();
+                    coloumnValues[index] = double.Parse(row[columnNamesGroupBy].ToString());
+                    index++;
+                }
+                else
+                {
+                    dataNotAvailable.Add(row["id"].ToString()); 
+                }
             }
 
             KMeansResults result = KMeans.Cluster(toClusterData, clustersCount, iterations, 0);
@@ -752,6 +764,8 @@ namespace CAS
                     coloumnValuesClusterList[i].Add(coloumnValues[result.clusters[i][j]]); 
                 }
             }
+
+            filterIdsGroupBy.Add("N/A", dataNotAvailable);
 
             index = 0; 
             foreach(List<double> coloumnValuesCluster in coloumnValuesClusterList)
