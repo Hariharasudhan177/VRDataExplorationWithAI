@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; 
-using TMPro; 
+using TMPro;
+using UnityEngine.SceneManagement; 
 
 namespace CAS {
     public class CAS_EnvironmentSwitch : MonoBehaviour
@@ -14,16 +15,18 @@ namespace CAS {
         //InsidePanel background
         //Model material 
 
-        private CAS_ButtonToSwitch[] buttons;
-        private CAS_MainPanelToSwitch[] mainPanels;
-        private CAS_InsidePanelToSwitch[] insidePanels;
-        private CAS_TextToSwitch[] texts;
-        private CAS_ScrollSwitch[] scrolls; 
-        private CAS_ContolModel[] models;
-        private CAS_SliderBackgroundToSwitch[] sliderBackgroundToSwitches;
-        private CAS_SliderHandleToSwitch[] sliderHandleToSwitches;
-        private CAS_TabGroupSwitch[] tabGroupSwitches;
-        private CAS_TabButtonSwitch[] tabButtonSwitches; 
+        private List<CAS_ButtonToSwitch> buttons;
+        private List<CAS_MainPanelToSwitch> mainPanels;
+        private List<CAS_InsidePanelToSwitch> insidePanels;
+        private List<CAS_InsidePanelNormalToSwitch> insideNormalPanels;
+        private List<CAS_TextToSwitch> texts;
+        private List<CAS_ScrollSwitch> scrolls; 
+        private List<CAS_ContolModel> models;
+        private List<CAS_SliderBackgroundToSwitch> sliderBackgroundToSwitches;
+        private List<CAS_SliderHandleToSwitch> sliderHandleToSwitches;
+        private List<CAS_TabGroupSwitch> tabGroupSwitches;
+        private List<CAS_TabButtonSwitch> tabButtonSwitches;
+        private List<CAS_InstantiatedTextToSwitch> instantiatedTextToSwitches; 
 
         //Normal 
         public Sprite buttonN;
@@ -112,14 +115,24 @@ namespace CAS {
                 insidePanelToSwitch.ChangeImage(insidePanelS);
             }
 
+            foreach (CAS_InsidePanelNormalToSwitch insidePanelNormalToSwitch in insideNormalPanels)
+            {
+                insidePanelNormalToSwitch.ChangeImage(buttonS);
+            }
+
             foreach (CAS_TextToSwitch textToSwitch in texts)
             {
                 textToSwitch.ChangeText(textColorS);
             }
 
+            foreach (CAS_InstantiatedTextToSwitch instantiatedTextToSwitch in instantiatedTextToSwitches)
+            {
+                instantiatedTextToSwitch.ChangeText(textColorS);
+            }
+
             foreach (CAS_ContolModel controlModel in models)
             {
-                controlModel.ChangeMaterialForSwitch(modelMaterialS, "_Color");
+                controlModel.ChangeMaterialForSwitch(modelMaterialS, "_Edgecolor");
             }
 
             foreach(CAS_ScrollSwitch scroll in scrolls)
@@ -172,9 +185,19 @@ namespace CAS {
                 insidePanelToSwitch.ChangeImage(insidePanelN);
             }
 
+            foreach (CAS_InsidePanelNormalToSwitch insidePanelNormalToSwitch in insideNormalPanels)
+            {
+                insidePanelNormalToSwitch.ChangeImage(insidePanelN);
+            }
+
             foreach (CAS_TextToSwitch textToSwitch in texts)
             {
                 textToSwitch.ChangeText(textColorN);
+            }
+
+            foreach (CAS_InstantiatedTextToSwitch instantiatedTextToSwitch in instantiatedTextToSwitches)
+            {
+                instantiatedTextToSwitch.ChangeText(textColorN);
             }
 
             foreach (CAS_ContolModel controlModel in models)
@@ -213,18 +236,71 @@ namespace CAS {
 
         public void Initialize()
         {
-            buttons = FindObjectsOfType<CAS_ButtonToSwitch>();
-            mainPanels = FindObjectsOfType<CAS_MainPanelToSwitch>();
-            insidePanels = FindObjectsOfType<CAS_InsidePanelToSwitch>();
-            texts = FindObjectsOfType<CAS_TextToSwitch>();
-            models = FindObjectsOfType<CAS_ContolModel>();
-            scrolls = FindObjectsOfType<CAS_ScrollSwitch>();
-            sliderBackgroundToSwitches = FindObjectsOfType<CAS_SliderBackgroundToSwitch>();
-            sliderHandleToSwitches = FindObjectsOfType<CAS_SliderHandleToSwitch>();
-            tabGroupSwitches = FindObjectsOfType<CAS_TabGroupSwitch>();
-            tabButtonSwitches = FindObjectsOfType<CAS_TabButtonSwitch>();
+            buttons = FindObjectsOfTypeAll<CAS_ButtonToSwitch>();
+            mainPanels = FindObjectsOfTypeAll<CAS_MainPanelToSwitch>();
+            insidePanels = FindObjectsOfTypeAll<CAS_InsidePanelToSwitch>();
+            insideNormalPanels = FindObjectsOfTypeAll<CAS_InsidePanelNormalToSwitch>();
+            texts = FindObjectsOfTypeAll<CAS_TextToSwitch>();
+            models = FindObjectsOfTypeAll<CAS_ContolModel>();
+            scrolls = FindObjectsOfTypeAll<CAS_ScrollSwitch>();
+            sliderBackgroundToSwitches = FindObjectsOfTypeAll<CAS_SliderBackgroundToSwitch>();
+            sliderHandleToSwitches = FindObjectsOfTypeAll<CAS_SliderHandleToSwitch>();
+            tabGroupSwitches = FindObjectsOfTypeAll<CAS_TabGroupSwitch>();
+            tabButtonSwitches = FindObjectsOfTypeAll<CAS_TabButtonSwitch>();
+            if (instantiatedTextToSwitches == null)
+            {
+                instantiatedTextToSwitches = new List<CAS_InstantiatedTextToSwitch>();
+            }
 
             initialized = true; 
+        }
+
+        public static List<T> FindObjectsOfTypeAll<T>()
+        {
+            List<T> results = new List<T>();
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var s = SceneManager.GetSceneAt(i);
+                if (s.isLoaded)
+                {
+                    var allGameObjects = s.GetRootGameObjects();
+                    for (int j = 0; j < allGameObjects.Length; j++)
+                    {
+                        var go = allGameObjects[j];
+                        results.AddRange(go.GetComponentsInChildren<T>(true));
+                    }
+                }
+            }
+            return results;
+        }
+
+        public void AddToInstantiatedTextToSwitch(CAS_InstantiatedTextToSwitch instantiatedTextToSwitch)
+        {
+            if(instantiatedTextToSwitches == null)
+            {
+                instantiatedTextToSwitches = new List<CAS_InstantiatedTextToSwitch>(); 
+            }
+
+            if (sciFi)
+            {
+                instantiatedTextToSwitch.ChangeText(textColorS); 
+            }
+            else
+            {
+                instantiatedTextToSwitch.ChangeText(textColorN);
+            }
+
+            instantiatedTextToSwitches.Add(instantiatedTextToSwitch); 
+        }
+
+        public void RemoveFromInstantiatedTextToSwitch(CAS_InstantiatedTextToSwitch instantiatedTextToSwitch)
+        {
+            if (instantiatedTextToSwitches == null)
+            {
+                instantiatedTextToSwitches = new List<CAS_InstantiatedTextToSwitch>();
+            }
+
+            instantiatedTextToSwitches.Remove(instantiatedTextToSwitch);
         }
     }
 }

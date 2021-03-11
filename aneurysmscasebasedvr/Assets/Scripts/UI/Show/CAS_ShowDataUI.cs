@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using UnityEngine.UI;
+using System.Linq; 
 
 namespace CAS
 {
@@ -17,6 +19,10 @@ namespace CAS
         public CAS_DisplayPatientDetailsUIManager displayPatientDetailsUIManager;
 
         bool visible = false;
+
+        public Image lockUnlockImage;
+        public Sprite lockSprite;
+        public Sprite unLockSprite;
 
         // Start is called before the first frame update
         void Start()
@@ -99,6 +105,32 @@ namespace CAS
 
             GetComponent<CanvasGroup>().interactable = status;
             GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
+        }
+
+        public void OnClickSwitchOnShowData(float value)
+        {
+            if (value == 0)
+            {
+                visible = false;
+            }
+            else
+            {
+                visible = true;
+            }
+        }
+
+        public void OnClickLockUnlockButton()
+        {
+            visible = !visible;
+
+            if (visible)
+            {
+                lockUnlockImage.sprite = unLockSprite;
+            }
+            else
+            {
+                lockUnlockImage.sprite = lockSprite;
+            }
         }
     }
 }

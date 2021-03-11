@@ -19,6 +19,7 @@ namespace CAS
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            Debug.Log(gameObject.name); 
             if(tabButton.interactable) tabGroup.OnTabSelected(this);
         }
 

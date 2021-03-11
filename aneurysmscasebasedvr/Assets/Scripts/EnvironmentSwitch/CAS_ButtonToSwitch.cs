@@ -14,6 +14,10 @@ namespace CAS
         }
         public void ChangeImage(Sprite sprite)
         {
+            if(imageToSwitch == null)
+            {
+                imageToSwitch = GetComponent<Image>();
+            }
             imageToSwitch.sprite = sprite; 
         } 
     }

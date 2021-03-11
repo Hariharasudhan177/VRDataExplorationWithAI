@@ -35,7 +35,7 @@ namespace CAS
         public Mesh defaultMesh;
 
         [Range(50000, 800000)]
-        public int thresholdTriangleCountForCubeConversion = 50000; 
+        public int thresholdTriangleCountForCubeConversion = 50000;
 
         private void Awake()
         {
@@ -273,7 +273,11 @@ namespace CAS
             if(gameObjectForWhichDataIsDisplayed != "")
                 allModelsInformationByRecordName[gameObjectForWhichDataIsDisplayed].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(false);
             gameObjectForWhichDataIsDisplayed = gameObjectName;
-            allModelsInformationByRecordName[gameObjectName].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(true); 
+
+            if(gameObjectName != "")
+            {
+                allModelsInformationByRecordName[gameObjectName].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(true);
+            }
         }
     }
 }

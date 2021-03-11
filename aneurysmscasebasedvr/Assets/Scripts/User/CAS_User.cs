@@ -20,9 +20,9 @@ public class CAS_User : MonoBehaviour
     public void SetInitialUserPositionAndRotation()
     {
         
-        VRCamHolder.position += transform.position;
+        VRCamHolder.position = transform.position;
 
-        Transform cameraCurrent= VRCamHolder.Find("Main Camera").transform;
+        Transform cameraCurrent = VRCamHolder.Find("Main Camera").transform;
 
         float yRotation = VRCamHolder.transform.eulerAngles.y - cameraCurrent.eulerAngles.y;
 

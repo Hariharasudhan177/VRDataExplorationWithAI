@@ -15,6 +15,10 @@ namespace CAS
         }
         public void ChangeText(Color color)
         {
+            if(textToSwitch == null)
+            {
+                textToSwitch = GetComponent<TextMeshProUGUI>();
+            }
             textToSwitch.color = color;
         }
     }

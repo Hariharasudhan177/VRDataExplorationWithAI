@@ -12,6 +12,10 @@ public class CAS_TabButtonSwitch : MonoBehaviour
     }
     public void ChangeImage(Sprite idleImage)
     {
+        if(image == null)
+        {
+            image = GetComponent<Image>();
+        }
         image.sprite = idleImage; 
     }
 }

@@ -47,7 +47,7 @@ namespace CAS
                 int filterOptionsSize = 0;
 
                 CAS_FilterAndGroupOptionKeyValuesClass filterKeyValuesClass = filterAndGroupOptionKeyValueClass;
-                filterOptionHeadingText += filterKeyValuesClass.GetFilterName() + " - " + modelsForAllSteps[filtersAppliedCount].Count + " selected";
+                filterOptionHeadingText += filterKeyValuesClass.GetFilterName() + " - " + modelsForAllSteps[filtersAppliedCount].Count;
 
                 if (filterKeyValuesClass.GetIsString())
                 {

@@ -14,6 +14,10 @@ namespace CAS
         }
         public void ChangeImages(Sprite idleImage, Sprite activeImage)
         {
+            if(tabGroup == null)
+            {
+                tabGroup = GetComponent<CAS_TabGroup>();
+            }
             tabGroup.tabHover = activeImage;
             tabGroup.tabActive = activeImage;
             tabGroup.tabIdle = idleImage;

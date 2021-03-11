@@ -195,6 +195,7 @@ GameObject:
   - component: {fileID: 5757196080685334985}
   - component: {fileID: 5757196080685334984}
   - component: {fileID: 5212293277661235412}
+  - component: {fileID: 5757196081137501631}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -259,6 +260,18 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!114 &5212293277661235412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196080685334986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5757196081137501631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -485,7 +498,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5757196081532234883}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5757196081100113171}
@@ -496,8 +509,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 12.3, y: 46.5}
-  m_SizeDelta: {x: 590, y: 705}
+  m_AnchoredPosition: {x: -2, y: 80.1}
+  m_SizeDelta: {x: 685, y: 815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5757196081532234887
 CanvasRenderer:
@@ -748,6 +761,7 @@ GameObject:
   - component: {fileID: 5757196081933948553}
   - component: {fileID: 5757196081933948552}
   - component: {fileID: 5044798342037578251}
+  - component: {fileID: 5757196081137501634}
   m_Layer: 0
   m_Name: Scrollbar Horizontal
   m_TagString: Untagged
@@ -872,6 +886,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5757196081137501634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196081933948554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5757196082004196254
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,7 +933,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000060371636}
+  m_AnchoredPosition: {x: 0, y: 0.00027155876}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &822554613
@@ -962,6 +988,7 @@ GameObject:
   - component: {fileID: 5757196082187240265}
   - component: {fileID: 5757196082187240264}
   - component: {fileID: 3672307073789098748}
+  - component: {fileID: 5757196081137501632}
   m_Layer: 0
   m_Name: Scrollbar Vertical
   m_TagString: Untagged
@@ -1068,13 +1095,25 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5757196080685334984}
   m_HandleRect: {fileID: 5757196080685334987}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &3672307073789098748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196082187240266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5757196081137501632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1217,6 +1256,7 @@ GameObject:
   - component: {fileID: 5757196082334543379}
   - component: {fileID: 5757196082334543378}
   - component: {fileID: 1215680285638472418}
+  - component: {fileID: 5757196081137501633}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -1281,6 +1321,18 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!114 &1215680285638472418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757196082334543388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983aa82e4f421fc428b5539a4aee1b00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5757196081137501633
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

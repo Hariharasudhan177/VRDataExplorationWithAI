@@ -14,6 +14,10 @@ namespace CAS
         }
         public void ChangeColor(Color color)
         {
+            if(scrollToSwitch == null)
+            {
+                scrollToSwitch = GetComponent<Image>();
+            }
             scrollToSwitch.color = color;
         }
     }

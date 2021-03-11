@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4836719157559321726}
   - component: {fileID: 4797120430889857807}
   - component: {fileID: 2522375233652343651}
-  - component: {fileID: 2029524304291119321}
+  - component: {fileID: 2709731607154954150}
   m_Layer: 0
   m_Name: ColumnName
   m_TagString: Untagged
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2029524304291119321
+--- !u!114 &2709731607154954150
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,9 +143,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1422641715152186974}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 967cca9227a3ff04881abb6be5427cae, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b333cc648c7c6047a4f4bc35b59a0e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  environmentSwitch: {fileID: 0}
 --- !u!1 &3684975975689952183
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,7 +158,7 @@ GameObject:
   - component: {fileID: 6131092687751647691}
   - component: {fileID: 7219921166855236510}
   - component: {fileID: 1002990302467030754}
-  - component: {fileID: 4226752756290695659}
+  - component: {fileID: 3067826194987649901}
   m_Layer: 0
   m_Name: ColumnValue
   m_TagString: Untagged
@@ -238,8 +239,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -280,7 +281,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &4226752756290695659
+--- !u!114 &3067826194987649901
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -289,9 +290,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3684975975689952183}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 967cca9227a3ff04881abb6be5427cae, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b333cc648c7c6047a4f4bc35b59a0e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  environmentSwitch: {fileID: 0}
 --- !u!1 &5899198837945745372
 GameObject:
   m_ObjectHideFlags: 0
