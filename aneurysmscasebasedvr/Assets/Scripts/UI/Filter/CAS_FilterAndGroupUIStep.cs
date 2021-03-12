@@ -40,6 +40,7 @@ namespace CAS
         public GameObject parentContentOfEachGroupedSetAndDetailsPrefab;
 
         string groupedByKey = "";
+        int clustersCount =  4; 
         bool groupingWithFilter = true;
 
         bool filterAndGroupUIVisibilityStatus = true; 
@@ -136,7 +137,7 @@ namespace CAS
 
             if (groupedByKey != "")
             {
-                ApplyGrouping(groupedByKey);
+                ApplyGrouping(groupedByKey, clustersCount);
             }
         }
 
@@ -209,9 +210,10 @@ namespace CAS
         }
 
         //Grouping 
-        public void ApplyGrouping(string filterKey)
+        public void ApplyGrouping(string filterKey, int count)
         {
-            groupedByKey = filterKey; 
+            groupedByKey = filterKey;
+            clustersCount = count; 
             //filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(filtersApplied, filterKey));
             //For now removing the filtering from grouping. Use the above code if needed later
             List<CAS_FilterAndGroupOptionKeyValuesClass> filterForGrouping = new List<CAS_FilterAndGroupOptionKeyValuesClass>();
@@ -221,7 +223,7 @@ namespace CAS
                 filterForGrouping = filtersApplied; 
             }
 
-            Dictionary<string, List<string>> groupedByPatientIds = GetGroupedByPatiendIds(filterForGrouping, filterKey); 
+            Dictionary<string, List<string>> groupedByPatientIds = GetGroupedByPatiendIds(filterForGrouping, filterKey, clustersCount); 
 
             //Set group colours to models 
             filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(groupedByPatientIds);
@@ -252,7 +254,7 @@ namespace CAS
 
             if (groupedByKey != "")
             {
-                ApplyGrouping(groupedByKey);
+                ApplyGrouping(groupedByKey, clustersCount);
             }
         }
 
@@ -298,11 +300,11 @@ namespace CAS
             return filterAndGroupUIManager.manager.dataManager.GetFilteredPatientIdsStringAndInteger(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4);
         }
 
-        public Dictionary<string, List<string>> GetGroupedByPatiendIds(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues, string filterKey)
+        public Dictionary<string, List<string>> GetGroupedByPatiendIds(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues, string filterKey, int clustersCount)
         {
             var keyValuePairs = GetKeyValuePairs(filterKeyValues); 
 
-            return filterAndGroupUIManager.manager.dataManager.GetPatientIdsGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey);
+            return filterAndGroupUIManager.manager.dataManager.GetPatientIdsGroupBy(keyValuePairs.Item1, keyValuePairs.Item2, keyValuePairs.Item3, keyValuePairs.Item4, filterKey, clustersCount);
         }
 
         public (List<string>, List<List<string>>, List<string>, List<List<List<double>>>) GetKeyValuePairs(List<CAS_FilterAndGroupOptionKeyValuesClass> filterKeyValues)

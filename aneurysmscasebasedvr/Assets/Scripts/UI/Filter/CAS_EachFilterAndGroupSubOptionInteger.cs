@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
+using TMPro;
+using UnityEngine.UI.Extensions;
 
 namespace CAS
 {
@@ -10,19 +11,19 @@ namespace CAS
     {
         public CAS_EachFilterAndGroupSubOptionPanel subOptionPanel;
 
-        public Slider fromSlider;
-        public Slider toSlider;
         public TextMeshProUGUI fromValueDisplayText;
         public TextMeshProUGUI toValueDisplayText;
 
         float originalMinimum;
-        float originalMaximum; 
+        float originalMaximum;
 
         bool settingValue = false;
 
         int subOptionIntegerIndex;
 
-        public TextMeshProUGUI conditionNumber; 
+        public TextMeshProUGUI conditionNumber;
+
+        public RangeSlider rangeSlider;
 
         // Start is called before the first frame update
         void Start()
@@ -40,72 +41,46 @@ namespace CAS
         {
             subOptionIntegerIndex = index;
 
-            if(index > 0)
+            if (index > 0)
             {
-                conditionNumber.gameObject.SetActive(true); 
-                conditionNumber.text = "Condition " + (subOptionIntegerIndex+1);
+                conditionNumber.gameObject.SetActive(true);
+                conditionNumber.text = "Condition " + (subOptionIntegerIndex + 1);
             }
 
 
-            settingValue = true; 
-            fromSlider.minValue = (float)min;
-            fromSlider.maxValue = (float)max;
-            fromSlider.gameObject.SetActive(true); 
-
-            toSlider.minValue = (float)min;
-            toSlider.maxValue = (float)max;
-            toSlider.gameObject.SetActive(true);
+            settingValue = true;
+            rangeSlider.MinValue = (float)min;
+            rangeSlider.MaxValue = (float)max;
+            rangeSlider.LowValue = (float)min;
+            rangeSlider.HighValue = (float)max;
             //toSlider.value = (float)max; //Reversed to slider - not needed 
             settingValue = false;
 
-            originalMinimum = (float) min;
-            originalMaximum = (float) max;
+            originalMinimum = (float)min;
+            originalMaximum = (float)max;
 
             fromValueDisplayText.text = originalMinimum.ToString();
-            toValueDisplayText.text = originalMaximum.ToString(); 
-        }
+            toValueDisplayText.text = originalMaximum.ToString();
 
-        public void ChageFromSliderValue(float value)
-        {
-            float convertedToValueSinceReversed = originalMaximum - (toSlider.value - originalMinimum);
-
-            if (!settingValue)
-            {
-                if (value > convertedToValueSinceReversed)
-                {
-                    fromSlider.value = convertedToValueSinceReversed;
-                    return;
-                }
-
-                subOptionPanel.SetFromToSliderValue(0, value, subOptionIntegerIndex);
-            }
-
-            fromValueDisplayText.text = fromSlider.value.ToString(); 
-        }
-
-        public void ChageToSliderValue(float value)
-        {
-            float convertedToValueSinceReversed = originalMaximum - (value - originalMinimum); 
-
-            if (!settingValue)
-            {
-                if(convertedToValueSinceReversed < fromSlider.value)
-                {
-                    toSlider.value = originalMaximum + originalMinimum - fromSlider.value; 
-                    return; 
-                }
-
-                subOptionPanel.SetFromToSliderValue(1, convertedToValueSinceReversed, subOptionIntegerIndex);
-            }
-
-            toValueDisplayText.text = convertedToValueSinceReversed.ToString();
         }
 
         public void SetOriginalValues()
         {
-            fromSlider.value = originalMinimum;
-            //toSlider.value = originalMaximum; because of conversion
-            toSlider.value = originalMinimum;
+            rangeSlider.LowValue = originalMinimum;
+            rangeSlider.HighValue = originalMaximum;
+        }
+
+        public void ChangeFromToSlider(float from, float to)
+        {
+            if (!settingValue)
+            {
+                if (subOptionPanel == null) subOptionPanel = GetComponentInParent<CAS_EachFilterAndGroupSubOptionPanel>();
+
+                subOptionPanel.SetFromToSliderValue(0, from, subOptionIntegerIndex);
+                subOptionPanel.SetFromToSliderValue(1, to, subOptionIntegerIndex);
+                fromValueDisplayText.text = from.ToString();
+                toValueDisplayText.text = to.ToString();
+            }
         }
     }
 }

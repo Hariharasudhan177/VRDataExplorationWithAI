@@ -74,9 +74,9 @@ namespace CAS
             stepUI.ChangeFilter(filterKey, filterValuesString, filterValuesDouble, isString);
         }
 
-        public void ApplyGrouping(string filterKey)
+        public void ApplyGrouping(string filterKey, int clustersCount)
         {
-            stepUI.ApplyGrouping(filterKey);
+            stepUI.ApplyGrouping(filterKey, clustersCount);
         }
 
         public void RemoveGrouping()

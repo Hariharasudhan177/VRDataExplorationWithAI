@@ -39,7 +39,11 @@ namespace CAS
         public TextMeshProUGUI applyGroupOrClusterText;
         public TextMeshProUGUI removeGroupOrClusterText;
 
-        List<CAS_EachFilterAndGroupSubOptionInteger> filterAndGroupSubOptionIntegerList; 
+        List<CAS_EachFilterAndGroupSubOptionInteger> filterAndGroupSubOptionIntegerList;
+
+        int clustersCount = 4;
+        public GameObject clusterCountSlider;
+        public TextMeshProUGUI clusterCountText;
 
         // Start is called before the first frame update
         void Start()
@@ -94,6 +98,7 @@ namespace CAS
                 filterAndGroupSubOptionInteger.SetEachFilterAndGroupSubOptionContent(minValue, maxValue, filterAndGroupSubOptionIntegerList.Count-1);
 
                 addIntegerOptionButton.gameObject.SetActive(true);
+                clusterCountSlider.SetActive(true); 
                 applyGroupOrClusterText.text = "Apply Clustering";
                 removeGroupOrClusterText.text = "Remove Clustering";
 
@@ -239,7 +244,7 @@ namespace CAS
             //To Remove existing grouping 
             RemoveGrouping(); 
 
-            filterAndGroupManager.ApplyGrouping(gameObject.name);
+            filterAndGroupManager.ApplyGrouping(gameObject.name, clustersCount);
         }
 
         public void RemoveGrouping()
@@ -257,6 +262,12 @@ namespace CAS
             fromToValue.Add(new List<double>());
             fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[0]);
             fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[1]);
+        }
+
+        public void OnChangeClusterCountSlider(float value)
+        {
+            clustersCount = (int) value;
+            clusterCountText.text = "ClusterCount " + value.ToString();
         }
     }
 }

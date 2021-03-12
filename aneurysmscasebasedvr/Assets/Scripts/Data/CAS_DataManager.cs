@@ -644,7 +644,7 @@ namespace CAS
         }
 
         //Distinct values from providing column names 
-        public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger, string columnNamesGroupBy)
+        public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger, string columnNamesGroupBy, int clustersCount)
         {
             DataView filteredView = QueryBuilderStringAndIntegerGroupBy(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
             if (filteredView == null)
@@ -664,7 +664,7 @@ namespace CAS
 
             if (filterOptionDataType == System.Type.GetType("System.Double"))
             {
-                return GetPatientIdsGroupByDouble(datatableSorted, columnNamesGroupBy);
+                return GetPatientIdsGroupByDouble(datatableSorted, columnNamesGroupBy, clustersCount);
             }
             
             if (filterOptionDataType == System.Type.GetType("System.String"))
@@ -715,7 +715,7 @@ namespace CAS
         }
 
         //using clustering to groupby numeric columns 
-        public Dictionary<string, List<string>> GetPatientIdsGroupByDouble(DataTable datatableSorted, string columnNamesGroupBy)
+        public Dictionary<string, List<string>> GetPatientIdsGroupByDouble(DataTable datatableSorted, string columnNamesGroupBy, int clustersCount)
         {
             Dictionary<string, List<string>> filterIdsGroupBy = new Dictionary<string, List<string>>();
 
@@ -725,7 +725,7 @@ namespace CAS
             dataNotAvailableView.RowFilter = filter;
             DataTable datatableSortedWithoutNAdata = dataNotAvailableView.ToTable();
 
-            int clustersCount = 4;
+            //int clustersCount = 4;
             int iterations = 50;
 
             string[] patientIds = new string[datatableSortedWithoutNAdata.Rows.Count];
