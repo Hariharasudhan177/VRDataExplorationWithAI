@@ -60,12 +60,9 @@ namespace CAS
             {
                 Initialize();
                 initialized = true;
-
-                //AddIdToList("Hannover_JTSH_left");
-                //AddIdToList("BL_20150731");
             }
 
-            if (Input.GetKeyDown(KeyCode.G))
+            /*if (Input.GetKeyDown(KeyCode.G))
             {
                 RemoveIdFromList("Hannover_JTSH_left");
             }
@@ -73,7 +70,7 @@ namespace CAS
             if (Input.GetKeyDown(KeyCode.K))
             {
                 AddIdToList("HG_20151127");
-            }
+            }*/
         }
 
         public void Initialize()

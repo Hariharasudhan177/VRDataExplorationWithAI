@@ -42,7 +42,7 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            /*if (Input.GetKeyDown(KeyCode.A))
             {
                 SetObjectOfInterest(1);
             }
@@ -60,7 +60,7 @@ namespace CAS
             if (Input.GetKeyDown(KeyCode.D))
             {
                 DeActivateSimilarityVisualisation();
-            }
+            }*/
         }
 
         public List<CAS_ObjectOfInterest> GetObjectsOfInterest()

@@ -12,10 +12,43 @@ namespace CAS
     public class CAS_PrepareModels : MonoBehaviour
     {
         public int dataAvailable = -1; 
-        public void Prepare(GameObject model, Material material)
+        public void Prepare(GameObject model, Material material, float limitSize)
         {
+            //Reduce scale to fit to limit size 
+            MeshFilter meshFilter = model.GetComponentInChildren<MeshFilter>();
+            Vector3 sizeOfModel = meshFilter.sharedMesh.bounds.size;
+            float toBeReducedPercentage = 1.0f; 
+            if (sizeOfModel.x > limitSize)
+            {
+                if (sizeOfModel.x > sizeOfModel.y && sizeOfModel.x > sizeOfModel.z)
+                {
+                    toBeReducedPercentage = limitSize / sizeOfModel.x; 
+                }
+            } 
+            
+            if(sizeOfModel.y > limitSize)
+            {
+                if (sizeOfModel.y > sizeOfModel.x && sizeOfModel.y > sizeOfModel.z)
+                {
+                    toBeReducedPercentage = limitSize / sizeOfModel.y;
+                }
+            }
+            
+            if(sizeOfModel.z > limitSize)
+            {
+                if (sizeOfModel.z > sizeOfModel.x && sizeOfModel.z > sizeOfModel.y)
+                {
+                    toBeReducedPercentage = limitSize / sizeOfModel.z;
+                }
+            }
+
+            if(toBeReducedPercentage != 1.0f)
+            {
+                model.transform.GetChild(0).localScale = new Vector3(toBeReducedPercentage, toBeReducedPercentage, toBeReducedPercentage);
+            }
+
             //Assigning Material 
-            MeshRenderer meshRenderer = model.GetComponentInChildren<MeshRenderer>();
+            MeshRenderer meshRenderer = model.GetComponentInChildren<MeshRenderer>(); 
             meshRenderer.material = material;
 
             //Attach XR grabbable
@@ -23,11 +56,10 @@ namespace CAS
             model.GetComponent<Rigidbody>().useGravity = false;
             model.GetComponent<Rigidbody>().isKinematic = true;
 
-
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
             model.transform.GetChild(0).gameObject.AddComponent<BoundBox>();
             model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = GetComponentInParent<CAS_StepManager>().boundingBoxLineMaterial;
-            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = false; 
+            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = true; 
             model.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().enabled = false;

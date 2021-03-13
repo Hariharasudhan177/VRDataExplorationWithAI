@@ -37,6 +37,8 @@ namespace CAS
         [Range(50000, 800000)]
         public int thresholdTriangleCountForCubeConversion = 50000;
 
+        public float limitSize = 0.75f;
+
         private void Awake()
         {
             allModelsInformationByRecordName = new Dictionary<string, GameObject>();

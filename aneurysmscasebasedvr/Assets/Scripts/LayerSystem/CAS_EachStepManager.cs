@@ -17,7 +17,8 @@ namespace CAS
         [HideInInspector]
         public bool initial = false; 
 
-        public int stepIndex; 
+        public int stepIndex;
+
         private void Awake()
         {
             stepManager = GetComponentInParent<CAS_StepManager>();

@@ -52,6 +52,7 @@ namespace CAS
         public float adjustmentDistance = 1f;
 
         public Material material;
+        float limitSize;
 
         /// <summary>
         /// Picks every child models and places them in spherical wireframe
@@ -61,6 +62,7 @@ namespace CAS
             transform.GetComponentInParent<CAS_StepManager>().SetTrueScale(); 
 
             material = GetComponentInParent<CAS_StepManager>().defaultMaterial;
+            limitSize = GetComponentInParent<CAS_StepManager>().limitSize;
             Dictionary<string, Vector3> positionOfTheModels = new Dictionary<string, Vector3>(); 
 
             //Vector3 originalScale = transform.parent.localScale; 
@@ -91,7 +93,7 @@ namespace CAS
                 if (!child.GetComponent<CAS_PrepareModels>())
                 {
                     child.gameObject.AddComponent<CAS_PrepareModels>();
-                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, material);
+                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, material, limitSize);
                 }
 
                 if (!child.GetComponent<CAS_ContolModel>())
@@ -108,7 +110,7 @@ namespace CAS
                 /* Mesh is formed with vertices and triangles. So need to find the centre to position the mesh according to our needs
                  The centre is found using Mesh bounds */
                 //Mesh bounds 
-                Bounds meshBounds = child.GetComponentInChildren<MeshFilter>().sharedMesh.bounds;
+                Bounds meshBounds = child.GetComponentInChildren<MeshRenderer>().bounds;
 
                 //child.transform.position = toBePosition;
                 child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition); 
