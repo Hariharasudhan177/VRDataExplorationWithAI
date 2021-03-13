@@ -83,6 +83,9 @@ namespace CAS
         //Initialisation 
         public void InitialseStepParents()
         {
+            GameObject firstModel = GetFirstModel();
+            firstModel.AddComponent<CAS_FirstModel>(); 
+
             List<GameObject> models = GetInitialModels();
             totalInitialNumberOfModels = models.Count;
 
@@ -156,6 +159,11 @@ namespace CAS
                 models.Add(child.gameObject);
             }
             return models;
+        }
+
+        public GameObject GetFirstModel()
+        {
+            return transform.GetChild(0).gameObject; 
         }
 
         List<GameObject> GetGameObjectsFromModelId(List<string> modelsId)
@@ -265,7 +273,7 @@ namespace CAS
 
         public void DisplayThisModelData(string name)
         {
-            manager.displayPatientDetailsUIManager.showDataUI.PopulateData(allModelsInformationGameobjectRecordName[name][0]);
+            manager.displayPatientDetailsUIManager.showDataUI.DisplayData(allModelsInformationGameobjectRecordName[name][0]);
         }
 
         public void HighlightModelForWhichDataIsDisplayed(string gameObjectName)

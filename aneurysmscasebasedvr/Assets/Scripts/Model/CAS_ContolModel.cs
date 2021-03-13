@@ -183,5 +183,10 @@ namespace CAS
             currentOriginalColor = initialOriginalColour;
             transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
         }
+
+        public bool GetModelMovingStatus()
+        {
+            return moving; 
+        }
     }
 }

@@ -49,7 +49,7 @@ namespace CAS
         public void OnClickPatientIdButton(string patientId)
         {
             Debug.Log(patientId); 
-            displayPatientDetailsUIManager.showDataUI.PopulateData(patientId); 
+            displayPatientDetailsUIManager.showDataUI.DisplayData(patientId); 
         }
 
         public void OpenClose(bool status)

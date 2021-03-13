@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3134744461747651391}
   - component: {fileID: 3628636435106171517}
   - component: {fileID: 3499533584407554666}
-  - component: {fileID: 4682696000339036596}
+  - component: {fileID: 2647209865355370675}
   m_Layer: 0
   m_Name: EachFieldHeading
   m_TagString: Untagged
@@ -107,8 +107,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &4682696000339036596
+--- !u!114 &2647209865355370675
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,9 +158,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1783141150111950458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 967cca9227a3ff04881abb6be5427cae, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b333cc648c7c6047a4f4bc35b59a0e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  environmentSwitch: {fileID: 0}
 --- !u!1 &3175484942993517887
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,21 +23,34 @@ namespace CAS
 
         //PatientIds 
         public int maxNumber = 10; 
-        List<string> patientIdsInCompareList;
+        string[] patientIdsInCompareList;
 
         public GameObject[] compareObjects;
-        List<GameObject> rowsOfData; 
+        List<GameObject>[] compareIndividualObjectsList;
+        bool[] compareIndividualObjectsStatus;
 
         public RenderTexture[] renderTextures;
 
         bool initialized = false;
 
-        bool compareUIVisibilityStatus = true; 
+        bool compareUIVisibilityStatus = true;
+
+        public CAS_CompareTrigger compareTrigger;
+
 
         // Start is called before the first frame update
         void Start()
         {
-            rowsOfData = new List<GameObject>(); 
+            patientIdsInCompareList = new string[maxNumber]; 
+            compareIndividualObjectsStatus = new bool[maxNumber];
+            compareIndividualObjectsList = new List<GameObject>[maxNumber];
+
+            for (int i = 0; i < maxNumber; i++)
+            {
+                patientIdsInCompareList[i] = "";
+                compareIndividualObjectsStatus[i] = false; 
+                compareIndividualObjectsList[i] = new List<GameObject>(); 
+            }
         }
 
         // Update is called once per frame
@@ -77,61 +90,75 @@ namespace CAS
                 eachfieldObject.GetComponent<CAS_EachFieldOfCompare>().SetContent(column);
             }
 
-            patientIdsInCompareList = new List<string>(); 
+            //tientIdsInCompareList = new List<string>(); 
         }
 
-        public void PopulateData()
+        public void PopulateData(string patientId, int index)
         {
-            foreach (GameObject compareObject in compareObjects)
+            compareIndividualObjectsList[index] = new List<GameObject>(); 
+
+            GameObject deleteButtonObject = Instantiate(eachDeleteButton, parentContent);
+            deleteButtonObject.GetComponent<CAS_DeleteComparedObject>().SetComparedPatientId(patientId);
+            compareIndividualObjectsList[index].Add(deleteButtonObject);
+
+            compareObjects[index].SetActive(true);
+            compareObjects[index].GetComponent<CAS_CompareObject>().ActivateCompareObject(manager.stepManager.allModelsInformationByRecordName[patientId]);
+
+            GameObject modelSnapshotObject = Instantiate(eachSnapShotPrefab, parentContent);
+            modelSnapshotObject.GetComponent<CAS_CompareSnapshot>().SetRawImage(renderTextures[index]);
+            compareIndividualObjectsList[index].Add(modelSnapshotObject);
+
+            List<string> patientRecord = manager.dataManager.GetPatientRecordWithIdWithoutKeys(patientId);
+
+            foreach (string patientRecordData in patientRecord)
             {
-                compareObject.GetComponent<CAS_CompareObject>().DeActivateCompareObject();
-                compareObject.SetActive(false); 
-            }
-
-            foreach (GameObject rowOfData in rowsOfData)
-            {
-                Destroy(rowOfData);
-            }
-
-            int index = 0;
-
-            foreach (string patientId in patientIdsInCompareList)
-            {
-                GameObject deleteButtonObject = Instantiate(eachDeleteButton, parentContent);
-                deleteButtonObject.GetComponent<CAS_DeleteComparedObject>().SetComparedPatientId(patientId);
-                rowsOfData.Add(deleteButtonObject);
-
-                compareObjects[index].SetActive(true);
-                compareObjects[index].GetComponent<CAS_CompareObject>().ActivateCompareObject(manager.stepManager.allModelsInformationByRecordName[patientId]);
-
-                GameObject modelSnapshotObject = Instantiate(eachSnapShotPrefab, parentContent);
-                modelSnapshotObject.GetComponent<CAS_CompareSnapshot>().SetRawImage(renderTextures[index]);
-                rowsOfData.Add(modelSnapshotObject);
-
-                List<string> patientRecord = manager.dataManager.GetPatientRecordWithIdWithoutKeys(patientId);
-
-                foreach (string patientRecordData in patientRecord)
-                {
-                    GameObject eachfieldObject = Instantiate(eachFieldPrefab, parentContent);
-                    eachfieldObject.GetComponent<CAS_EachFieldOfCompare>().SetContent(patientRecordData);
-                    rowsOfData.Add(eachfieldObject); 
-                }
-
-                index++;
+                GameObject eachfieldObject = Instantiate(eachFieldPrefab, parentContent);
+                eachfieldObject.GetComponent<CAS_EachFieldOfCompare>().SetContent(patientRecordData);
+                compareIndividualObjectsList[index].Add(eachfieldObject); 
             }
         }
 
-        public void AddIdToList(string patientId)
+        public void UnPopulateData(int index)
         {
-            if(!(patientIdsInCompareList.Count > maxNumber))
+            foreach (GameObject compareObject in compareIndividualObjectsList[index])
             {
-                if (!patientIdsInCompareList.Contains(patientId))
+                Destroy(compareObject); 
+            }
+
+            compareObjects[index].GetComponent<CAS_CompareObject>().DeActivateCompareObject();
+            compareObjects[index].SetActive(false); 
+        }
+
+        public bool AddIdToList(string patientId)
+        {
+            //If patient id is already present 
+            foreach(string patientIdPresent in patientIdsInCompareList)
+            {
+                if(patientIdPresent == patientId)
                 {
-                    patientIdsInCompareList.Add(patientId);
+                    return false; 
                 }
             }
 
-            PopulateData();
+            //Compare is set to max of maxNumber. Find which index is not filled yet
+            int index = -1; 
+            for (int i = 0; i < compareIndividualObjectsStatus.Length; i++)
+            {
+                if (!compareIndividualObjectsStatus[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            //If all slots filled return 
+            if (index == -1) return false;
+
+            patientIdsInCompareList[index] = patientId;
+            compareIndividualObjectsStatus[index] = true;
+            PopulateData(patientId, index);
+
+            return true; 
         }
 
         public void RemoveIdFromList(string patientId)
@@ -141,14 +168,13 @@ namespace CAS
             {
                 if(id == patientId)
                 {
-                    patientIdsInCompareList.RemoveAt(index);
-                    Debug.Log(patientIdsInCompareList.Count);
+                    patientIdsInCompareList[index] = "";
+                    compareIndividualObjectsStatus[index] = false;
+                    UnPopulateData(index);
                     break; 
                 }
                 index++;
             }
-
-            PopulateData();
         }
 
         public void OpenClose()
@@ -166,6 +192,28 @@ namespace CAS
 
             GetComponentInChildren<CanvasGroup>().interactable = compareUIVisibilityStatus;
             GetComponentInChildren<TrackedDeviceGraphicRaycaster>().enabled = compareUIVisibilityStatus;
+        }
+
+        public void ClearAllCompareSlots()
+        {
+            for(int i=0; i < compareIndividualObjectsStatus.Length; i++)
+            {
+                if (compareIndividualObjectsStatus[i])
+                {
+
+                    foreach (GameObject compareObject in compareIndividualObjectsList[i])
+                    {
+                        Destroy(compareObject);
+                    }
+
+                    compareObjects[i].GetComponent<CAS_CompareObject>().DeActivateCompareObject();
+                    compareObjects[i].SetActive(false);
+
+                    patientIdsInCompareList[i] = "";
+                    compareIndividualObjectsStatus[i] = false; 
+                    compareIndividualObjectsList[i] = new List<GameObject>(); 
+                }
+            }
         }
     }
 }

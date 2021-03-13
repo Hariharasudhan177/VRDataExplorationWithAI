@@ -24,6 +24,8 @@ namespace CAS
         public Sprite lockSprite;
         public Sprite unLockSprite;
 
+        bool modelsPlaced = false;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -56,38 +58,35 @@ namespace CAS
             GetComponent<TrackedDeviceGraphicRaycaster>().enabled = _visible;
         }
 
-        public void PopulateData(string id)
+        public void DisplayData(string id)
         {
             if (visible)
             {
-                foreach(Transform toDelete in parentContent.transform)
-                {
-                    Destroy(toDelete.gameObject); 
-                }
-
-                Dictionary<string, string> patientRecord = displayPatientDetailsUIManager.manager.dataManager.GetPatientRecordWithId(id);
-
-                foreach (KeyValuePair<string, string> entry in patientRecord)
-                {
-                    GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfData, parentContent.transform);
-                    eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(entry.Key, entry.Value);
-                }
-                displayPatientDetailsUIManager.patientIdListUI.SetSelectedPatientId(id);
-                displayPatientDetailsUIManager.manager.stepManager.HighlightModelForWhichDataIsDisplayed(id); 
+                PopulateData(id); 
             }
+        }
 
+        public void PopulateData(string id)
+        {
+            UnPopulateData();
+
+            Dictionary<string, string> patientRecord = displayPatientDetailsUIManager.manager.dataManager.GetPatientRecordWithId(id);
+
+            foreach (KeyValuePair<string, string> entry in patientRecord)
+            {
+                GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfData, parentContent.transform);
+                eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(entry.Key, entry.Value);
+            }
+            displayPatientDetailsUIManager.patientIdListUI.SetSelectedPatientId(id);
+            displayPatientDetailsUIManager.manager.stepManager.HighlightModelForWhichDataIsDisplayed(id);
         }
 
         public void UnPopulateData()
         {
-            if (visible)
+            foreach (Transform toDelete in parentContent.transform)
             {
-                foreach (Transform toDelete in parentContent.transform)
-                {
-                    Destroy(toDelete.gameObject);
-                }
+                Destroy(toDelete.gameObject);
             }
-
         }
 
         public void OpenClose(bool status)
@@ -131,6 +130,11 @@ namespace CAS
             {
                 lockUnlockImage.sprite = lockSprite;
             }
+        }
+
+        public void Initialize(string patientId)
+        {
+            PopulateData(patientId); 
         }
     }
 }

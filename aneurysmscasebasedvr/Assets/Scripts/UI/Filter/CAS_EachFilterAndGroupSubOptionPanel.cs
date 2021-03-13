@@ -36,6 +36,7 @@ namespace CAS
         public TextMeshProUGUI filterOptionNameTextBox;
         public Image filterOptionStatus;
         public Button addIntegerOptionButton;
+        public Button removeIntegerOptionButton;
         public TextMeshProUGUI applyGroupOrClusterText;
         public TextMeshProUGUI removeGroupOrClusterText;
 
@@ -262,6 +263,26 @@ namespace CAS
             fromToValue.Add(new List<double>());
             fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[0]);
             fromToValue[fromToValue.Count - 1].Add(fromToValueOriginal[1]);
+
+            if(filterAndGroupSubOptionIntegerList.Count == 2){
+                removeIntegerOptionButton.gameObject.SetActive(true); 
+            }
+        }
+
+        public void RemoveLastSubOptionInteger()
+        {
+            if(filterAndGroupSubOptionIntegerList.Count > 1)
+            {
+                CAS_EachFilterAndGroupSubOptionInteger lastEachFilterAndGroupSubOptionInteger = filterAndGroupSubOptionIntegerList[filterAndGroupSubOptionIntegerList.Count - 1];
+                filterAndGroupSubOptionIntegerList.RemoveAt(filterAndGroupSubOptionIntegerList.Count - 1);
+                fromToValue.RemoveAt(fromToValue.Count - 1); 
+                Destroy(lastEachFilterAndGroupSubOptionInteger.gameObject); 
+            }
+
+            if(filterAndGroupSubOptionIntegerList.Count == 1)
+            {
+                removeIntegerOptionButton.gameObject.SetActive(false);
+            }
         }
 
         public void OnChangeClusterCountSlider(float value)

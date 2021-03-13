@@ -38,6 +38,7 @@ namespace CAS {
         public Material modelMaterialN;
         public GameObject environmentN;
         private Color colorN = Color.black;
+        private Color colorSliderScrollN = Color.white;
 
         //Scifi
         public Sprite buttonS;
@@ -203,17 +204,17 @@ namespace CAS {
 
             foreach (CAS_ScrollSwitch scroll in scrolls)
             {
-                scroll.ChangeColor(colorN);
+                scroll.ChangeColor(colorSliderScrollN);
             }
 
             foreach (CAS_SliderBackgroundToSwitch sliderBackgroundToSwitche in sliderBackgroundToSwitches)
             {
-                sliderBackgroundToSwitche.ChangeColor(colorN, buttonN);
+                sliderBackgroundToSwitche.ChangeColor(colorSliderScrollN, buttonN);
             }
 
             foreach (CAS_SliderHandleToSwitch sliderHandleToSwitch in sliderHandleToSwitches)
             {
-                sliderHandleToSwitch.ChangeColor(colorN);
+                sliderHandleToSwitch.ChangeColor(colorSliderScrollN);
             }
 
             foreach (CAS_TabButtonSwitch tabButtonSwitch in tabButtonSwitches)
