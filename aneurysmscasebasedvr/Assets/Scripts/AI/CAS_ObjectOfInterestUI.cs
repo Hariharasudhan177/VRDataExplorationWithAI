@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using System.Data; 
 using TMPro;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
@@ -34,7 +34,7 @@ namespace CAS
             examples.ClearOptions(); 
             dropDownOptions = new List<string>();
 
-            dropDownOptions.Add(""); 
+            dropDownOptions.Add("None"); 
 
             foreach (CAS_ObjectOfInterest example in aiUI.aiManager.GetObjectsOfInterest())
             {
@@ -53,12 +53,12 @@ namespace CAS
                 Destroy(toDelete.gameObject);
             }
 
-            Dictionary<string, string> patientRecord = aiUI.aiManager.manager.dataManager.GetPatientRecordWithId(id);
+            DataTable rowToKeyValuePair = aiUI.aiManager.manager.dataManager.GetPatientRecordWithId(id);
 
-            foreach (KeyValuePair<string, string> entry in patientRecord)
+            foreach (var column in rowToKeyValuePair.Columns)
             {
                 GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfDataPrefab, parentContentForData.transform);
-                eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(entry.Key, entry.Value);
+                eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(column.ToString(), rowToKeyValuePair.Rows[0][column.ToString()].ToString());
             }
         }
 

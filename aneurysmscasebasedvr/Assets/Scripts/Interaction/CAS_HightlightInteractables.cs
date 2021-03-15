@@ -76,6 +76,7 @@ namespace CAS
 
         void DeHighlightOnHoverExit(XRBaseInteractable interactable)
         {
+            if (interactable == null) return; 
             //manager.displayPatientDetailsUIManager.showDataUI.UnPopulateData();
             if (interactable.GetComponent<CAS_PrepareModels>())
             {

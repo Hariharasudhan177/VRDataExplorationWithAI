@@ -59,7 +59,7 @@ namespace CAS
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
             model.transform.GetChild(0).gameObject.AddComponent<BoundBox>();
             model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = GetComponentInParent<CAS_StepManager>().boundingBoxLineMaterial;
-            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = true; 
+            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = false; 
             model.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().enabled = false;
@@ -88,7 +88,7 @@ namespace CAS
         /// </summary>
         void SwitchCollider()
         {
-            if(Vector3.Distance(transform.position, Camera.main.transform.position) < 2f)
+            if(Vector3.Distance(transform.position, Camera.main.transform.position) < 1f)
             {
                 transform.GetChild(0).GetComponent<BoxCollider>().enabled = false;
                 transform.GetChild(0).GetComponent<MeshCollider>().enabled = true;

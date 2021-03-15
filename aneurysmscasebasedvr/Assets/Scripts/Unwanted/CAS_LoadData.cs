@@ -126,7 +126,7 @@ namespace CAS
                         allModelsInformation.Add(row.ItemArray[1].ToString(), matchingModel);
                     }                    
 
-                    matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1; 
+                    //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1; 
                     numberOfRowsWithValidModels++;
                 }
                 
@@ -140,7 +140,7 @@ namespace CAS
                             {
                                 allModelsInformation.Add(row.ItemArray[1].ToString(), matchingModel);
                             }
-                            matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                            //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
                             numberOfRowsWithValidModels++; 
                             break; 
                         }
@@ -164,10 +164,10 @@ namespace CAS
 
             foreach (Transform child in step1Parent.transform)
             {
-                if (child.GetComponent<CAS_PrepareModels>().dataAvailable < 0)
+                /*if (child.GetComponent<CAS_PrepareModels>().dataAvailable < 0)
                 {
                     UnityEngine.Debug.Log(child.name);
-                }
+                }*/
             }
 
             //dataManager.stepManager.allModelsInformation = allModelsInformation; 

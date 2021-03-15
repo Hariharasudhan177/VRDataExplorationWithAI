@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq; 
 
 namespace CAS
 {
@@ -39,7 +40,7 @@ namespace CAS
 
         public float limitSize = 0.75f;
 
-        private void Awake()
+        public void InitializeAfterDataRead()
         {
             allModelsInformationByRecordName = new Dictionary<string, GameObject>();
             allModelsInformationByGameObjectName = new Dictionary<string, GameObject>();
@@ -50,7 +51,7 @@ namespace CAS
             modelsParent = transform.gameObject;
             originalScale = transform.localScale;
 
-            ChangeMeshIfMoreTriangles(); 
+            ChangeMeshIfMoreTriangles();
 
             InitialseStepParents();
         }
@@ -70,17 +71,6 @@ namespace CAS
                 }
             }
         }
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
 
         //Initialisation 
         public void InitialseStepParents()
@@ -90,6 +80,7 @@ namespace CAS
 
             List<GameObject> models = GetInitialModels();
             totalInitialNumberOfModels = models.Count;
+            Debug.Log(models.Count);
 
             CAS_EachStepManager stepParent = CreateNewStep();
             stepParent.SetModelsInitial(models);
@@ -231,8 +222,11 @@ namespace CAS
 
         public void RemoveGroupByModelsToEditLayers()
         {
-            foreach (string value in allModelsInformationByRecordName.Keys)
+
+            foreach (string value in allModelsInformationByRecordName.Keys.ToList())
             {
+
+                if (value == null) continue; 
                 allModelsInformationByRecordName[value].GetComponentInChildren<CAS_ContolModel>().UnSetGroupByColour();
             }           
         }

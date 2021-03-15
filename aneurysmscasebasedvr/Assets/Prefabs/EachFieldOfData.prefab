@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4836719157559321726}
   - component: {fileID: 4797120430889857807}
   - component: {fileID: 2522375233652343651}
-  - component: {fileID: 2709731607154954150}
+  - component: {fileID: 8476048321237136840}
   m_Layer: 0
   m_Name: ColumnName
   m_TagString: Untagged
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2709731607154954150
+--- !u!114 &8476048321237136840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 6131092687751647691}
   - component: {fileID: 7219921166855236510}
   - component: {fileID: 1002990302467030754}
-  - component: {fileID: 3067826194987649901}
+  - component: {fileID: 8052724822728717972}
   m_Layer: 0
   m_Name: ColumnValue
   m_TagString: Untagged
@@ -281,7 +281,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3067826194987649901
+--- !u!114 &8052724822728717972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Data;
 using System.Linq;
 using System;
-using System.Globalization;
 
 namespace CAS
 {
@@ -45,6 +43,9 @@ namespace CAS
             new Color(0.749f, 0.937f, 0.270f, 1f), new Color(0.333f, 0.419f, 0.184f, 1f), new Color(0.858f, 0.439f, 0.576f, 1f),
             new Color(0.854f, 0.647f, 0.125f, 1f), new Color(0.184f, 0.309f, 0.309f, 1f)};
 
+        string modelWithMultipleRecords = "";
+        int modelWithMultipleRecordsCount = 0; 
+
         public void Start()
         {
             string path = Application.streamingAssetsPath + inputPath;
@@ -66,6 +67,8 @@ namespace CAS
 
         }
 
+
+        //model present was converted from bool to numeric but not in database 
         void ConvertCSVToDatatable(string data)
         {
 
@@ -188,18 +191,24 @@ namespace CAS
                         newRow["morphoPresent"] = false; 
                     }
 
-                    bool modelPresent = CheckIfCorrespondingModelIsPresent(content[0]);
-                    newRow["modelPresent"] = modelPresent;
-                    if (!modelPresent)
+                    newRow["notExample"] = true;
+
+                    int modelPresent = CheckIfCorrespondingModelIsPresent(content[0]);
+                    newRow[patientDetails.Columns[0 + 1]] = content[0] + "_" + modelPresent; 
+
+                    if (modelPresent == -1)
                     {
+                        newRow["modelPresent"] = false;
+
                         dataWithoutModel += content[0] + " ";
-                        numberOfDataWithoutModel++; 
+                        numberOfDataWithoutModel++;
                     }
 
-                    newRow["notExample"] = true; 
-                    if (modelPresent)
+                    if (modelPresent != -1)
                     {
-                        if(exampleIndex < 2)
+                        newRow["modelPresent"] = true;
+
+                        if (exampleIndex < 2)
                         {
                             bool qualifiedForExample = true;
                             
@@ -214,7 +223,8 @@ namespace CAS
                             if (qualifiedForExample)
                             {
                                 newRow["notExample"] = false;
-                                GameObject matchingModel = GameObject.Find(content[0]);
+                                GameObject matchingModel = GameObject.Find(content[0] + "_" + modelPresent);
+                                allModelsInformation.Remove(content[0] + "_" + modelPresent); 
                                 matchingModel.AddComponent<CAS_ObjectOfInterest>(); 
                                 objectsOfInterest.Add(matchingModel.GetComponent<CAS_ObjectOfInterest>());
                                 matchingModel.transform.parent = manager.aiManager.transform;
@@ -231,13 +241,14 @@ namespace CAS
                 index++;
             }
 
+            manager.stepManager.InitializeAfterDataRead(); 
             manager.aiManager.SetObjectsOfInterest(objectsOfInterest); 
             manager.stepManager.SetAllModelsInformation(allModelsInformation);
 
             Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
 
             //PrintDataMissingInformation 
-            int numberOfmodelsForWhichDataIsMissing = 0;
+            /*int numberOfmodelsForWhichDataIsMissing = 0;
             string modelsForWhichDataIsMissing = "";
             foreach (Transform child in manager.stepManager.stepParents[0].transform)
             {
@@ -246,50 +257,94 @@ namespace CAS
                     modelsForWhichDataIsMissing += child.name + " ";
                     numberOfmodelsForWhichDataIsMissing++;
                 }
-            }
+            }*/
 
-            Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
+            //Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
+            Debug.Log("There are " + patientDetails.Rows.Count + " rows of data ");
+            Debug.Log("There are " + manager.stepManager.stepParents[0].transform.childCount + " model present ");
+            Debug.Log("There are " + modelWithMultipleRecordsCount + " models for which multiple records present and they are " +  modelWithMultipleRecords); 
 
             manager.filterAndGroupUIManager.PopulateFilterOptions();
             manager.displayPatientDetailsUIManager.PopulatePatientDisplay();
         }
 
-        public bool CheckIfCorrespondingModelIsPresent(string patientId)
+        public int CheckIfCorrespondingModelIsPresent(string patientId)
         {
-            bool modelPresent = false; 
+            int modelPresent = -1; 
 
             GameObject matchingModel = GameObject.Find(patientId);
 
+            if(matchingModel == null)
+            {
+                matchingModel = GameObject.Find(patientId + "_" + 0);
+            }
+
             if (matchingModel != null)
             {
-                if (!allModelsInformation.ContainsKey(patientId))
+                modelPresent = 0;
+
+                if (!allModelsInformation.ContainsKey(patientId + "_" + modelPresent))
                 {
-                    allModelsInformation.Add(patientId, matchingModel);
+                    matchingModel.name = patientId + "_" + modelPresent;
+                    allModelsInformation.Add(patientId + "_" + modelPresent, matchingModel);
                 }
-                matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
-                modelPresent = true; 
+                else
+                {
+                    modelPresent = CheckIfModelAlreadyMapped(patientId, 1);
+                    GameObject instantiatedModel = Instantiate(matchingModel, matchingModel.transform.parent);
+                    instantiatedModel.name = patientId + "_" + modelPresent;
+
+                    modelWithMultipleRecords += patientId + " ";
+                    modelWithMultipleRecordsCount++;
+                    allModelsInformation.Add(patientId + "_" + modelPresent, instantiatedModel);
+                }
+                //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
             }
 
 
             if (matchingModel == null)
             {
-                foreach (Transform child in manager.stepManager.stepParents[0].transform)
+                foreach (Transform child in manager.stepManager.transform)
                 {
                     if (child.name.Contains(patientId))
                     {
+                        modelPresent = 0;
                         matchingModel = child.gameObject;
-                        if (!allModelsInformation.ContainsKey(patientId))
+
+                        if (!allModelsInformation.ContainsKey(patientId + "_" + modelPresent))
                         {
-                            allModelsInformation.Add(patientId, matchingModel);
+                            matchingModel.name = patientId + "_" + modelPresent;
+                            allModelsInformation.Add(patientId + "_" + modelPresent, matchingModel);
                         }
-                        matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
-                        modelPresent = true; 
+                        else
+                        {
+                            modelPresent = CheckIfModelAlreadyMapped(patientId, 1);
+                            GameObject instantiatedModel = Instantiate(matchingModel, matchingModel.transform.parent);
+                            instantiatedModel.name = patientId + "_" + modelPresent;
+
+                            modelWithMultipleRecords += patientId + " ";
+                            modelWithMultipleRecordsCount++;
+                            allModelsInformation.Add(patientId + "_" + modelPresent, instantiatedModel);
+                        }
+                        //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
                         break;
                     }
                 }
             }
 
             return modelPresent; 
+        }
+
+        public int CheckIfModelAlreadyMapped(string patientId, int numberOfTimesMapped)
+        {
+            if (allModelsInformation.ContainsKey(patientId + "_" + numberOfTimesMapped))
+            {
+                return CheckIfModelAlreadyMapped(patientId, numberOfTimesMapped + 1);
+            }
+            else
+            {
+                return numberOfTimesMapped; 
+            }
         }
 
         public DataTable GetPatientDetails()
@@ -394,7 +449,11 @@ namespace CAS
             List<string> idList = new List<string>();
 
             string[] requiredColumn = { "id" };
+
+            string filter = "modelPresent = true";
+
             DataView view = new DataView(patientDetails);
+            view.RowFilter = filter; 
             DataTable uniqueIdTable = view.ToTable(true, requiredColumn);
 
             foreach (DataRow row in uniqueIdTable.Rows)
@@ -428,7 +487,7 @@ namespace CAS
 
 
         //Entire row from patient id 
-        public Dictionary<string, string> GetPatientRecordWithId(string id)
+        public DataTable GetPatientRecordWithId(string id)
         {
             List<string> columnNames = new List<string>();
             columnNames.Add("id");
@@ -448,15 +507,7 @@ namespace CAS
 
             DataTable filteredTable = filteredView.ToTable(false);
 
-            //returning row as key value pair 
-            Dictionary<string, string> rowToKeyValuePair = new Dictionary<string, string>();
-            foreach(var column in filteredTable.Columns)
-            {
-                rowToKeyValuePair.Add(column.ToString(), filteredTable.Rows[0][column.ToString()].ToString()); 
-            }
-
-            return rowToKeyValuePair;
-
+            return filteredTable; 
         }
 
         //Entire row from patient id 

@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 using UnityEngine.UI;
+using System.Data;
 using System.Linq; 
 
 namespace CAS
@@ -25,6 +25,8 @@ namespace CAS
         public Sprite unLockSprite;
 
         bool modelsPlaced = false;
+
+        List<CAS_EachFieldOfData> fieldsOfData;
 
         // Start is called before the first frame update
         void Start()
@@ -68,24 +70,29 @@ namespace CAS
 
         public void PopulateData(string id)
         {
-            UnPopulateData();
+            DataTable rowToKeyValuePair = displayPatientDetailsUIManager.manager.dataManager.GetPatientRecordWithId(id);
 
-            Dictionary<string, string> patientRecord = displayPatientDetailsUIManager.manager.dataManager.GetPatientRecordWithId(id);
+            if (fieldsOfData == null) PopulateFields(rowToKeyValuePair); 
 
-            foreach (KeyValuePair<string, string> entry in patientRecord)
+            int index = 0; 
+            foreach (var column in rowToKeyValuePair.Columns)
             {
-                GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfData, parentContent.transform);
-                eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(entry.Key, entry.Value);
+                fieldsOfData[index].SetColumnNameAndFieldData(column.ToString(), rowToKeyValuePair.Rows[0][column.ToString()].ToString());
+                index++; 
             }
+
             displayPatientDetailsUIManager.patientIdListUI.SetSelectedPatientId(id);
             displayPatientDetailsUIManager.manager.stepManager.HighlightModelForWhichDataIsDisplayed(id);
         }
 
-        public void UnPopulateData()
+        public void PopulateFields(DataTable rowToKeyValuePair)
         {
-            foreach (Transform toDelete in parentContent.transform)
+            fieldsOfData = new List<CAS_EachFieldOfData>(); 
+
+            foreach (var column in rowToKeyValuePair.Columns)
             {
-                Destroy(toDelete.gameObject);
+                GameObject eachFieldOfDataInstantiated = Instantiate(eachFieldOfData, parentContent.transform);
+                fieldsOfData.Add(eachFieldOfDataInstantiated.GetComponent<CAS_EachFieldOfData>());
             }
         }
 

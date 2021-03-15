@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.UI;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace CAS
 {
