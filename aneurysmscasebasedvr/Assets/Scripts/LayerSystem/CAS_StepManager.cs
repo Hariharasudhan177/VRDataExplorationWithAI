@@ -35,8 +35,8 @@ namespace CAS
 
         public Mesh defaultMesh;
 
-        [Range(50000, 800000)]
-        public int thresholdTriangleCountForCubeConversion = 50000;
+        [Range(100, 800000)]
+        public int thresholdTriangleCountForCubeConversion = 2000;
 
         public float limitSize = 0.75f;
 

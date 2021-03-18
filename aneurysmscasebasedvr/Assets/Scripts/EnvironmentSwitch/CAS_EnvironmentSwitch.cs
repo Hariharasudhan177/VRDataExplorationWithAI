@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; 
 using TMPro;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 namespace CAS {
     public class CAS_EnvironmentSwitch : MonoBehaviour
@@ -22,12 +23,13 @@ namespace CAS {
         private List<CAS_TextToSwitch> texts;
         private List<CAS_ScrollSwitch> scrolls; 
         private List<CAS_ContolModel> models;
+        private List<CAS_ModelIdentifier> modelSwitches;
         private List<CAS_SliderBackgroundToSwitch> sliderBackgroundToSwitches;
         private List<CAS_SliderHandleToSwitch> sliderHandleToSwitches;
         private List<CAS_TabGroupSwitch> tabGroupSwitches;
         private List<CAS_TabButtonSwitch> tabButtonSwitches;
-        private List<CAS_InstantiatedTextToSwitch> instantiatedTextToSwitches; 
-
+        private List<CAS_InstantiatedTextToSwitch> instantiatedTextToSwitches;
+        private List<Camera> cameras; 
         //Normal 
         public Sprite buttonN;
         public Sprite buttonIdleN;
@@ -39,6 +41,9 @@ namespace CAS {
         public GameObject environmentN;
         private Color colorN = Color.black;
         private Color colorSliderScrollN = Color.white;
+
+        public Camera oculusCamera;
+        public Camera viveCamera; 
 
         //Scifi
         public Sprite buttonS;
@@ -95,7 +100,9 @@ namespace CAS {
         {
             if (!initialized) Initialize(); 
 
-            Camera.main.clearFlags = CameraClearFlags.Skybox; 
+            Camera.main.clearFlags = CameraClearFlags.Skybox;
+            oculusCamera.clearFlags = CameraClearFlags.Skybox;
+            viveCamera.clearFlags = CameraClearFlags.Skybox; 
 
             foreach (CAS_ButtonToSwitch buttonToSwitch in buttons)
             {
@@ -132,7 +139,12 @@ namespace CAS {
                 controlModel.ChangeMaterialForSwitch(modelMaterialS, "_Edgecolor");
             }
 
-            foreach(CAS_ScrollSwitch scroll in scrolls)
+            foreach (CAS_ModelIdentifier modelSwitch in modelSwitches)
+            {
+                modelSwitch.SetToSciFi();
+            }
+
+            foreach (CAS_ScrollSwitch scroll in scrolls)
             {
                 scroll.ChangeColor(colorS); 
             }
@@ -166,6 +178,8 @@ namespace CAS {
             if (!initialized) Initialize();
 
             Camera.main.clearFlags = CameraClearFlags.SolidColor;
+            oculusCamera.clearFlags = CameraClearFlags.SolidColor;
+            viveCamera.clearFlags = CameraClearFlags.SolidColor;
 
             foreach (CAS_ButtonToSwitch buttonToSwitch in buttons)
             {
@@ -200,6 +214,11 @@ namespace CAS {
             foreach (CAS_ContolModel controlModel in models)
             {
                 controlModel.ChangeMaterialForSwitch(modelMaterialN, "_Color");
+            }
+
+            foreach (CAS_ModelIdentifier modelSwitch in modelSwitches)
+            {
+                modelSwitch.SetToNormal();
             }
 
             foreach (CAS_ScrollSwitch scroll in scrolls)
@@ -239,6 +258,7 @@ namespace CAS {
             insideNormalPanels = FindObjectsOfTypeAll<CAS_InsidePanelNormalToSwitch>();
             texts = FindObjectsOfTypeAll<CAS_TextToSwitch>();
             models = FindObjectsOfTypeAll<CAS_ContolModel>();
+            modelSwitches = FindObjectsOfTypeAll<CAS_ModelIdentifier>();
             scrolls = FindObjectsOfTypeAll<CAS_ScrollSwitch>();
             sliderBackgroundToSwitches = FindObjectsOfTypeAll<CAS_SliderBackgroundToSwitch>();
             sliderHandleToSwitches = FindObjectsOfTypeAll<CAS_SliderHandleToSwitch>();

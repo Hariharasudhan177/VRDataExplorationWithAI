@@ -11,7 +11,6 @@ namespace CAS
     [ExecuteInEditMode]
     public class CAS_PrepareModels : MonoBehaviour
     {
-        public int dataAvailable = -1; 
         public void Prepare(GameObject model, Material material, float limitSize)
         {
             //Reduce scale to fit to limit size 

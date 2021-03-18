@@ -25,7 +25,16 @@ namespace CAS
         public void SetColumnNameAndFieldData(string columnName, string fieldData)
         {
             columnNameText.text = columnName;
-            fieldDataText.text = fieldData;
+
+            if(fieldData != "-1")
+            {
+                fieldDataText.text = fieldData;
+            }
+            else
+            {
+                fieldDataText.text = "N/A";
+            }
+
         }
     }
 }

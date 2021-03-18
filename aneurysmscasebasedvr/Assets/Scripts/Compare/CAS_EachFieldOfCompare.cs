@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI; 
 
 namespace CAS
 {
@@ -13,7 +12,14 @@ namespace CAS
 
         public void SetContent(string value)
         {
-            content.text = value; 
+            if(value != "-1")
+            {
+                content.text = value;
+            }
+            else
+            {
+                content.text = "N/A"; 
+            }
         }
     }
 }

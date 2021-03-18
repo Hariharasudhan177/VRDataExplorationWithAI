@@ -44,7 +44,7 @@ namespace CAS
             Destroy(meshObject.GetComponent<BoxCollider>());
             meshObject.AddComponent<BoxCollider>();
             meshObject.layer = 11;
-            comparedModel.GetComponentInChildren<MeshRenderer>().material = compareManager.manager.stepManager.defaultMaterial;
+            //comparedModel.GetComponentInChildren<MeshRenderer>().material = compareManager.manager.stepManager.defaultMaterial;
 
             //if (compareCamera == null) compareCamera = GetComponentInChildren<Camera>();
             //Debug.Log(GetComponentInChildren<BoxCollider>().bounds.center);

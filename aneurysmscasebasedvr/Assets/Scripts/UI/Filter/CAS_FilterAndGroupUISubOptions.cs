@@ -29,7 +29,10 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                RemoveAllFilters(); 
+            }
         }
 
         public void PopulateFilterOptions()
@@ -74,6 +77,15 @@ namespace CAS
 
             GetComponent<CanvasGroup>().interactable = status;
             GetComponent<TrackedDeviceGraphicRaycaster>().enabled = status;
+        }
+
+        public void RemoveAllFilters()
+        {
+            Debug.Log(filterSubOptionPanelsDict.Keys.ToList().Count); 
+            foreach (string key in filterSubOptionPanelsDict.Keys.ToList())
+            {
+                filterSubOptionPanelsDict[key].GetComponent<CAS_EachFilterAndGroupSubOptionPanel>().RemoveFilter(); 
+            }
         }
     }
 }

@@ -61,7 +61,15 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                filterAndGroupManager.AddFilter("sex", new List<string> {"M"}, new List<List<double>>(), true); 
+            }
 
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                filterAndGroupManager.AddFilter("aneurysmType", new List<string> { "ter" }, new List<List<double>>(), true);
+            }
         }
 
         public void PopulateFilterOptions()
@@ -149,14 +157,12 @@ namespace CAS
 
                 foreach(List<double> subFromToValue in fromToValue)
                 {
-                    if ((subFromToValue[0] != fromToValueOriginal[0]) || (subFromToValue[1] != fromToValueOriginal[1]))
+                    if (((float)subFromToValue[0] != (float)fromToValueOriginal[0]) || ((float)subFromToValue[1] != (float)fromToValueOriginal[1]))
                     {
                         fromToValueSelected.Add(subFromToValue);
                         blankFilter = false;
                     }
                 }
-
-                Debug.Log(fromToValueSelected.Count); 
 
                 if (filterApplied)
                 {

@@ -75,7 +75,7 @@ namespace CAS
 
         public void Initialize()
         {
-            List<string> coloumnNames = manager.dataManager.GetAllColumnNames();
+            List<string> coloumnNames = manager.dataManager.GetAllColumnNamesForCompare();
             gridLayout.constraintCount = initialColumns + coloumnNames.Count;
 
             Instantiate(eachFieldHeading, parentContent).GetComponent<CAS_EachFieldOfCompare>().SetContent("");

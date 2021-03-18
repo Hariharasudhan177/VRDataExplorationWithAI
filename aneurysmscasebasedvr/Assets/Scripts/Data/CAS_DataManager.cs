@@ -248,21 +248,21 @@ namespace CAS
             Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
 
             //PrintDataMissingInformation 
-            /*int numberOfmodelsForWhichDataIsMissing = 0;
+            int numberOfmodelsForWhichDataIsMissing = 0;
             string modelsForWhichDataIsMissing = "";
             foreach (Transform child in manager.stepManager.stepParents[0].transform)
             {
-                if (child.GetComponent<CAS_PrepareModels>().dataAvailable < 0)
+                if (child.GetComponent<CAS_ModelIdentifier>().dataAvailable < 0)
                 {
                     modelsForWhichDataIsMissing += child.name + " ";
                     numberOfmodelsForWhichDataIsMissing++;
                 }
-            }*/
+            }
 
-            //Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
+            Debug.Log("There are " + numberOfmodelsForWhichDataIsMissing + " for which data is misssing and they are " + modelsForWhichDataIsMissing);
             Debug.Log("There are " + patientDetails.Rows.Count + " rows of data ");
             Debug.Log("There are " + manager.stepManager.stepParents[0].transform.childCount + " model present ");
-            Debug.Log("There are " + modelWithMultipleRecordsCount + " models for which multiple records present and they are " +  modelWithMultipleRecords); 
+            Debug.Log("There are " + modelWithMultipleRecordsCount + " models for which multiple records present and they are " +  modelWithMultipleRecords);
 
             manager.filterAndGroupUIManager.PopulateFilterOptions();
             manager.displayPatientDetailsUIManager.PopulatePatientDisplay();
@@ -298,7 +298,7 @@ namespace CAS
                     modelWithMultipleRecordsCount++;
                     allModelsInformation.Add(patientId + "_" + modelPresent, instantiatedModel);
                 }
-                //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                matchingModel.GetComponent<CAS_ModelIdentifier>().dataAvailable += 1;
             }
 
 
@@ -326,7 +326,7 @@ namespace CAS
                             modelWithMultipleRecordsCount++;
                             allModelsInformation.Add(patientId + "_" + modelPresent, instantiatedModel);
                         }
-                        //matchingModel.GetComponent<CAS_PrepareModels>().dataAvailable += 1;
+                        matchingModel.GetComponent<CAS_ModelIdentifier>().dataAvailable += 1;
                         break;
                     }
                 }
@@ -443,6 +443,28 @@ namespace CAS
             return coloumnNames; 
         }
 
+        //Column type
+        public List<string> GetAllColumnNamesForCompare()
+        {
+            DataView filteredView = new DataView(patientDetails);
+            DataTable filteredTable = filteredView.ToTable();
+
+            if (filteredTable.Columns.Contains("manualAddedOthersFromCode")) filteredTable.Columns.Remove("manualAddedOthersFromCode");
+            filteredTable.Columns.Remove("index");
+            filteredTable.Columns.Remove("modelPresent");
+            filteredTable.Columns.Remove("morphoPresent");
+            filteredTable.Columns.Remove("notExample");
+
+            List<string> coloumnNames = new List<string>();
+
+            foreach (DataColumn coloumn in filteredTable.Columns)
+            {
+                coloumnNames.Add(coloumn.ColumnName.ToString());
+            }
+
+            return coloumnNames;
+        }
+
         //Distinct values from providing column names 
         public List<string> GetUniquePatientIds()
         {
@@ -507,6 +529,12 @@ namespace CAS
 
             DataTable filteredTable = filteredView.ToTable(false);
 
+            if (filteredTable.Columns.Contains("manualAddedOthersFromCode")) filteredTable.Columns.Remove("manualAddedOthersFromCode");
+            filteredTable.Columns.Remove("index");
+            filteredTable.Columns.Remove("modelPresent");
+            filteredTable.Columns.Remove("morphoPresent");
+            filteredTable.Columns.Remove("notExample");
+
             return filteredTable; 
         }
 
@@ -530,6 +558,13 @@ namespace CAS
             }
 
             DataTable filteredTable = filteredView.ToTable(false);
+
+            if(filteredTable.Columns.Contains("manualAddedOthersFromCode")) filteredTable.Columns.Remove("manualAddedOthersFromCode");
+            filteredTable.Columns.Remove("index"); 
+            filteredTable.Columns.Remove("modelPresent");
+            filteredTable.Columns.Remove("morphoPresent");
+            filteredTable.Columns.Remove("notExample");
+
 
             //returning row as key value pair 
             List<string> listOfRowValues = new List<string>();
@@ -698,6 +733,7 @@ namespace CAS
         public Dictionary<string, List<string>> GetPatientIdsGroupBy(List<string> columnNamesString, List<List<string>> valuesString, List<string> columnNamesInteger, List<List<List<double>>> valuesInteger, string columnNamesGroupBy, int clustersCount)
         {
             DataView filteredView = QueryBuilderStringAndIntegerGroupBy(columnNamesString, valuesString, columnNamesInteger, valuesInteger);
+
             if (filteredView == null)
             {
                 return new Dictionary<string, List<string>>();
@@ -705,7 +741,7 @@ namespace CAS
 
             string[] requiredColumn = { "id", columnNamesGroupBy };
 
-            DataTable filteredTable = filteredView.ToTable(true, requiredColumn);
+            DataTable filteredTable = filteredView.ToTable(false, requiredColumn);
 
             DataView filteredViewSorted = filteredTable.DefaultView;
             filteredViewSorted.Sort = columnNamesGroupBy + " desc";
@@ -735,8 +771,11 @@ namespace CAS
 
             List<string> filterIdsGroupedByIds = new List<string>();
 
+            int index = 0;
             foreach (DataRow row in datatableSorted.Rows)
             {
+                Debug.Log(index);
+                index++;
                 previousFilterOption = currentFilterOption;
                 currentFilterOption = row[columnNamesGroupBy].ToString();
 
@@ -752,9 +791,10 @@ namespace CAS
                     if (previousFilterOption != "")
                     {
                         filterIdsGroupBy.Add(previousFilterOption, filterIdsGroupedByIds);
-                        filterIdsGroupedByIds = new List<string>();
-                        filterIdsGroupedByIds.Add(row["id"].ToString());
                     }
+
+                    filterIdsGroupedByIds = new List<string>();
+                    filterIdsGroupedByIds.Add(row["id"].ToString());
                 }
             }
 
@@ -1058,13 +1098,16 @@ namespace CAS
             {
                 filter += " AND (modelPresent = true) AND (notExample = true)";
             }
+            else
+            {
+                filter += "(modelPresent = true) AND (notExample = true)";
+            }
 
             Debug.Log(filter);
 
             //Creating a view for filter
             DataView filteredView = new DataView(patientDetails);
             filteredView.RowFilter = filter;
-
             return filteredView;
         }
 
