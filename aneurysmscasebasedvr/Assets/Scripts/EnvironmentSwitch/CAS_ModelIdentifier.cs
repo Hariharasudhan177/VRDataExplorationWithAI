@@ -20,11 +20,13 @@ namespace CAS
 
         public void SetToNormal()
         {
+            if (meshFilter == null) meshFilter = GetComponentInChildren<MeshFilter>();
             meshFilter.mesh = normalMesh; 
         }
 
         public void SetToSciFi()
         {
+            if(meshFilter == null) meshFilter = GetComponentInChildren<MeshFilter>();
             meshFilter.mesh = fresnelMesh;
         }
     }

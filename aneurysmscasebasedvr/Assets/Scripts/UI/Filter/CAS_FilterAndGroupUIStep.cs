@@ -43,6 +43,8 @@ namespace CAS
         int clustersCount =  4; 
         bool groupingWithFilter = true;
 
+        string sortByKey = "";
+
         bool filterAndGroupUIVisibilityStatus = true; 
 
         private void Awake()
@@ -139,6 +141,11 @@ namespace CAS
             {
                 ApplyGrouping(groupedByKey, clustersCount);
             }
+
+            if (sortByKey != "")
+            {
+                ApplySorting(sortByKey);
+            }
         }
 
         public void CreateAndEditFilterSteps()
@@ -213,6 +220,8 @@ namespace CAS
         public void ApplyGrouping(string filterKey, int count)
         {
             groupedByKey = filterKey;
+            sortByKey = ""; 
+
             clustersCount = count; 
             //filterAndGroupUIManager.manager.stepManager.SetGroupByModelsToEditLayers(GetGroupedByPatiendIds(filtersApplied, filterKey));
             //For now removing the filtering from grouping. Use the above code if needed later
@@ -233,9 +242,21 @@ namespace CAS
             groupingOptionName.text = filterKey;
         }
 
+        public void ApplySorting(string sortKey)
+        {
+            sortByKey = sortKey;
+            groupedByKey = ""; 
+
+            SortByStructure sorted = filterAndGroupUIManager.manager.dataManager.GetSortedBy(sortByKey);
+
+            //Set group colours to models 
+            filterAndGroupUIManager.manager.stepManager.SetSortByModelsToEditLayers(sorted, groupingWithFilter);
+        }
+
         public void RemoveGrouping()
         {
             groupedByKey = "";
+            sortByKey = "";
             filterAndGroupUIManager.manager.stepManager.RemoveGroupByModelsToEditLayers();
             SetGroupingDetails(new Dictionary<string, List<string>>()); 
             groupingOptionName.text = ""; 
@@ -255,6 +276,11 @@ namespace CAS
             if (groupedByKey != "")
             {
                 ApplyGrouping(groupedByKey, clustersCount);
+            }
+
+            if(sortByKey != "")
+            {
+                ApplySorting(sortByKey);
             }
         }
 
@@ -332,6 +358,16 @@ namespace CAS
             Debug.Log(doubleFilterKeys.Count);
 
             return (stringFilterKeys, stringFilterValues, doubleFilterKeys, doubleFilterValues); 
+        }
+
+        public struct SortByStructure
+        {
+            public bool isString;
+            public List<string> patientIds;
+            public List<string> stringValues;
+            public List<double> doubleValues;
+            public double min;
+            public double max; 
         }
     }
 }

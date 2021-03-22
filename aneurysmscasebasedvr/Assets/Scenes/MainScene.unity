@@ -23364,7 +23364,7 @@ MonoBehaviour:
   stepParents: []
   totalInitialNumberOfModels: 0
   defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  thresholdTriangleCountForCubeConversion: 100
+  thresholdTriangleCountForCubeConversion: 800000
   limitSize: 0.075
 --- !u!4 &839727231
 Transform:

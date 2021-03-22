@@ -774,7 +774,6 @@ namespace CAS
             int index = 0;
             foreach (DataRow row in datatableSorted.Rows)
             {
-                Debug.Log(index);
                 index++;
                 previousFilterOption = currentFilterOption;
                 currentFilterOption = row[columnNamesGroupBy].ToString();
@@ -1241,6 +1240,63 @@ namespace CAS
             filteredView.RowFilter = filter;
 
             return filteredView;
+        }
+
+        public CAS_FilterAndGroupUIStep.SortByStructure GetSortedBy(string columnNameSortBy)
+        {
+            CAS_FilterAndGroupUIStep.SortByStructure sorted = new CAS_FilterAndGroupUIStep.SortByStructure();
+
+            string filter = "(modelPresent = true) AND (notExample = true)"; 
+
+            DataView filterView = new DataView(patientDetails);
+            filterView.RowFilter = filter; 
+            string[] requiredColumn = { "id", columnNameSortBy };
+            DataTable filteredTable = filterView.ToTable(false, requiredColumn);
+
+            DataView filteredViewSorted = filteredTable.DefaultView;
+            filteredViewSorted.Sort = columnNameSortBy + " desc";
+            DataTable datatableSorted = filteredViewSorted.ToTable();
+
+            Type filterOptionDataType = GetColumnType(columnNameSortBy);
+
+            if (filterOptionDataType == System.Type.GetType("System.Double"))
+            {
+                sorted.isString = false;
+            }
+            else
+            {
+                sorted.isString = true;
+            }
+
+            List<string> patientIds = new List<string>();
+            List<string> stringValues = new List<string>();
+            List<double> doubleValues = new List<double>(); 
+
+            foreach (DataRow row in datatableSorted.Rows)
+            {
+                patientIds.Add(row["id"].ToString());
+
+                if (filterOptionDataType == System.Type.GetType("System.Double"))
+                {
+                    doubleValues.Add(double.Parse(row[columnNameSortBy].ToString()));
+                }
+                else
+                {
+                    stringValues.Add(row[columnNameSortBy].ToString());
+                }
+            }
+
+            sorted.patientIds = patientIds;
+            sorted.stringValues = stringValues;
+            sorted.doubleValues = doubleValues;
+
+            if (!sorted.isString)
+            {
+                sorted.min = doubleValues.Min();
+                sorted.max = doubleValues.Max(); 
+            }
+
+            return sorted; 
         }
     }
 }

@@ -63,12 +63,22 @@ namespace CAS
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
-                filterAndGroupManager.AddFilter("sex", new List<string> {"M"}, new List<List<double>>(), true); 
+                filterAndGroupManager.ApplySorting("age");
+            }
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {               
+                filterAndGroupManager.AddFilter("ruptureStatus", new List<string>() {"U"}, new List<List<double>>(), true);
             }
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                filterAndGroupManager.AddFilter("aneurysmType", new List<string> { "ter" }, new List<List<double>>(), true);
+                filterAndGroupManager.ChangeFilter("ruptureStatus", new List<string>() {}, new List<List<double>>(), true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                filterAndGroupManager.ApplyGrouping("ruptureStatus", 4);
             }
         }
 
@@ -255,6 +265,19 @@ namespace CAS
         }
 
         public void RemoveGrouping()
+        {
+            filterAndGroupManager.RemoveGrouping();
+        }
+
+        public void ApplySorting()
+        {
+            //To Remove existing grouping 
+            RemoveGrouping();
+
+            filterAndGroupManager.ApplySorting(gameObject.name);
+        }
+
+        public void RemoveSorting()
         {
             filterAndGroupManager.RemoveGrouping();
         }

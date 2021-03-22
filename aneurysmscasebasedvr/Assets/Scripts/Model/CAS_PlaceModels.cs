@@ -89,6 +89,7 @@ namespace CAS
             //Looping through each child attached to the parent model object 
             foreach (Transform child in transform)
             {
+                bool firstTime = false;
                 //Prepare model 
                 if (!child.GetComponent<CAS_PrepareModels>())
                 {
@@ -98,6 +99,7 @@ namespace CAS
 
                 if (!child.GetComponent<CAS_ContolModel>())
                 {
+                    firstTime = true; 
                     child.gameObject.AddComponent<CAS_ContolModel>();
                 }
 
@@ -113,10 +115,13 @@ namespace CAS
                 Bounds meshBounds = child.GetComponentInChildren<MeshRenderer>().bounds;
 
                 //child.transform.position = toBePosition;
-                child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition); 
+                child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition);
 
-                //Not sure of this line - not useful for cubes but needed for meshes as the mesh is away from centre will be adjusted in the parent 
-                child.GetChild(0).transform.localPosition = Vector3.zero - meshBounds.center;
+                if (firstTime)
+                {
+                    //Not sure of this line - not useful for cubes but needed for meshes as the mesh is away from centre will be adjusted in the parent 
+                    child.GetChild(0).transform.localPosition = transform.localPosition - meshBounds.center;
+                }
 
                 //child.gameObject.GetComponent<CAS_ContolModel>().SetStepOriginalPositionMoving(toBePosition, layerChangeType); 
 

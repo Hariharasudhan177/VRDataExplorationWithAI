@@ -79,6 +79,11 @@ namespace CAS
             stepUI.ApplyGrouping(filterKey, clustersCount);
         }
 
+        public void ApplySorting(string filterKey)
+        {
+            stepUI.ApplySorting(filterKey);
+        }
+
         public void RemoveGrouping()
         {
             stepUI.RemoveGrouping();

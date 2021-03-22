@@ -220,12 +220,101 @@ namespace CAS
             }
         }
 
+        public void SetSortByModelsToEditLayers(CAS_FilterAndGroupUIStep.SortByStructure sorted, bool withFilter)
+        {
+            RemoveGroupByModelsToEditLayers();
+
+            GameObject sortManager = new GameObject();
+            sortManager.AddComponent<CAS_EachStepManager>();
+            sortManager.AddComponent<CAS_PlaceModels>();
+            sortManager.transform.parent = transform;
+
+            List<List<GameObject>> originalObjectsList = new List<List<GameObject>>();            
+            foreach (CAS_EachStepManager stepManager in stepParents)
+            {
+                List<GameObject> originalObjectList = new List<GameObject>();
+                foreach (Transform child in stepManager.transform)
+                {
+                    originalObjectList.Add(child.gameObject);
+                }
+                originalObjectsList.Add(originalObjectList);  
+            }
+
+            int index = 0;
+            int stringIndex = 0;
+            string previousKey = "";
+            string currentKey = "";
+            if (sorted.isString)
+            {
+                previousKey = sorted.stringValues[0];
+                currentKey = sorted.stringValues[0];
+            }
+
+            foreach (List<GameObject> originalObjectList in originalObjectsList)
+            {
+                foreach (GameObject originalObject in originalObjectList)
+                {
+                    originalObject.transform.parent = sortManager.transform;
+                }
+            }
+
+            foreach (string patientId in sorted.patientIds)
+            {
+                if (allModelsInformationByRecordName.ContainsKey(patientId))
+                {
+                    allModelsInformationByRecordName[patientId].transform.SetAsLastSibling();
+
+                    if (!sorted.isString)
+                    {
+                        allModelsInformationByRecordName[patientId].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(GetSortColorDouble((float)sorted.min, (float)sorted.max, (float)sorted.doubleValues[index]));
+                    }
+                    else
+                    {
+                        previousKey = currentKey;
+                        currentKey = sorted.stringValues[index];
+
+                        if (previousKey != currentKey) stringIndex++; 
+                        if (stringIndex >= manager.dataManager.colorsForGrouping.Length)
+                        {
+                            stringIndex = 0;
+                        }
+                        allModelsInformationByRecordName[patientId].GetComponentInChildren<CAS_ContolModel>().SetGroupByColour(manager.dataManager.colorsForGrouping[stringIndex]);                       
+                    }
+                }
+                index++; 
+            }
+
+            sortManager.GetComponent<CAS_EachStepManager>().PlaceModels();
+
+            int stepParentsIndex = 0; 
+            foreach (CAS_EachStepManager stepManager in stepParents)
+            {
+                foreach (GameObject originalObject in originalObjectsList[stepParentsIndex])
+                {
+                    originalObject.transform.parent = stepManager.transform;
+                    for(int i = 0; i <= stepParentsIndex; i++)
+                    {
+                        originalObject.GetComponent<CAS_ContolModel>().ChangeLayer();
+
+                        if (withFilter)
+                        {
+                            if (stepParentsIndex != stepParents.Count - 1)
+                            {
+                                originalObject.GetComponentInChildren<CAS_ContolModel>().UnSetGroupByColour();
+                            }
+                        }
+                    }
+                }
+                stepParentsIndex++;
+            }
+
+            Destroy(sortManager.gameObject); 
+        }
+
         public void RemoveGroupByModelsToEditLayers()
         {
-
             foreach (string value in allModelsInformationByRecordName.Keys.ToList())
             {
-
                 if (value == null) continue; 
                 allModelsInformationByRecordName[value].GetComponentInChildren<CAS_ContolModel>().UnSetGroupByColour();
             }           
@@ -282,6 +371,17 @@ namespace CAS
             {
                 allModelsInformationByRecordName[gameObjectName].GetComponentInChildren<CAS_ContolModel>().HighlightModelSinceSelected(true);
             }
+        }
+
+        public Color GetSortColorDouble(float min, float max, float value)
+        {
+            if(value == -1)
+            {
+                return Color.white; 
+            }
+
+            float colourValue = 1f - ((max - value) / (max - min));
+            return new Color(0.90f - (colourValue / 1.20f), 0.90f - (colourValue / 1.10f), 0.90f - (colourValue / 1.60f));
         }
     }
 }
