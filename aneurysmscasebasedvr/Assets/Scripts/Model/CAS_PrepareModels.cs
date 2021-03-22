@@ -94,7 +94,8 @@ namespace CAS
                 //Need not change in unity game object layer. Just in the cas_interactable(XR) script. Yes it is simple but it doesn't make sense to me too. 
                 //gameObject.layer = 8;
                 //transform.GetChild(0).gameObject.layer = 8; 
-                gameObject.transform.GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("DirectInteractables"); 
+                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("DirectInteractables");
+                GetComponent<CAS_GrabInteractable>().attachEaseInTime = 0.5f;
             }
             else
             {
@@ -102,7 +103,15 @@ namespace CAS
                 transform.GetChild(0).GetComponent<MeshCollider>().enabled = false;
                 //gameObject.layer = 9;
                 //transform.GetChild(0).gameObject.layer = 9;
-                gameObject.transform.GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("RayInteractables"); 
+                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("RayInteractables");
+                if (GetComponent<CAS_GrabInteractable>().stepManager.controlledPull)
+                {
+                    GetComponent<CAS_GrabInteractable>().attachEaseInTime = 20f;
+                }
+                else
+                {
+                    GetComponent<CAS_GrabInteractable>().attachEaseInTime = 0.5f;
+                }
             }
         }
     }

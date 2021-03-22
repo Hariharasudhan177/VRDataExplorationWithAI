@@ -59,7 +59,7 @@ namespace CAS
         /// </summary>
         public void PickAndPlace()
         {
-            transform.GetComponentInParent<CAS_StepManager>().SetTrueScale(); 
+            //transform.GetComponentInParent<CAS_StepManager>().SetTrueScale(); 
 
             material = GetComponentInParent<CAS_StepManager>().defaultMaterial;
             limitSize = GetComponentInParent<CAS_StepManager>().limitSize;
@@ -149,7 +149,7 @@ namespace CAS
                     //Debug.Log(radiusOfSmallCircle); 
                 }
             }
-            transform.GetComponentInParent<CAS_StepManager>().SetOriginalScale();
+            //transform.GetComponentInParent<CAS_StepManager>().SetOriginalScale();
         }
 
         /// <summary>

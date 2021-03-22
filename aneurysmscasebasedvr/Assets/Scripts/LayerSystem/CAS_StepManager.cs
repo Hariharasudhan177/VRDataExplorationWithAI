@@ -40,6 +40,16 @@ namespace CAS
 
         public float limitSize = 0.75f;
 
+        public bool controlledPull = false;
+        public bool pushObjects = false;
+
+        public CAS_GrabInteractable[] grabInteractables;
+
+        private void Start()
+        {
+            grabInteractables = GetComponentsInChildren<CAS_GrabInteractable>(); 
+        }
+
         public void InitializeAfterDataRead()
         {
             allModelsInformationByRecordName = new Dictionary<string, GameObject>();
@@ -320,7 +330,7 @@ namespace CAS
             }           
         }
 
-        public void SetTrueScale()
+        /*public void SetTrueScale()
         {
             transform.localScale = Vector3.one;
         }
@@ -328,7 +338,7 @@ namespace CAS
         public void SetOriginalScale()
         {
             transform.localScale = originalScale;
-        }
+        }*/
 
         public void SetAllModelsInformation(Dictionary<string, GameObject> allModelsInformation)
         {
@@ -382,6 +392,46 @@ namespace CAS
 
             float colourValue = 1f - ((max - value) / (max - min));
             return new Color(0.90f - (colourValue / 1.20f), 0.90f - (colourValue / 1.10f), 0.90f - (colourValue / 1.60f));
+        }
+
+        public void OnClickControlledPullSwitch()
+        {
+            controlledPull = !controlledPull;
+
+            if (controlledPull)
+            {
+                foreach(CAS_GrabInteractable grabInteractable in grabInteractables)
+                {
+                    grabInteractable.attachEaseInTime = 20f; 
+                }
+            }
+            else
+            {
+                foreach (CAS_GrabInteractable grabInteractable in grabInteractables)
+                {
+                    grabInteractable.attachEaseInTime = 0.5f;
+                }
+            }
+        }
+
+        public void OnClickPushObjectsSwitch()
+        {
+            pushObjects = !pushObjects;
+
+            if (pushObjects)
+            {
+                foreach (CAS_GrabInteractable grabInteractable in grabInteractables)
+                {
+                    grabInteractable.attachEaseInTime = 20f;
+                }
+            }
+            else
+            {
+                foreach (CAS_GrabInteractable grabInteractable in grabInteractables)
+                {
+                    grabInteractable.attachEaseInTime = 0.5f;
+                }
+            }
         }
     }
 }

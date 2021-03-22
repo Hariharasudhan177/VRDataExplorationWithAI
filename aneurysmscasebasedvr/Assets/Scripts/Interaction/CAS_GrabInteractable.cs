@@ -167,6 +167,8 @@ namespace CAS
         Color highlightedColor = Color.magenta;
         MeshRenderer meshRenderer;*/
 
+        public CAS_StepManager stepManager; 
+
         protected override void Awake()
         {
             base.Awake();
@@ -263,6 +265,18 @@ namespace CAS
 
         void UpdateTarget(float timeDelta)
         {
+            if (stepManager.controlledPull & stepManager.pushObjects & interactionLayerMask != LayerMask.GetMask("DirectInteractables"))
+            {
+                if (m_AttachEaseInTime > 0.0f && m_CurrentAttachEaseTime <= m_AttachEaseInTime)
+                {
+                    var currentAttachDelta = m_CurrentAttachEaseTime / m_AttachEaseInTime;
+                    m_TargetWorldPosition = Vector3.Lerp(m_TargetWorldPosition, GetComponent<CAS_ContolModel>().GetPosition(), currentAttachDelta);
+                    m_TargetWorldRotation = Quaternion.Slerp(m_TargetWorldRotation, GetWorldAttachRotation(m_SelectingInteractor), currentAttachDelta);
+                    m_CurrentAttachEaseTime += Time.unscaledDeltaTime;
+                }
+                return; 
+            }
+
             if (m_AttachEaseInTime > 0.0f && m_CurrentAttachEaseTime <= m_AttachEaseInTime)
             {
                 var currentAttachDelta = m_CurrentAttachEaseTime / m_AttachEaseInTime;
@@ -312,6 +326,7 @@ namespace CAS
             {
                 if (trackPosition)
                 {
+                    Debug.Log(m_TargetWorldPosition); 
                     var positionDelta = m_TargetWorldPosition - m_RigidBody.worldCenterOfMass;
                     m_RigidBody.velocity = Vector3.zero;
                     m_RigidBody.MovePosition(m_RigidBody.position + positionDelta);
@@ -559,6 +574,7 @@ namespace CAS
             //Moving this code to interactor 
             //onHoverEnter.AddListener(HighlightOnHoverEnter);
             //onHoverExit.AddListener(DeHighlightOnHoverExit);
+            stepManager = GetComponentInParent<CAS_StepManager>(); 
         }
 
         //Moving this code to interactor 

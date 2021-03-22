@@ -10,7 +10,7 @@ namespace CAS
         CAS_StepManager stepManager; 
 
         // Adjust the speed for the movement - Should be received from step manager 
-        float speedMoveToLayer = 0.5f;
+        float speedMoveToLayer = 2.5f;
         float speedPush= 10f;
 
         Vector3 originalLocalPosition;
@@ -64,7 +64,7 @@ namespace CAS
             float stepMoveToLayer = speedMoveToLayer * Time.deltaTime;
             if (moving)
             {
-                stepManager.SetTrueScale();
+                //stepManager.SetTrueScale();
                 if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f)) 
                 {
                     moving = false;
@@ -74,12 +74,12 @@ namespace CAS
                     transform.position = Vector3.MoveTowards(transform.position, toBeWorldPosition, stepMoveToLayer);
                     originalLocalPosition = transform.localPosition;
                 }
-                stepManager.SetOriginalScale(); 
+                //stepManager.SetOriginalScale(); 
             }
 
             if (moveForSimilartiy)
             {
-                stepManager.SetTrueScale();
+                //stepManager.SetTrueScale();
                 if (Vector3.Distance(transform.position, similartiyPosition) < 0.01f && Vector3.Distance(transform.position, similartiyPosition) > (-0.01f))
                 {
                     moveForSimilartiy = false;
@@ -89,7 +89,7 @@ namespace CAS
                     transform.position = Vector3.MoveTowards(transform.position, similartiyPosition, stepMoveToLayer);
                     originalLocalPosition = transform.localPosition;
                 }
-                stepManager.SetOriginalScale();
+                //stepManager.SetOriginalScale();
             }
         }
 
@@ -100,14 +100,19 @@ namespace CAS
             moving = true;
         }
 
+        public Vector3 GetPosition()
+        {
+            return initialWorldPosition; 
+        }
+
         public void ChangeLayer()
         {
-            stepManager.SetTrueScale();
+            //stepManager.SetTrueScale();
             //should use something like backward step index 
             layerIndex = GetComponentInParent<CAS_EachStepManager>().stepIndex;
             toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f));
             moving = true;
-            stepManager.SetOriginalScale();
+            //stepManager.SetOriginalScale();
         }
 
         public void PushToOriginalPosition()
