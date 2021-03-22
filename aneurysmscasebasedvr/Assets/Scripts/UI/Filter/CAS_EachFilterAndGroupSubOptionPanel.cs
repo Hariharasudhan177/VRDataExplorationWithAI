@@ -118,8 +118,8 @@ namespace CAS
 
                 addIntegerOptionButton.gameObject.SetActive(true);
                 clusterCountSlider.SetActive(true); 
-                applyGroupOrClusterText.text = "Apply Clustering";
-                removeGroupOrClusterText.text = "Remove Clustering";
+                applyGroupOrClusterText.text = "Apply Cluster";
+                removeGroupOrClusterText.text = "Remove Cluster";
 
                 parentContentOfSubOption.GetComponent<VerticalLayoutGroup>().childControlHeight = true;
             }

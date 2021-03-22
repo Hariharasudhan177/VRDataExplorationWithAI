@@ -15,7 +15,9 @@ namespace CAS
         InputDevice inputXRDevice;
 
         bool pushHappening = false;
-        bool checkForPush = false; 
+        bool checkForPush = false;
+
+        bool pushGestureOn = false; 
 
         // Start is called before the first frame update
         void Start()
@@ -56,8 +58,11 @@ namespace CAS
                 }
                 else
                 {
-                    CheckForPush(inputXRDevice);
-                    checkForPush = true;
+                    if (pushGestureOn)
+                    {
+                        CheckForPush(inputXRDevice);
+                        checkForPush = true;
+                    }
                 }
             }
         }
@@ -126,6 +131,17 @@ namespace CAS
             }
         }
 
+        public void SwitchPushGesture(float value)
+        {
+            if (value == 0f)
+            {
+                pushGestureOn = false; 
+            }
+            else
+            {
+                pushGestureOn = true; 
+            }
+        }
     }
 }
 

@@ -239,7 +239,14 @@ namespace CAS
             //Set group details to UI
             SetGroupingDetails(groupedByPatientIds); 
 
-            groupingOptionName.text = filterKey;
+            if(filterAndGroupUIManager.manager.dataManager.GetColumnType(filterKey) == System.Type.GetType("System.String"))
+            {
+                groupingOptionName.text = "Grouped by " + filterKey;
+            }
+            else if (filterAndGroupUIManager.manager.dataManager.GetColumnType(filterKey) == System.Type.GetType("System.Double"))
+            {
+                groupingOptionName.text = "Clustered by " + filterKey;
+            }
         }
 
         public void ApplySorting(string sortKey)
@@ -251,6 +258,9 @@ namespace CAS
 
             //Set group colours to models 
             filterAndGroupUIManager.manager.stepManager.SetSortByModelsToEditLayers(sorted, groupingWithFilter);
+            SetSortingDetails(sorted);
+
+            groupingOptionName.text = "Sorted by " + sortKey;
         }
 
         public void RemoveGrouping()
@@ -299,6 +309,46 @@ namespace CAS
                 GameObject eachGroupedSetAndDetailsObject = Instantiate(eachGroupedSetAndDetailsPrefab, parentContentOfEachGroupedSetAndDetailsPrefab.transform);
                 eachGroupedSetAndDetailsObject.GetComponent<CAS_EachGroupedSetAndDetails>().SetGroupedDetailsContent(filterAndGroupUIManager.manager.dataManager.colorsForGrouping[index], key, groupedByPatientIds[key].Count);
                 index++;
+            }
+        }
+
+        public void SetSortingDetails(CAS_FilterAndGroupUIStep.SortByStructure sorted)
+        {
+            CAS_EachGroupedSetAndDetails[] toDestroy = parentContentOfEachGroupedSetAndDetailsPrefab.GetComponentsInChildren<CAS_EachGroupedSetAndDetails>();
+            foreach (CAS_EachGroupedSetAndDetails child in toDestroy)
+            {
+                Destroy(child.gameObject);
+            }
+
+            string previousKey = "";
+            string currentKey = "";
+
+            if (sorted.isString)
+            {
+                previousKey = sorted.stringValues[0];
+                currentKey = sorted.stringValues[0]; 
+            }
+
+            int index = 0;
+            int stringIndex = 0; 
+            int keyIndex = 0; 
+            foreach (string patientId in sorted.patientIds)
+            {
+                stringIndex++;
+                if (sorted.isString)
+                {
+                    previousKey = currentKey;
+                    currentKey = sorted.stringValues[index];
+
+                    if (previousKey != currentKey)
+                    {
+                        GameObject eachGroupedSetAndDetailsObject = Instantiate(eachGroupedSetAndDetailsPrefab, parentContentOfEachGroupedSetAndDetailsPrefab.transform);
+                        eachGroupedSetAndDetailsObject.GetComponent<CAS_EachGroupedSetAndDetails>().SetGroupedDetailsContent(filterAndGroupUIManager.manager.dataManager.colorsForGrouping[keyIndex], previousKey, stringIndex);
+                        stringIndex = 0; 
+                        keyIndex++;
+                    } 
+                }
+                index++; 
             }
         }
 
@@ -353,9 +403,6 @@ namespace CAS
                     doubleFilterValues.Add(filterKeyValue.GetDoubleValues());
                 }
             }
-
-            Debug.Log(stringFilterKeys.Count);
-            Debug.Log(doubleFilterKeys.Count);
 
             return (stringFilterKeys, stringFilterValues, doubleFilterKeys, doubleFilterValues); 
         }
