@@ -53,6 +53,7 @@ namespace CAS
                 Destroy(toDelete.gameObject);
             }
 
+            Debug.Log(id);
             DataTable rowToKeyValuePair = aiUI.aiManager.manager.dataManager.GetPatientRecordWithId(id);
 
             foreach (var column in rowToKeyValuePair.Columns)
@@ -74,7 +75,7 @@ namespace CAS
         {
             if(dropDownIndex != 0)
             {
-                PopulateData(dropDownOptions[dropDownIndex-1]);
+                PopulateData(dropDownOptions[dropDownIndex]);
                 aiUI.aiManager.SetObjectOfInterest(dropDownIndex-1);
             }
             else

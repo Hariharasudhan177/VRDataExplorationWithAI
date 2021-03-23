@@ -26,6 +26,9 @@ namespace CAS
         //Model details 
         Dictionary<string, GameObject> allModelsInformation;
 
+        //Model details 
+        Dictionary<string, GameObject> objectOfInterestModelsInformation;
+
         //Legend details 
         Dictionary<string, TypeOfOptions> columnTypeOfOption;
 
@@ -56,6 +59,7 @@ namespace CAS
             //Initialization 
             patientDetails = new DataTable("patientDetails");
             allModelsInformation = new Dictionary<string, GameObject>();
+            objectOfInterestModelsInformation = new Dictionary<string, GameObject>(); 
             columnTypeOfOption = new Dictionary<string, TypeOfOptions>();
 
             ConvertCSVToDatatable(dataCSV.text);
@@ -224,7 +228,8 @@ namespace CAS
                             {
                                 newRow["notExample"] = false;
                                 GameObject matchingModel = GameObject.Find(content[0] + "_" + modelPresent);
-                                allModelsInformation.Remove(content[0] + "_" + modelPresent); 
+                                allModelsInformation.Remove(content[0] + "_" + modelPresent);
+                                objectOfInterestModelsInformation.Add(content[0] + "_" + modelPresent, matchingModel); 
                                 matchingModel.AddComponent<CAS_ObjectOfInterest>(); 
                                 objectsOfInterest.Add(matchingModel.GetComponent<CAS_ObjectOfInterest>());
                                 matchingModel.transform.parent = manager.aiManager.transform;
@@ -244,6 +249,7 @@ namespace CAS
             manager.stepManager.InitializeAfterDataRead(); 
             manager.aiManager.SetObjectsOfInterest(objectsOfInterest); 
             manager.stepManager.SetAllModelsInformation(allModelsInformation);
+            manager.aiManager.SetAllModelsInformation(objectOfInterestModelsInformation); 
 
             Debug.Log("There are " + numberOfDataWithoutModel + " for which model is misssing and they are " + dataWithoutModel);
 
@@ -744,7 +750,7 @@ namespace CAS
             DataTable filteredTable = filteredView.ToTable(false, requiredColumn);
 
             DataView filteredViewSorted = filteredTable.DefaultView;
-            filteredViewSorted.Sort = columnNamesGroupBy + " desc";
+            filteredViewSorted.Sort = columnNamesGroupBy + " asc";
             DataTable datatableSorted = filteredViewSorted.ToTable();
 
             Type filterOptionDataType = GetColumnType(columnNamesGroupBy);
@@ -1254,7 +1260,7 @@ namespace CAS
             DataTable filteredTable = filterView.ToTable(false, requiredColumn);
 
             DataView filteredViewSorted = filteredTable.DefaultView;
-            filteredViewSorted.Sort = columnNameSortBy + " desc";
+            filteredViewSorted.Sort = columnNameSortBy + " asc";
             DataTable datatableSorted = filteredViewSorted.ToTable();
 
             Type filterOptionDataType = GetColumnType(columnNameSortBy);

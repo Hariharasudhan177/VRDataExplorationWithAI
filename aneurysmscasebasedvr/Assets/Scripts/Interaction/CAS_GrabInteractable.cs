@@ -326,7 +326,6 @@ namespace CAS
             {
                 if (trackPosition)
                 {
-                    Debug.Log(m_TargetWorldPosition); 
                     var positionDelta = m_TargetWorldPosition - m_RigidBody.worldCenterOfMass;
                     m_RigidBody.velocity = Vector3.zero;
                     m_RigidBody.MovePosition(m_RigidBody.position + positionDelta);

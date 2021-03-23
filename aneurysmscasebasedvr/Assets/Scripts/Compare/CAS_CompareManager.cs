@@ -69,7 +69,7 @@ namespace CAS
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                AddIdToList("HG_20151127");
+                AddIdToList("HG_20151127_0");
             }*/
         }
 

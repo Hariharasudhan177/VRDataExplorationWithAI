@@ -98,7 +98,7 @@ Material:
     - _Invert: 1
     - _Invertmaintexture: 1
     - _Invertsecondarytexture: 0
-    - _Maintextureintensity: 1
+    - _Maintextureintensity: 0
     - _Metallic: 0
     - _Mode: 0
     - _Noisescale: 100

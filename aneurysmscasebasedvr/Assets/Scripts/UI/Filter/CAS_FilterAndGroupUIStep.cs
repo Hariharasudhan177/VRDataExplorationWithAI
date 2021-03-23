@@ -314,29 +314,28 @@ namespace CAS
 
         public void SetSortingDetails(CAS_FilterAndGroupUIStep.SortByStructure sorted)
         {
+            if (!sorted.isString) return; 
+
+
             CAS_EachGroupedSetAndDetails[] toDestroy = parentContentOfEachGroupedSetAndDetailsPrefab.GetComponentsInChildren<CAS_EachGroupedSetAndDetails>();
             foreach (CAS_EachGroupedSetAndDetails child in toDestroy)
             {
                 Destroy(child.gameObject);
             }
 
-            string previousKey = "";
-            string currentKey = "";
-
-            if (sorted.isString)
-            {
-                previousKey = sorted.stringValues[0];
-                currentKey = sorted.stringValues[0]; 
-            }
+            string previousKey = sorted.stringValues[0];
+            string currentKey = sorted.stringValues[0];
 
             int index = 0;
             int stringIndex = 0; 
             int keyIndex = 0; 
             foreach (string patientId in sorted.patientIds)
             {
-                stringIndex++;
-                if (sorted.isString)
-                {
+                Debug.Log(sorted.stringValues[index]);
+                Debug.Log(stringIndex); 
+
+                //if (sorted.isString)
+                //{
                     previousKey = currentKey;
                     currentKey = sorted.stringValues[index];
 
@@ -346,9 +345,20 @@ namespace CAS
                         eachGroupedSetAndDetailsObject.GetComponent<CAS_EachGroupedSetAndDetails>().SetGroupedDetailsContent(filterAndGroupUIManager.manager.dataManager.colorsForGrouping[keyIndex], previousKey, stringIndex);
                         stringIndex = 0; 
                         keyIndex++;
-                    } 
+                    }
+                //}
+
+                stringIndex++;
+                index++;
+
+                if (index == sorted.patientIds.Count)
+                {
+                    if (previousKey == currentKey)
+                    {
+                        GameObject eachGroupedSetAndDetailsObject = Instantiate(eachGroupedSetAndDetailsPrefab, parentContentOfEachGroupedSetAndDetailsPrefab.transform);
+                        eachGroupedSetAndDetailsObject.GetComponent<CAS_EachGroupedSetAndDetails>().SetGroupedDetailsContent(filterAndGroupUIManager.manager.dataManager.colorsForGrouping[keyIndex], previousKey, stringIndex);
+                    }
                 }
-                index++; 
             }
         }
 

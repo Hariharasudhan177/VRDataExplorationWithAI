@@ -31,7 +31,15 @@ namespace CAS
 
         float uninterestedSimilartiy = 1.5f;
 
-        bool similarityVisualisationStatus =  false; 
+        bool similarityVisualisationStatus =  false;
+
+        //Model Information 
+        [HideInInspector]
+        public Dictionary<string, GameObject> allModelsInformationByRecordName;
+        [HideInInspector]
+        public Dictionary<string, GameObject> allModelsInformationByGameObjectName;
+        [HideInInspector]
+        public Dictionary<string, List<string>> allModelsInformationGameobjectRecordName;
 
         // Start is called before the first frame update
         void Start()
@@ -109,7 +117,7 @@ namespace CAS
 
             DataTable filteredTable = manager.dataManager.DataForSimilarityCalculation(filteredLayerPatientIds, ignoredColumns);
 
-            DataRow GetPatientRecordWithIdAsDataRow = manager.dataManager.GetPatientRecordOfInterest(manager.stepManager.allModelsInformationGameobjectRecordName[objectsOfInterest[indexOfInterest].gameObject.name][0]);
+            DataRow GetPatientRecordWithIdAsDataRow = manager.dataManager.GetPatientRecordOfInterest(allModelsInformationGameobjectRecordName[objectsOfInterest[indexOfInterest].gameObject.name][0]);
             filteredTable.ImportRow(GetPatientRecordWithIdAsDataRow);
 
             double[] similarityDouble = CalculateDoubleColumnSimilarity(filteredTable, ignoredColumns);
@@ -275,7 +283,8 @@ namespace CAS
             foreach (string patientId in similarityWithPatientId.Keys)
             {
                 string target = manager.dataManager.GetTargetValue(patientId);
-                neighboursWithTarget.Add(patientId, target + " " + similarityWithPatientId[patientId].ToString());
+                //neighboursWithTarget.Add(patientId, target + " - " + similarityWithPatientId[patientId].ToString("0.0000"));
+                neighboursWithTarget.Add(patientId, target);
 
                 if (!targets.Keys.Contains(target))
                 {
@@ -453,11 +462,11 @@ namespace CAS
                     currentAngle += (rightIndex * angleRequired);
                 } 
 
-                float adjustLengthOfRadius = radius * (float)model.GetSimilarity() * 1.5f;
+                float adjustLengthOfRadius = radius * (float)model.GetSimilarity() * 10f;
 
                 model.ActivateSimilartiySettings(new Vector3(
                     adjustLengthOfRadius * Mathf.Cos(currentAngle * (Mathf.PI / 180f)),
-                    0.1f,
+                    1.5f,
                     adjustLengthOfRadius * Mathf.Sin(currentAngle * (Mathf.PI / 180f))),
                     InterpolateScaleColour((float)model.GetSimilarity())); 
 
@@ -497,6 +506,36 @@ namespace CAS
 
             return new Color(r, g, b, a);
 
+        }
+
+        public void SetAllModelsInformation(Dictionary<string, GameObject> allModelsInformation)
+        {
+            allModelsInformationByRecordName = new Dictionary<string, GameObject>();
+            allModelsInformationByGameObjectName = new Dictionary<string, GameObject>();
+            allModelsInformationGameobjectRecordName = new Dictionary<string, List<string>>();
+
+            allModelsInformationByRecordName = allModelsInformation;
+
+            foreach (string id in allModelsInformationByRecordName.Keys)
+            {
+
+                if (!allModelsInformationByGameObjectName.ContainsKey(allModelsInformation[id].name))
+                {
+                    allModelsInformationByGameObjectName.Add(allModelsInformation[id].name, allModelsInformation[id]);
+                }
+
+                if (allModelsInformationGameobjectRecordName.ContainsKey(allModelsInformation[id].name))
+                {
+                    allModelsInformationGameobjectRecordName[allModelsInformation[id].name].Add(id);
+                }
+                else
+                {
+                    List<string> idList = new List<string>();
+                    idList.Add(id);
+                    allModelsInformationGameobjectRecordName.Add(allModelsInformation[id].name, idList);
+                }
+
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace CAS
             foreach (string patientId in similarityValues.Keys)
             {
                 GameObject eachFieldOfDataObject = Instantiate(similarityValuePrefab, parentContent);
-                eachFieldOfDataObject.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(patientId, similarityValues[patientId].ToString()); 
+                eachFieldOfDataObject.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(patientId, similarityValues[patientId].ToString("0.0000")); 
             }
         }
     }

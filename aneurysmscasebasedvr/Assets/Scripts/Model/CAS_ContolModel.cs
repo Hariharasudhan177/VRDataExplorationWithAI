@@ -10,7 +10,7 @@ namespace CAS
         CAS_StepManager stepManager; 
 
         // Adjust the speed for the movement - Should be received from step manager 
-        float speedMoveToLayer = 2.5f;
+        float speedMoveToLayer = 6f;
         float speedPush= 10f;
 
         Vector3 originalLocalPosition;
