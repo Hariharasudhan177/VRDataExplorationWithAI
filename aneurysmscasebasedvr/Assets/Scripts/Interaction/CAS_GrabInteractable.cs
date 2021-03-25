@@ -167,7 +167,17 @@ namespace CAS
         Color highlightedColor = Color.magenta;
         MeshRenderer meshRenderer;*/
 
-        public CAS_StepManager stepManager; 
+        public CAS_StepManager stepManager;
+
+        class SavedTransform
+        {
+            public Vector3 OriginalPosition;
+            public Quaternion OriginalRotation;
+        }
+
+        Dictionary<XRBaseInteractor, SavedTransform> m_SavedTransforms = new Dictionary<XRBaseInteractor, SavedTransform>();
+
+        Rigidbody m_Rb;
 
         protected override void Awake()
         {
@@ -178,6 +188,9 @@ namespace CAS
                 m_RigidBody = GetComponent<Rigidbody>();
             if (m_RigidBody == null)
                 Debug.LogWarning("Grab Interactable does not have a required RigidBody.", this);
+
+            //the base class already grab it but don't expose it so have to grab it again
+            m_Rb = GetComponent<Rigidbody>();
         }
 
         public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -423,6 +436,24 @@ namespace CAS
         /// <param name="interactor">Interactor that is initiating the selection.</param>
 		protected override void OnSelectEnter(XRBaseInteractor interactor)
         {
+            if (interactor is XRDirectInteractor)
+            {
+                GetComponent<CAS_GrabInteractable>().trackRotation = true;
+
+                SavedTransform savedTransform = new SavedTransform();
+
+                savedTransform.OriginalPosition = interactor.attachTransform.localPosition;
+                savedTransform.OriginalRotation = interactor.attachTransform.localRotation;
+
+                m_SavedTransforms[interactor] = savedTransform;
+
+
+                bool haveAttach = attachTransform != null;
+
+                interactor.attachTransform.position = haveAttach ? attachTransform.position : m_Rb.worldCenterOfMass;
+                interactor.attachTransform.rotation = haveAttach ? attachTransform.rotation : m_Rb.rotation;
+            }
+
             if (!interactor)
                 return;
             base.OnSelectEnter(interactor);
@@ -470,6 +501,18 @@ namespace CAS
         /// <param name="interactor">Interactor that is ending the selection.</param>
 		protected override void OnSelectExit(XRBaseInteractor interactor)
         {
+            if (interactor is XRDirectInteractor)
+            {
+                SavedTransform savedTransform = null;
+                if (m_SavedTransforms.TryGetValue(interactor, out savedTransform))
+                {
+                    interactor.attachTransform.localPosition = savedTransform.OriginalPosition;
+                    interactor.attachTransform.localRotation = savedTransform.OriginalRotation;
+
+                    m_SavedTransforms.Remove(interactor);
+                }
+            }
+
             base.OnSelectExit(interactor);
 
             if (m_RetainTransformParent)

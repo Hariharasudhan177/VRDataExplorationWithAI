@@ -118,7 +118,7 @@ namespace CAS
         public void PushToOriginalPosition()
         {
             pushingToOriginalPosition = true; 
-            transform.localRotation = originalRotation;
+            //transform.localRotation = originalRotation;
         }
 
         public void UnSetGroupByColour()

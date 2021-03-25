@@ -141,6 +141,7 @@ namespace CAS
         {
             GameObject stepParent = new GameObject();
             stepParent.transform.parent = modelsParent.transform;
+            stepParent.name = "Step " + (stepParents.Count + 1); 
 
             stepParent.AddComponent<CAS_EachStepManager>();
             stepParent.AddComponent<CAS_PlaceModels>();

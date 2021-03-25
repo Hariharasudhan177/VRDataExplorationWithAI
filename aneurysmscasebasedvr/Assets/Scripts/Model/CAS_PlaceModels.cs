@@ -52,6 +52,7 @@ namespace CAS
         public float adjustmentDistance = 1f;
 
         public Material material;
+        public Material boundingBoxLineMaterial;
         float limitSize;
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace CAS
 
             material = GetComponentInParent<CAS_StepManager>().defaultMaterial;
             limitSize = GetComponentInParent<CAS_StepManager>().limitSize;
+            boundingBoxLineMaterial = GetComponentInParent<CAS_StepManager>().boundingBoxLineMaterial;
             Dictionary<string, Vector3> positionOfTheModels = new Dictionary<string, Vector3>(); 
 
             //Vector3 originalScale = transform.parent.localScale; 
@@ -94,7 +96,7 @@ namespace CAS
                 if (!child.GetComponent<CAS_PrepareModels>())
                 {
                     child.gameObject.AddComponent<CAS_PrepareModels>();
-                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, material, limitSize);
+                    child.gameObject.GetComponent<CAS_PrepareModels>().Prepare(child.gameObject, material, limitSize, boundingBoxLineMaterial);
                 }
 
                 if (!child.GetComponent<CAS_ContolModel>())

@@ -230,9 +230,10 @@ namespace CAS
                                 GameObject matchingModel = GameObject.Find(content[0] + "_" + modelPresent);
                                 allModelsInformation.Remove(content[0] + "_" + modelPresent);
                                 objectOfInterestModelsInformation.Add(content[0] + "_" + modelPresent, matchingModel); 
-                                matchingModel.AddComponent<CAS_ObjectOfInterest>(); 
+                                matchingModel.AddComponent<CAS_ObjectOfInterest>();
                                 objectsOfInterest.Add(matchingModel.GetComponent<CAS_ObjectOfInterest>());
                                 matchingModel.transform.parent = manager.aiManager.transform;
+                                matchingModel.GetComponent<CAS_ObjectOfInterest>().Initialize();
                                 matchingModel.SetActive(false); 
                                 exampleIndex++;
                             }

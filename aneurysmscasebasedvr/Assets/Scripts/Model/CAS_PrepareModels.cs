@@ -11,7 +11,7 @@ namespace CAS
     [ExecuteInEditMode]
     public class CAS_PrepareModels : MonoBehaviour
     {
-        public void Prepare(GameObject model, Material material, float limitSize)
+        public void Prepare(GameObject model, Material material, float limitSize, Material boundingBoxLineMaterial)
         {
             //Reduce scale to fit to limit size 
             MeshFilter meshFilter = model.GetComponentInChildren<MeshFilter>();
@@ -57,7 +57,7 @@ namespace CAS
 
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
             model.transform.GetChild(0).gameObject.AddComponent<BoundBox>();
-            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = GetComponentInParent<CAS_StepManager>().boundingBoxLineMaterial;
+            model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = boundingBoxLineMaterial;
             model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = false; 
             model.transform.GetChild(0).gameObject.AddComponent<MeshCollider>();
             model.transform.GetChild(0).gameObject.GetComponent<MeshCollider>().sharedMesh = model.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
@@ -96,6 +96,7 @@ namespace CAS
                 //transform.GetChild(0).gameObject.layer = 8; 
                 GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("DirectInteractables");
                 GetComponent<CAS_GrabInteractable>().attachEaseInTime = 0.5f;
+                //GetComponent<CAS_GrabInteractable>().trackRotation = true;
             }
             else
             {
@@ -112,6 +113,7 @@ namespace CAS
                 {
                     GetComponent<CAS_GrabInteractable>().attachEaseInTime = 0.5f;
                 }
+                GetComponent<CAS_GrabInteractable>().trackRotation = false;
             }
         }
     }
