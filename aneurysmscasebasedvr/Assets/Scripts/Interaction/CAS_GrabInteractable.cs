@@ -616,7 +616,9 @@ namespace CAS
             //Moving this code to interactor 
             //onHoverEnter.AddListener(HighlightOnHoverEnter);
             //onHoverExit.AddListener(DeHighlightOnHoverExit);
-            stepManager = GetComponentInParent<CAS_StepManager>(); 
+            stepManager = GetComponentInParent<CAS_StepManager>();
+
+            if (stepManager == null) stepManager = FindObjectOfType<CAS_StepManager>(); 
         }
 
         //Moving this code to interactor 
