@@ -118,14 +118,13 @@ namespace CAS
             string[] ignoredColumns = new string[] { "manualAddedOthersFromCode", "morphoPresent", "id" };
 
             DataTable filteredTable = manager.dataManager.DataForSimilarityCalculation(filteredLayerPatientIds, ignoredColumns);
-
             DataRow GetPatientRecordWithIdAsDataRow = manager.dataManager.GetPatientRecordOfInterest(allModelsInformationGameobjectRecordName[objectsOfInterest[indexOfInterest].gameObject.name][0]);
             filteredTable.ImportRow(GetPatientRecordWithIdAsDataRow);
 
             double[] similarityDouble = CalculateDoubleColumnSimilarity(filteredTable, ignoredColumns);
             double[] similarityString = CalculateStringColumnSimilarity(filteredTable, ignoredColumns); 
 
-            similarity = new double[similarityDouble.Length - 1];    
+            similarity = new double[similarityDouble.Length];
             Dictionary<string, double> similarityWithPatientId = new Dictionary<string, double>();             
 
             for (int i = 0; i < similarity.Length; i++)
@@ -140,7 +139,7 @@ namespace CAS
 
             aiUI.similarityUI.PopulateData(similarityWithPatientIdOrdered);
             GetNearestNeighbours(similarityWithPatientIdOrdered, 4);
-            SetSimilartiySettings(similarityWithPatientIdOrdered); 
+            SetSimilartiySettings(similarityWithPatientIdOrdered);
 
             return similarityWithPatientIdOrdered; 
         }
@@ -323,7 +322,7 @@ namespace CAS
         {
             List<string> frontLayerPatientIds = new List<string>();
 
-            foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
+            foreach (string patientId in manager.stepManager.stepParents[manager.stepManager.stepParents.Count - 1].GetModelsInThisStep().Keys.ToList())
             {
                 frontLayerPatientIds.Add(manager.stepManager.allModelsInformationGameobjectRecordName[patientId][0]);
             }
@@ -341,23 +340,23 @@ namespace CAS
 
             unInterestingModels = new List<CAS_ContolModel>();
 
-            foreach (CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
+            foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
             {
-                foreach (string patientId in eachStepParent.GetModelsInThisStep().Keys.ToList())
-                {
-                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
-                    controlModel.SetSimilarity(uninterestedSimilartiy, 3);
+                CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+                controlModel.SetSimilarity(uninterestedSimilartiy, 3);
+
+                if (!unInterestingModels.Contains(controlModel))
                     unInterestingModels.Add(controlModel);
-                }
             }
 
-            List<string> patientIdKeys = similarityWithPatientIdOrdered.Keys.ToList(); 
+
+            List<string> patientIdKeys = similarityWithPatientIdOrdered.Keys.ToList();
 
             foreach (string patientId in patientIdKeys)
             {
-                if (manager.stepManager.stepParents[0].GetModelsInThisStep().ContainsKey(patientId))
+                if (manager.stepManager.stepParents[manager.stepManager.stepParents.Count-1].GetModelsInThisStep().ContainsKey(patientId))
                 {
-                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+                    CAS_ContolModel controlModel = manager.stepManager.stepParents[manager.stepManager.stepParents.Count-1].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
 
                     if (interestingLayer1.Count < 5)
                     {
@@ -395,36 +394,15 @@ namespace CAS
 
         public void ActivateSimilartiyVisualisation()
         {
-            int index = 0; 
-
-            foreach(CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
-            {
-    
-                if (index == 0)
-                {
-                    PlaceObjectsWithLayer();
-                }
-                else
-                {
-                    foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
-                    {
-                        manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>().ActivateSimilartiySettings(new Vector3(0f,0f,0f), Color.white);
-                    }
-                }
-
-                index++; 
-            }
+            PlaceObjectsWithLayer(); 
         }
 
         public void DeActivateSimilarityVisualisation()
         {
-            foreach (CAS_EachStepManager eachStepParent in manager.stepManager.stepParents)
+            foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
             {
-                foreach (string patientId in eachStepParent.GetModelsInThisStep().Keys.ToList())
-                {
-                    CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
-                    controlModel.DeActivateSimilartiySettings();
-                }
+                CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
+                controlModel.DeActivateSimilartiySettings();
             }
         }
 
@@ -462,7 +440,7 @@ namespace CAS
                 else
                 {
                     currentAngle += (rightIndex * angleRequired);
-                } 
+                }
 
                 float adjustLengthOfRadius = radius * (float)model.GetSimilarity() * 10f;
 
@@ -470,7 +448,7 @@ namespace CAS
                     adjustLengthOfRadius * Mathf.Cos(currentAngle * (Mathf.PI / 180f)),
                     1.5f,
                     adjustLengthOfRadius * Mathf.Sin(currentAngle * (Mathf.PI / 180f))),
-                    InterpolateScaleColour((float)model.GetSimilarity())); 
+                    InterpolateScaleColour((float)model.GetSimilarity()));
 
                 index++;
 
