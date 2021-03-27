@@ -41,7 +41,9 @@ namespace CAS
         [HideInInspector]
         public Dictionary<string, List<string>> allModelsInformationGameobjectRecordName;
 
-        public Transform objectOfInterestToBeTransform; 
+        public Transform objectOfInterestToBeTransform;
+
+        public bool visualisationOn = false; 
         // Start is called before the first frame update
         void Start()
         {
@@ -91,8 +93,7 @@ namespace CAS
 
         public void SetObjectOfInterest(int indexOfInterest)
         {
-            currentIndexOfInterest = indexOfInterest; 
-
+            currentIndexOfInterest = indexOfInterest;
             foreach (CAS_ObjectOfInterest example in objectsOfInterest)
             {
                 example.gameObject.SetActive(false); 
@@ -105,6 +106,7 @@ namespace CAS
 
         public void UnSetObjectOfInterest()
         {
+            currentIndexOfInterest = -1; 
             foreach (CAS_ObjectOfInterest example in objectsOfInterest)
             {
                 example.gameObject.SetActive(false);
@@ -118,11 +120,13 @@ namespace CAS
             string[] ignoredColumns = new string[] { "manualAddedOthersFromCode", "morphoPresent", "id" };
 
             DataTable filteredTable = manager.dataManager.DataForSimilarityCalculation(filteredLayerPatientIds, ignoredColumns);
+
+            //Add the question here to the same table. So one extra row at the last 
             DataRow GetPatientRecordWithIdAsDataRow = manager.dataManager.GetPatientRecordOfInterest(allModelsInformationGameobjectRecordName[objectsOfInterest[indexOfInterest].gameObject.name][0]);
             filteredTable.ImportRow(GetPatientRecordWithIdAsDataRow);
 
             double[] similarityDouble = CalculateDoubleColumnSimilarity(filteredTable, ignoredColumns);
-            double[] similarityString = CalculateStringColumnSimilarity(filteredTable, ignoredColumns); 
+            double[] similarityString = CalculateStringColumnSimilarity(filteredTable, ignoredColumns);
 
             similarity = new double[similarityDouble.Length];
             Dictionary<string, double> similarityWithPatientId = new Dictionary<string, double>();             
@@ -130,8 +134,7 @@ namespace CAS
             for (int i = 0; i < similarity.Length; i++)
             {
                 similarity[i] = (similarityDouble[i] + similarityString[i]) / 2;
-
-                if(!similarityWithPatientId.ContainsKey(filteredTable.Rows[i]["id"].ToString()))
+                if (!similarityWithPatientId.ContainsKey(filteredTable.Rows[i]["id"].ToString()))
                     similarityWithPatientId.Add(filteredTable.Rows[i]["id"].ToString(), similarity[i]); 
             }
 
@@ -167,9 +170,9 @@ namespace CAS
             int rowIndex = 0;
             foreach (DataRow dataRow in filteredTableDoubleColoumnsNormalized.Rows)
             {
-                if (rowIndex == 0)
+                if (rowIndex == filteredTableDoubleColoumnsNormalized.Rows.Count-1)
                 {
-                    rowIndex++;
+                    rowIndex++; 
                     continue;
                 }
 
@@ -186,7 +189,8 @@ namespace CAS
                 }
                 //weight if needed can be given here somehow 
                 double distance = Accord.Math.Distance.Euclidean(questionArray, currentArray);
-                similarityDouble[rowIndex - 1] = distance / filteredTableDoubleColoumns.Columns.Count;
+                similarityDouble[rowIndex] = distance / filteredTableDoubleColoumns.Columns.Count;
+                
                 rowIndex++;
             }
 
@@ -232,14 +236,14 @@ namespace CAS
                 int rowIndexFilteredOtherRows = 0;
                 foreach (double[] otherRows in result)
                 {
-                    if (rowIndexFilteredOtherRows == 0)
+                    if (rowIndexFilteredOtherRows == result.Length - 1)
                     {
                         rowIndexFilteredOtherRows++;
                         continue;
                     }
 
                     double distance = Accord.Math.Distance.Dice(questionRowString, otherRows);
-                    similarityStringForEachColumn[rowIndexFilteredOtherRows - 1] = distance;
+                    similarityStringForEachColumn[rowIndexFilteredOtherRows] = distance;
                     rowIndexFilteredOtherRows++;
                 }
 
@@ -389,12 +393,16 @@ namespace CAS
             }
 
             similartiyMin = similarityWithPatientIdOrdered[patientIdKeys[0]];
-            similartiyMax = similarityWithPatientIdOrdered[patientIdKeys[patientIdKeys.Count - 1]]; 
+            similartiyMax = similarityWithPatientIdOrdered[patientIdKeys[patientIdKeys.Count - 1]];
+
+            if (visualisationOn) ActivateSimilartiyVisualisation();
         }
 
         public void ActivateSimilartiyVisualisation()
         {
-            PlaceObjectsWithLayer(); 
+            PlaceObjectsWithLayer();
+
+            visualisationOn = true; 
         }
 
         public void DeActivateSimilarityVisualisation()
@@ -404,6 +412,9 @@ namespace CAS
                 CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
                 controlModel.DeActivateSimilartiySettings();
             }
+
+
+            visualisationOn = false;
         }
 
         public void PlaceObjectsWithLayer()
@@ -515,6 +526,14 @@ namespace CAS
                     allModelsInformationGameobjectRecordName.Add(allModelsInformation[id].name, idList);
                 }
 
+            }
+        }
+
+        public void RefreshAfterFilter()
+        {
+            if(currentIndexOfInterest > -1)
+            {
+                SetObjectOfInterest(currentIndexOfInterest); 
             }
         }
     }

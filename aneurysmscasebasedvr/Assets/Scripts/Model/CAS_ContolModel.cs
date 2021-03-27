@@ -174,6 +174,7 @@ namespace CAS
         //Similarity values already set. So now active this setting by having a visualise button in the tab. Switch on off in the smilartis script written today 
         public void ActivateSimilartiySettings(Vector3 position, Color similartiyColor)
         {
+            moving = false; 
             similartiyPosition = position;
             moveForSimilartiy = true;
             currentOriginalColor = similartiyColor;

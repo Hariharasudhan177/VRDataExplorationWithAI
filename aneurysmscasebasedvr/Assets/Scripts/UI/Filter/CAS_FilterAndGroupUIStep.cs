@@ -146,6 +146,8 @@ namespace CAS
             {
                 ApplySorting(sortByKey);
             }
+
+            filterAndGroupUIManager.manager.aiManager.RefreshAfterFilter(); 
         }
 
         public void CreateAndEditFilterSteps()
