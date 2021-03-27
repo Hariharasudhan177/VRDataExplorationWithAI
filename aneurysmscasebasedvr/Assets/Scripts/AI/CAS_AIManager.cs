@@ -400,6 +400,8 @@ namespace CAS
 
         public void ActivateSimilartiyVisualisation()
         {
+            manager.filterAndGroupUIManager.RemoveGrouping(); 
+
             PlaceObjectsWithLayer();
 
             visualisationOn = true; 
@@ -407,6 +409,8 @@ namespace CAS
 
         public void DeActivateSimilarityVisualisation()
         {
+            manager.filterAndGroupUIManager.RemoveGrouping();
+
             foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
             {
                 CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
@@ -534,6 +538,14 @@ namespace CAS
             if(currentIndexOfInterest > -1)
             {
                 SetObjectOfInterest(currentIndexOfInterest); 
+            }
+        }
+
+        public void RefreshAfterGroupingRemoved()
+        {
+            if (visualisationOn)
+            {
+                PlaceObjectsWithLayer();
             }
         }
     }

@@ -80,6 +80,11 @@ namespace CAS
             {
                 filterAndGroupManager.ApplyGrouping("ruptureStatus", 4);
             }
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                filterAndGroupManager.RemoveGrouping();
+            }
         }
 
         public void PopulateFilterOptions()

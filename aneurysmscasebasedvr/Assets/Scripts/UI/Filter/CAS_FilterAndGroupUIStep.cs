@@ -147,7 +147,7 @@ namespace CAS
                 ApplySorting(sortByKey);
             }
 
-            filterAndGroupUIManager.manager.aiManager.RefreshAfterFilter(); 
+            filterAndGroupUIManager.manager.aiManager.RefreshAfterFilter();
         }
 
         public void CreateAndEditFilterSteps()
@@ -253,6 +253,7 @@ namespace CAS
 
         public void ApplySorting(string sortKey)
         {
+            if (filterAndGroupUIManager.manager.aiManager.visualisationOn) return; 
             sortByKey = sortKey;
             groupedByKey = ""; 
 
@@ -271,7 +272,9 @@ namespace CAS
             sortByKey = "";
             filterAndGroupUIManager.manager.stepManager.RemoveGroupByModelsToEditLayers();
             SetGroupingDetails(new Dictionary<string, List<string>>()); 
-            groupingOptionName.text = ""; 
+            groupingOptionName.text = "";
+
+            filterAndGroupUIManager.manager.aiManager.RefreshAfterGroupingRemoved();
         }
 
         public void OnClickGroupingWithOrWithoutFilterSwitch(float value)
