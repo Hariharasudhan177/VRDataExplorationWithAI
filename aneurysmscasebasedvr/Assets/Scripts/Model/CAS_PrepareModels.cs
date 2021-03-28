@@ -11,6 +11,8 @@ namespace CAS
     [ExecuteInEditMode]
     public class CAS_PrepareModels : MonoBehaviour
     {
+        bool movingInitial = false; 
+
         public void Prepare(GameObject model, Material material, float limitSize, Material boundingBoxLineMaterial)
         {
             //Reduce scale to fit to limit size 
@@ -56,6 +58,7 @@ namespace CAS
             model.GetComponent<Rigidbody>().isKinematic = true;
 
             model.transform.GetChild(0).gameObject.AddComponent<BoxCollider>();
+            model.transform.GetChild(0).gameObject.GetComponent<BoxCollider>().enabled = false;
             model.transform.GetChild(0).gameObject.AddComponent<BoundBox>();
             model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().lineMaterial = boundingBoxLineMaterial;
             model.transform.GetChild(0).gameObject.GetComponent<BoundBox>().enabled = false; 
@@ -67,6 +70,7 @@ namespace CAS
 
             model.gameObject.AddComponent<CAS_GrabInteractable>();
             model.GetComponent<CAS_GrabInteractable>().throwOnDetach = false;
+            //model.GetComponent<CAS_GrabInteractable>().enabled = false;
         }
 
         public void Update()
@@ -87,6 +91,12 @@ namespace CAS
         /// </summary>
         void SwitchCollider()
         {
+            if(movingInitial)
+            {
+                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("NotInteractables");
+                return; 
+            }
+
             if(Vector3.Distance(transform.position, Camera.main.transform.position) < 1f)
             {
                 transform.GetChild(0).GetComponent<BoxCollider>().enabled = false;
@@ -94,7 +104,7 @@ namespace CAS
                 //Need not change in unity game object layer. Just in the cas_interactable(XR) script. Yes it is simple but it doesn't make sense to me too. 
                 //gameObject.layer = 8;
                 //transform.GetChild(0).gameObject.layer = 8; 
-                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("DirectInteractables");
+                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("ModelInteractables");
                 GetComponent<CAS_GrabInteractable>().attachEaseInTime = 0.5f;
                 //GetComponent<CAS_GrabInteractable>().trackRotation = true;
             }
@@ -104,7 +114,7 @@ namespace CAS
                 transform.GetChild(0).GetComponent<MeshCollider>().enabled = false;
                 //gameObject.layer = 9;
                 //transform.GetChild(0).gameObject.layer = 9;
-                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("RayInteractables");
+                GetComponent<CAS_GrabInteractable>().interactionLayerMask = LayerMask.GetMask("ModelInteractables");
                 if (GetComponent<CAS_GrabInteractable>().stepManager.controlledPull)
                 {
                     GetComponent<CAS_GrabInteractable>().attachEaseInTime = 20f;
@@ -115,6 +125,11 @@ namespace CAS
                 }
                 GetComponent<CAS_GrabInteractable>().trackRotation = false;
             }
+        }
+
+        public void SetInitialMovement(bool value)
+        {
+            movingInitial = value; 
         }
     }
 }

@@ -7,9 +7,10 @@ namespace CAS
 {
     public class CAS_ContolModel : MonoBehaviour
     {
-        CAS_StepManager stepManager; 
+        CAS_StepManager stepManager;
 
         // Adjust the speed for the movement - Should be received from step manager 
+        float speedMoveInitial = 10f;
         float speedMoveToLayer = 6f;
         float speedPush= 10f;
 
@@ -25,6 +26,7 @@ namespace CAS
         int layerIndex;
 
         bool pushingToOriginalPosition = false; 
+        bool movingInitial = false;
         bool moving = false;
 
         //string colourInMaterialName = "_Edgecolor"; 
@@ -58,6 +60,25 @@ namespace CAS
                 transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalLocalPosition, stepPush);
 
                 if (Vector3.Distance(transform.localPosition, originalLocalPosition) < 0.01f && Vector3.Distance(transform.localPosition, originalLocalPosition) > (-0.01f)) pushingToOriginalPosition = false;
+            }
+
+            //MovingInitial 
+            float stepInitialMove = speedMoveInitial * Time.deltaTime; 
+            if (movingInitial)
+            {
+                //stepManager.SetTrueScale();
+                if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f))
+                {
+                    movingInitial = false;
+                    GetComponent<CAS_GrabInteractable>().enabled = true;
+                    GetComponent<CAS_PrepareModels>().SetInitialMovement(false);
+                }
+                else
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, toBeWorldPosition, stepInitialMove);
+                    originalLocalPosition = transform.localPosition;
+                }
+                //stepManager.SetOriginalScale(); 
             }
 
             //Moving 
@@ -97,7 +118,8 @@ namespace CAS
         {
             toBeWorldPosition = position;
             initialWorldPosition = toBeWorldPosition;
-            moving = true;
+            movingInitial = true;
+            GetComponent<CAS_PrepareModels>().SetInitialMovement(true); 
         }
 
         public Vector3 GetPosition()

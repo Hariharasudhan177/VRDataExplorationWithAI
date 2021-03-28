@@ -13,8 +13,8 @@ TagManager:
   - UI
   - 
   - 
-  - DirectInteractables
-  - RayInteractables
+  - ModelInteractables
+  - NotInteractables
   - Ground
   - Compare
   - Radialchart

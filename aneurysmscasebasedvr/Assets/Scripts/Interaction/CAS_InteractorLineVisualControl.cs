@@ -2,62 +2,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
-using UnityEngine.XR.Interaction.Toolkit; 
+using UnityEngine.XR.Interaction.Toolkit;
 
-/// <summary>
-/// To control XRInteractorLineVisual
-/// </summary>
-public class CAS_InteractorLineVisualControl : MonoBehaviour
+namespace CAS
 {
-    public XRNode leftOrRightHand;
-    InputDevice inputXRDevice; 
-
-    //Use Input helpers later 
-    public enum CAS_XRButtonTypes
+    /// <summary>
+    /// To control XRInteractorLineVisual
+    /// </summary>
+    public class CAS_InteractorLineVisualControl : MonoBehaviour
     {
-        triggerTouch, 
-        touchPadTouch
-    }
+        public XRNode leftOrRightHand;
+        InputDevice inputXRDevice;
+        public CAS_InteractorControl interactableControl;
 
-    public CAS_XRButtonTypes activateLineButton; 
-
-    private void Start()
-    {
-        List<InputDevice> inputXRDevices = new List<InputDevice>();
-        InputDevices.GetDevicesAtXRNode(leftOrRightHand, inputXRDevices); 
-        if(inputXRDevices.Count > 0)
+        //Use Input helpers later 
+        public enum CAS_XRButtonTypes
         {
-            inputXRDevice = inputXRDevices[0]; 
+            triggerTouch,
+            touchPadTouch
         }
-    }
 
-    private void Update()
-    {
-        //To activate line visual only when trigger button is pressed 
-        if(inputXRDevice != null)
+        public CAS_XRButtonTypes activateLineButton;
+
+        private void Start()
         {
-            if(activateLineButton == CAS_XRButtonTypes.touchPadTouch)
+            List<InputDevice> inputXRDevices = new List<InputDevice>();
+            InputDevices.GetDevicesAtXRNode(leftOrRightHand, inputXRDevices);
+            if (inputXRDevices.Count > 0)
             {
-                bool touchButtonTouched;
-                if (inputXRDevice.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out touchButtonTouched) && touchButtonTouched)
-                {
-                    gameObject.GetComponent<XRInteractorLineVisual>().enabled = true;
-                }
-                else
-                {
-                    gameObject.GetComponent<XRInteractorLineVisual>().enabled = false;
-                }
+                inputXRDevice = inputXRDevices[0];
             }
-            else if(activateLineButton == CAS_XRButtonTypes.triggerTouch)
+        }
+
+        private void Update()
+        {
+            //To activate line visual only when trigger button is pressed 
+            if (inputXRDevice != null)
             {
-                float triggerButtonTouched;
-                if (inputXRDevice.TryGetFeatureValue(CommonUsages.trigger, out triggerButtonTouched) && triggerButtonTouched > 0.065f)
+                if (activateLineButton == CAS_XRButtonTypes.touchPadTouch)
                 {
-                    gameObject.GetComponent<XRInteractorLineVisual>().enabled = true;
+                    bool touchButtonTouched;
+                    if (inputXRDevice.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out touchButtonTouched) && touchButtonTouched)
+                    {
+                        gameObject.GetComponent<XRInteractorLineVisual>().enabled = true;
+                    }
+                    else
+                    {
+                        gameObject.GetComponent<XRInteractorLineVisual>().enabled = false;
+                    }
                 }
-                else
+                else if (activateLineButton == CAS_XRButtonTypes.triggerTouch)
                 {
-                    gameObject.GetComponent<XRInteractorLineVisual>().enabled = false;
+                    float triggerButtonTouched;
+                    if (inputXRDevice.TryGetFeatureValue(CommonUsages.trigger, out triggerButtonTouched) && triggerButtonTouched > 0.065f)
+                    {
+                        if (!interactableControl.otherInteractorActiveStatus)
+                            gameObject.GetComponent<XRInteractorLineVisual>().enabled = true;
+                    }
+                    else
+                    {
+                        gameObject.GetComponent<XRInteractorLineVisual>().enabled = false;
+                    }
                 }
             }
         }

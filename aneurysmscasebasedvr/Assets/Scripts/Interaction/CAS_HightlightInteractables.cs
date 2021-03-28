@@ -25,7 +25,8 @@ namespace CAS
         Color highlightedColor = Color.magenta;
 
         //ShowData
-        public CAS_Manager manager; 
+        public CAS_Manager manager;
+        public CAS_InteractorControl interactableControl;
 
         // Start is called before the first frame update
         void Start()
@@ -54,6 +55,11 @@ namespace CAS
 
         void HighlightOnHoverEnter(XRBaseInteractable interactable)
         {
+            if (interactor.GetType() == typeof(XRDirectInteractor))
+            {
+                interactableControl.SetOtherInteractorInActive();
+            }
+
             if ((interactor.GetType() == typeof(XRRayInteractor)))
             {
                 float triggerTouched;
@@ -61,6 +67,10 @@ namespace CAS
                 if (!(triggerTouched > 0.065f))
                 {
                     return;
+                }
+                else
+                {
+                    interactableControl.SetOtherInteractorInActive();
                 }
             }
 
@@ -76,6 +86,8 @@ namespace CAS
 
         void DeHighlightOnHoverExit(XRBaseInteractable interactable)
         {
+            interactableControl.SetOtherInteractorActive();
+
             if (interactable == null) return; 
             //manager.displayPatientDetailsUIManager.showDataUI.UnPopulateData();
             if (interactable.GetComponent<CAS_PrepareModels>())

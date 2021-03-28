@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR; 
+using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace CAS
 {
@@ -15,9 +16,10 @@ namespace CAS
         InputDevice inputXRDevice;
 
         bool pushHappening = false;
-        bool checkForPush = false;
+        public bool checkForPush = false;
 
-        bool pushGestureOn = false; 
+        bool pushGestureOn = false;
+        public XRBaseInteractor interactor;
 
         // Start is called before the first frame update
         void Start()
@@ -54,15 +56,22 @@ namespace CAS
                 bool gripPressed = false;
                 if (inputXRDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out gripPressed) && gripPressed)
                 {
-                    checkForPush = false;
+                    //checkForPush = false;
+                    //}
+                    //else
+                    //{
+                    //if (pushGestureOn)
+                    //{
+                    checkForPush = true;
+                    if (interactor.GetType() == typeof(XRDirectInteractor))
+                    {
+                        CheckForPush(inputXRDevice);
+                    }
+                    //}
                 }
                 else
                 {
-                    if (pushGestureOn)
-                    {
-                        CheckForPush(inputXRDevice);
-                        checkForPush = true;
-                    }
+                    checkForPush = false;
                 }
             }
         }

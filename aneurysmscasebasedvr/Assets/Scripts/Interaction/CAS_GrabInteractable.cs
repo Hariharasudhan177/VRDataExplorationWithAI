@@ -127,6 +127,8 @@ namespace CAS
         /// <summary>Get the current selecting interactor for this interactable.
         public XRBaseInteractor selectingInteractor { get { return m_SelectingInteractor; } }
 
+        XRBaseInteractor selectingInteractorCurrent; 
+
         // Point we are attaching to on this Interactable (in interactor's attach's coordinate space)
         Vector3 m_InteractorLocalPosition;
         Quaternion m_InteractorLocalRotation;
@@ -278,7 +280,7 @@ namespace CAS
 
         void UpdateTarget(float timeDelta)
         {
-            if (stepManager.controlledPull & stepManager.pushObjects & interactionLayerMask != LayerMask.GetMask("DirectInteractables"))
+            if (selectingInteractorCurrent.GetComponent<CAS_PushGesture>().checkForPush)
             {
                 if (m_AttachEaseInTime > 0.0f && m_CurrentAttachEaseTime <= m_AttachEaseInTime)
                 {
@@ -436,6 +438,8 @@ namespace CAS
         /// <param name="interactor">Interactor that is initiating the selection.</param>
 		protected override void OnSelectEnter(XRBaseInteractor interactor)
         {
+            selectingInteractorCurrent = interactor; 
+
             if (interactor is XRDirectInteractor)
             {
                 GetComponent<CAS_GrabInteractable>().trackRotation = true;
@@ -501,6 +505,8 @@ namespace CAS
         /// <param name="interactor">Interactor that is ending the selection.</param>
 		protected override void OnSelectExit(XRBaseInteractor interactor)
         {
+            selectingInteractorCurrent = null;
+
             if (interactor is XRDirectInteractor)
             {
                 SavedTransform savedTransform = null;
@@ -618,7 +624,7 @@ namespace CAS
             //onHoverExit.AddListener(DeHighlightOnHoverExit);
             stepManager = GetComponentInParent<CAS_StepManager>();
 
-            if (stepManager == null) stepManager = FindObjectOfType<CAS_StepManager>(); 
+            if (stepManager == null) stepManager = FindObjectOfType<CAS_StepManager>();
         }
 
         //Moving this code to interactor 
