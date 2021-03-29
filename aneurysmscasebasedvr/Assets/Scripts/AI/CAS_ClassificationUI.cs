@@ -40,6 +40,14 @@ namespace CAS
             GameObject eachFieldOfDataObjectFinal = Instantiate(similarityValuePrefab, parentContent);
             eachFieldOfDataObjectFinal.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData("Prediction", predicted);
         }
+
+        public void UnPopulateData()
+        {
+            foreach (Transform child in parentContent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
 
 }

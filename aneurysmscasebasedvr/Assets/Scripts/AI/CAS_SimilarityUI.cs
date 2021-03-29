@@ -38,5 +38,13 @@ namespace CAS
                 eachFieldOfDataObject.GetComponent<CAS_EachFieldOfData>().SetColumnNameAndFieldData(patientId, similarityValues[patientId].ToString("0.0000")); 
             }
         }
+
+        public void UnPopulateData()
+        {
+            foreach (Transform child in parentContent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
 }

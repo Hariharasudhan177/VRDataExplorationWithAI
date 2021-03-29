@@ -26,7 +26,23 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                PopulateData("BP_20161021_right_0");
+                aiUI.aiManager.SetObjectOfInterest(0);
+            }
 
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                PopulateData("Hannover_DRKR_right_0");
+                aiUI.aiManager.SetObjectOfInterest(1);
+            }
+
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                UnPopulateData();
+                aiUI.aiManager.UnSetObjectOfInterest();
+            }
         }
 
         public void UpdateExamplesDropDown()
@@ -69,6 +85,8 @@ namespace CAS
             {
                 Destroy(toDelete.gameObject);
             }
+
+            aiUI.aiManager.UnPopulateData();
         }
 
         public void OnDropDownValueChanged(int dropDownIndex)

@@ -53,16 +53,6 @@ namespace CAS
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                SetObjectOfInterest(1);
-            }
-
-            if (Input.GetKeyDown(KeyCode.B))
-            {
-                SetObjectOfInterest(0);
-            }
-
             if (Input.GetKeyDown(KeyCode.C))
             {
                 ActivateSimilartiyVisualisation(); 
@@ -400,6 +390,8 @@ namespace CAS
 
         public void ActivateSimilartiyVisualisation()
         {
+            if (currentIndexOfInterest < 0) return; 
+
             manager.filterAndGroupUIManager.RemoveGrouping(); 
 
             PlaceObjectsWithLayer();
@@ -409,6 +401,8 @@ namespace CAS
 
         public void DeActivateSimilarityVisualisation()
         {
+            if (!visualisationOn) return; 
+
             manager.filterAndGroupUIManager.RemoveGrouping();
 
             foreach (string patientId in manager.stepManager.stepParents[0].GetModelsInThisStep().Keys.ToList())
@@ -416,7 +410,6 @@ namespace CAS
                 CAS_ContolModel controlModel = manager.stepManager.stepParents[0].GetModelsInThisStep()[patientId].GetComponent<CAS_ContolModel>();
                 controlModel.DeActivateSimilartiySettings();
             }
-
 
             visualisationOn = false;
         }
@@ -547,6 +540,17 @@ namespace CAS
             {
                 PlaceObjectsWithLayer();
             }
+        }
+
+        public void UnPopulateData()
+        {
+            aiUI.classificationUI.UnPopulateData();
+            aiUI.similarityUI.UnPopulateData(); 
+        }
+
+        public int GetIndexOfInterest()
+        {
+            return currentIndexOfInterest; 
         }
     }
 }
