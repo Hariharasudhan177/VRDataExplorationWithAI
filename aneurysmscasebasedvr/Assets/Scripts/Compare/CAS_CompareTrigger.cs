@@ -59,8 +59,8 @@ namespace CAS
 
         private void OnTriggerEnter(Collider other)
         {
-            bool gripPressed = false;
-            if (inputXRDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out gripPressed) && gripPressed)
+            bool triggerPressed = false;
+            if (inputXRDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out triggerPressed) && triggerPressed)
             {
                 if (modelsPlaced)
                 {
