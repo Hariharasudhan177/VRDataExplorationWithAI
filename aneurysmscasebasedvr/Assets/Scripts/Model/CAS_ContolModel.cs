@@ -11,8 +11,9 @@ namespace CAS
 
         // Adjust the speed for the movement - Should be received from step manager 
         float speedMoveInitial = 10f;
+        float speedMoveSorting = 2f;
         float speedMoveToLayer = 6f;
-        float speedPush= 10f;
+        float speedPush = 10f;
 
         Vector3 originalLocalPosition;
         Vector3 toBeWorldPosition;
@@ -25,26 +26,27 @@ namespace CAS
 
         int layerIndex;
 
-        bool pushingToOriginalPosition = false; 
+        bool pushingToOriginalPosition = false;
         bool movingInitial = false;
+        bool movingSorting = false;
         bool moving = false;
 
         //string colourInMaterialName = "_Edgecolor"; 
         string colourInMaterialName = "_Color";
 
-        bool moveForSimilartiy = false; 
+        bool moveForSimilartiy = false;
         double similartiy = 0f;
         Vector3 similartiyPosition;
         //1 - mostInteresting; 2 - lessInteresting; 3 - notInteresting;
-        int interest = 2; 
+        int interest = 2;
 
         // Start is called before the first frame update
         void Start()
         {
             initialOriginalColour = transform.GetChild(0).GetComponent<MeshRenderer>().material.GetColor(colourInMaterialName);
             currentOriginalColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.GetColor(colourInMaterialName);
-            
-            stepManager = GetComponentInParent<CAS_StepManager>(); 
+
+            stepManager = GetComponentInParent<CAS_StepManager>();
 
             originalLocalPosition = transform.localPosition;
             originalRotation = transform.localRotation;
@@ -63,7 +65,7 @@ namespace CAS
             }
 
             //MovingInitial 
-            float stepInitialMove = speedMoveInitial * Time.deltaTime; 
+            float stepInitialMove = speedMoveInitial * Time.deltaTime;
             if (movingInitial)
             {
                 //stepManager.SetTrueScale();
@@ -81,12 +83,31 @@ namespace CAS
                 //stepManager.SetOriginalScale(); 
             }
 
+            //MovingSorting 
+            float stepSortingMove = speedMoveSorting * Time.deltaTime;
+            if (movingSorting)
+            {
+                //stepManager.SetTrueScale();
+                if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f))
+                {
+                    movingSorting = false;
+                    GetComponent<CAS_GrabInteractable>().enabled = true;
+                    GetComponent<CAS_PrepareModels>().SetInitialMovement(false);
+                }
+                else
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, toBeWorldPosition, stepSortingMove);
+                    originalLocalPosition = transform.localPosition;
+                }
+                //stepManager.SetOriginalScale(); 
+            }
+
             //Moving 
             float stepMoveToLayer = speedMoveToLayer * Time.deltaTime;
             if (moving)
             {
                 //stepManager.SetTrueScale();
-                if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f)) 
+                if (Vector3.Distance(transform.position, toBeWorldPosition) < 0.01f && Vector3.Distance(transform.position, toBeWorldPosition) > (-0.01f))
                 {
                     moving = false;
                 }
@@ -119,12 +140,20 @@ namespace CAS
             toBeWorldPosition = position;
             initialWorldPosition = toBeWorldPosition;
             movingInitial = true;
-            GetComponent<CAS_PrepareModels>().SetInitialMovement(true); 
+            GetComponent<CAS_PrepareModels>().SetInitialMovement(true);
+        }
+
+        public void SetPositionSorting(Vector3 position)
+        {
+            toBeWorldPosition = position;
+            initialWorldPosition = toBeWorldPosition;
+            movingSorting = true;
+            GetComponent<CAS_PrepareModels>().SetInitialMovement(true);
         }
 
         public Vector3 GetPosition()
         {
-            return initialWorldPosition; 
+            return initialWorldPosition;
         }
 
         public void ChangeLayer()
@@ -139,7 +168,7 @@ namespace CAS
 
         public void PushToOriginalPosition()
         {
-            pushingToOriginalPosition = true; 
+            pushingToOriginalPosition = true;
             //transform.localRotation = originalRotation;
         }
 
@@ -167,7 +196,7 @@ namespace CAS
 
         public void HighlightModelSinceSelected(bool selected)
         {
-            transform.GetChild(0).GetComponent<BoundBox>().enabled = selected; 
+            transform.GetChild(0).GetComponent<BoundBox>().enabled = selected;
         }
 
         Vector3 LerpWithoutClamp(Vector3 originPosition, Vector3 currentPosition, float factor)
@@ -185,18 +214,18 @@ namespace CAS
         public void SetSimilarity(double value, int interestStatus)
         {
             similartiy = value;
-            interest = interestStatus; 
+            interest = interestStatus;
         }
 
         public double GetSimilarity()
         {
-            return similartiy; 
+            return similartiy;
         }
 
         //Similarity values already set. So now active this setting by having a visualise button in the tab. Switch on off in the smilartis script written today 
         public void ActivateSimilartiySettings(Vector3 position, Color similartiyColor)
         {
-            moving = false; 
+            moving = false;
             similartiyPosition = position;
             moveForSimilartiy = true;
             currentOriginalColor = similartiyColor;
@@ -214,7 +243,7 @@ namespace CAS
 
         public bool GetModelMovingStatus()
         {
-            return moving; 
+            return moving;
         }
     }
 }

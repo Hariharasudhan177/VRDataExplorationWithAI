@@ -116,13 +116,18 @@ namespace CAS
                 //Mesh bounds 
                 Bounds meshBounds = child.GetComponentInChildren<MeshRenderer>().bounds;
 
-                //child.transform.position = toBePosition;
-                child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition);
-
                 if (firstTime)
                 {
+
+                    //child.transform.position = toBePosition;
+                    child.GetComponent<CAS_ContolModel>().SetPosition(toBePosition);
                     //Not sure of this line - not useful for cubes but needed for meshes as the mesh is away from centre will be adjusted in the parent 
                     child.GetChild(0).transform.localPosition = transform.localPosition - meshBounds.center;
+                }
+                else
+                {
+                    //child.transform.position = toBePosition;
+                    child.GetComponent<CAS_ContolModel>().SetPositionSorting(toBePosition);
                 }
 
                 //child.gameObject.GetComponent<CAS_ContolModel>().SetStepOriginalPositionMoving(toBePosition, layerChangeType); 
