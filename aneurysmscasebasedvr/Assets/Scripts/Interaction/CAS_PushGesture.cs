@@ -83,7 +83,7 @@ namespace CAS
 
             if (angularVelocity.x > 5 || angularVelocity.y > 5 || angularVelocity.z > 5)
             {
-                Debug.Log("Trying to push");
+                //Debug.Log("Trying to push");
 
                 //RayPush
                 Vector3 devicePosition;

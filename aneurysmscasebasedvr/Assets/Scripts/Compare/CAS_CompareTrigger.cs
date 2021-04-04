@@ -64,10 +64,21 @@ namespace CAS
             {
                 if (modelsPlaced)
                 {
-                    if (other.gameObject.GetComponentInParent<CAS_ContolModel>() != null)
+                    if (other.gameObject.GetComponentInParent<CAS_ContolModel>() != null || other.gameObject.GetComponentInParent<CAS_ObjectOfInterest>() != null)
                     {
-                        bool status = compareManager.manager.compareManager.AddIdToList(compareManager.manager.stepManager.allModelsInformationGameobjectRecordName[other.transform.parent.gameObject.name][0]);
+                        bool status = false;
+                        
+                        if(other.gameObject.GetComponentInParent<CAS_ContolModel>() != null)
+                        {
+                            status = compareManager.manager.compareManager.AddIdToList(compareManager.manager.stepManager.allModelsInformationGameobjectRecordName[other.transform.parent.gameObject.name][0], false);
+                        }
 
+                        if (other.gameObject.GetComponentInParent<CAS_ObjectOfInterest>() != null)
+                        {
+                            status = compareManager.manager.compareManager.AddIdToList(compareManager.manager.aiManager.allModelsInformationGameobjectRecordName[other.transform.parent.gameObject.name][0], true);
+                        }
+
+                        
                         if (status)
                         {
                             red = 0f;

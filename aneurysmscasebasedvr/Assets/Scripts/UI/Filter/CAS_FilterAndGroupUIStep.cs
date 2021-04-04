@@ -336,9 +336,6 @@ namespace CAS
             int keyIndex = 0; 
             foreach (string patientId in sorted.patientIds)
             {
-                Debug.Log(sorted.stringValues[index]);
-                Debug.Log(stringIndex); 
-
                 //if (sorted.isString)
                 //{
                     previousKey = currentKey;

@@ -11,7 +11,7 @@ namespace CAS
 
         // Adjust the speed for the movement - Should be received from step manager 
         float speedMoveInitial = 10f;
-        float speedMoveSorting = 2f;
+        float speedMoveSorting = 4f;
         float speedMoveToLayer = 6f;
         float speedPush = 10f;
 
@@ -35,6 +35,7 @@ namespace CAS
         string colourInMaterialName = "_Color";
 
         bool moveForSimilartiy = false;
+        bool similaritySettingsStatus = false; 
         double similartiy = 0f;
         Vector3 similartiyPosition;
         //1 - mostInteresting; 2 - lessInteresting; 3 - notInteresting;
@@ -96,6 +97,7 @@ namespace CAS
                 }
                 else
                 {
+                    moving = false; 
                     transform.position = Vector3.MoveTowards(transform.position, toBeWorldPosition, stepSortingMove);
                     originalLocalPosition = transform.localPosition;
                 }
@@ -153,7 +155,14 @@ namespace CAS
 
         public Vector3 GetPosition()
         {
-            return initialWorldPosition;
+            if (similaritySettingsStatus)
+            {
+                return similartiyPosition;
+            }
+            else
+            {
+                return initialWorldPosition;
+            }
         }
 
         public void ChangeLayer()
@@ -230,6 +239,7 @@ namespace CAS
             moveForSimilartiy = true;
             currentOriginalColor = similartiyColor;
             transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
+            similaritySettingsStatus = true;
         }
 
         public void DeActivateSimilartiySettings()
@@ -239,6 +249,7 @@ namespace CAS
             moving = true;
             currentOriginalColor = initialOriginalColour;
             transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor(colourInMaterialName, currentOriginalColor);
+            similaritySettingsStatus = false; 
         }
 
         public bool GetModelMovingStatus()

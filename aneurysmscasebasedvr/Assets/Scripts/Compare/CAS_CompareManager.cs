@@ -90,7 +90,7 @@ namespace CAS
             //tientIdsInCompareList = new List<string>(); 
         }
 
-        public void PopulateData(string patientId, int index)
+        public void PopulateData(string patientId, int index, bool objectOfInterest)
         {
             compareIndividualObjectsList[index] = new List<GameObject>(); 
 
@@ -99,7 +99,16 @@ namespace CAS
             compareIndividualObjectsList[index].Add(deleteButtonObject);
 
             compareObjects[index].SetActive(true);
-            compareObjects[index].GetComponent<CAS_CompareObject>().ActivateCompareObject(manager.stepManager.allModelsInformationByRecordName[patientId]);
+
+            if (objectOfInterest)
+            {
+                compareObjects[index].GetComponent<CAS_CompareObject>().ActivateCompareObject(manager.aiManager.allModelsInformationByRecordName[patientId]);
+            }
+            else
+            {
+                compareObjects[index].GetComponent<CAS_CompareObject>().ActivateCompareObject(manager.stepManager.allModelsInformationByRecordName[patientId]);
+            }
+ 
 
             GameObject modelSnapshotObject = Instantiate(eachSnapShotPrefab, parentContent);
             modelSnapshotObject.GetComponent<CAS_CompareSnapshot>().SetRawImage(renderTextures[index]);
@@ -126,7 +135,7 @@ namespace CAS
             compareObjects[index].SetActive(false); 
         }
 
-        public bool AddIdToList(string patientId)
+        public bool AddIdToList(string patientId, bool objectOfInterest)
         {
             //If patient id is already present 
             foreach(string patientIdPresent in patientIdsInCompareList)
@@ -153,7 +162,7 @@ namespace CAS
 
             patientIdsInCompareList[index] = patientId;
             compareIndividualObjectsStatus[index] = true;
-            PopulateData(patientId, index);
+            PopulateData(patientId, index, objectOfInterest);
 
             return true; 
         }

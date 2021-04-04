@@ -260,8 +260,9 @@ namespace CAS
         public void GetNearestNeighbours(Dictionary<string, double> similarityWithPatientId, int count)
         {
             Dictionary<string, double> neighbours = new Dictionary<string, double>();
-            List<string> patientIds = similarityWithPatientId.Keys.ToList(); 
+            List<string> patientIds = similarityWithPatientId.Keys.ToList();
 
+            if (count > similarityWithPatientId.Count) count = similarityWithPatientId.Count; 
             for(int i=0; i< count; i++)
             {
                 neighbours.Add(patientIds[i], similarityWithPatientId[patientIds[i]]); 

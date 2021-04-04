@@ -23,6 +23,7 @@ namespace CAS {
         private List<CAS_TextToSwitch> texts;
         private List<CAS_ScrollSwitch> scrolls; 
         private List<CAS_ContolModel> models;
+        private List<CAS_ObjectOfInterest> interestedModels;
         private List<CAS_ModelIdentifier> modelSwitches;
         private List<CAS_SliderBackgroundToSwitch> sliderBackgroundToSwitches;
         private List<CAS_SliderHandleToSwitch> sliderHandleToSwitches;
@@ -139,6 +140,11 @@ namespace CAS {
                 controlModel.ChangeMaterialForSwitch(modelMaterialS, "_Edgecolor");
             }
 
+            foreach (CAS_ObjectOfInterest interestedModel in interestedModels)
+            {
+                interestedModel.ChangeMaterialForSwitch(modelMaterialS, "_Edgecolor");
+            }
+
             foreach (CAS_ModelIdentifier modelSwitch in modelSwitches)
             {
                 modelSwitch.SetToSciFi();
@@ -216,6 +222,11 @@ namespace CAS {
                 controlModel.ChangeMaterialForSwitch(modelMaterialN, "_Color");
             }
 
+            foreach (CAS_ObjectOfInterest interestedModel in interestedModels)
+            {
+                interestedModel.ChangeMaterialForSwitch(modelMaterialN, "_Color");
+            }
+
             foreach (CAS_ModelIdentifier modelSwitch in modelSwitches)
             {
                 modelSwitch.SetToNormal();
@@ -258,6 +269,7 @@ namespace CAS {
             insideNormalPanels = FindObjectsOfTypeAll<CAS_InsidePanelNormalToSwitch>();
             texts = FindObjectsOfTypeAll<CAS_TextToSwitch>();
             models = FindObjectsOfTypeAll<CAS_ContolModel>();
+            interestedModels = FindObjectsOfTypeAll<CAS_ObjectOfInterest>();
             modelSwitches = FindObjectsOfTypeAll<CAS_ModelIdentifier>();
             scrolls = FindObjectsOfTypeAll<CAS_ScrollSwitch>();
             sliderBackgroundToSwitches = FindObjectsOfTypeAll<CAS_SliderBackgroundToSwitch>();

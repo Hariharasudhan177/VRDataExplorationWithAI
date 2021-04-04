@@ -867,6 +867,7 @@ namespace CAS
             index = 0; 
             foreach(List<double> coloumnValuesCluster in coloumnValuesClusterList)
             {
+                if (coloumnValuesCluster.Count < 1) continue; 
                 double minValue = coloumnValuesCluster.Min<double>();
                 double maxValue = coloumnValuesCluster.Max<double>();
                 string key = minValue + " to " + maxValue;

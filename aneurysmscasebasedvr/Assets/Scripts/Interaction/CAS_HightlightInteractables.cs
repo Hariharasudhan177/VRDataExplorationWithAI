@@ -77,9 +77,16 @@ namespace CAS
             if (interactable.GetComponent<CAS_PrepareModels>())
             {
                 //interactable.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", highlightedColor);
-                if(interactable.transform.GetComponent<CAS_ContolModel>())
+                if (interactable.transform.GetComponent<CAS_ContolModel>())
+                {
                     interactable.transform.GetComponent<CAS_ContolModel>().Highlight(highlightedColor);
-                manager.stepManager.DisplayThisModelData(interactable.transform.GetChild(0).GetComponentInParent<CAS_GrabInteractable>().gameObject.name); 
+                    manager.stepManager.DisplayThisModelData(interactable.transform.GetChild(0).GetComponentInParent<CAS_GrabInteractable>().gameObject.name);
+                }
+
+                if (interactable.transform.GetComponent<CAS_ObjectOfInterest>())
+                {
+                    interactable.transform.GetComponent<CAS_ObjectOfInterest>().Highlight(highlightedColor);
+                }
             }
         //meshRenderer.material.SetColor("_Color", highlightedColor);
         }
@@ -95,6 +102,9 @@ namespace CAS
                 //interactable.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_Color", defaultColor);
                 if(interactable.transform.GetComponent<CAS_ContolModel>())
                     interactable.transform.GetComponent<CAS_ContolModel>().DeHighlight();
+
+                if (interactable.transform.GetComponent<CAS_ObjectOfInterest>())
+                    interactable.transform.GetComponent<CAS_ObjectOfInterest>().DeHighlight();
             }
             //meshRenderer.material.SetColor("_Color", defaultColor);
         }
