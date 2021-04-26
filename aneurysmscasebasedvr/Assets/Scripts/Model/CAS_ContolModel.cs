@@ -173,7 +173,7 @@ namespace CAS
             //stepManager.SetTrueScale();
             //should use something like backward step index 
             layerIndex = GetComponentInParent<CAS_EachStepManager>().stepIndex;
-            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f)) + offset;
+            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f));
             moving = true;
             //stepManager.SetOriginalScale();
         }
