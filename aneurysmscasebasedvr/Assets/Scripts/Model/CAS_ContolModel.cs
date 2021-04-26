@@ -41,6 +41,9 @@ namespace CAS
         //1 - mostInteresting; 2 - lessInteresting; 3 - notInteresting;
         int interest = 2;
 
+        //offset to adjust user height and obstruction by the ground 
+        Vector3 offset = new Vector3(0f, 0.35f, 0f); 
+
         // Start is called before the first frame update
         void Start()
         {
@@ -139,7 +142,7 @@ namespace CAS
 
         public void SetPosition(Vector3 position)
         {
-            toBeWorldPosition = position;
+            toBeWorldPosition = position + offset;
             initialWorldPosition = toBeWorldPosition;
             movingInitial = true;
             GetComponent<CAS_PrepareModels>().SetInitialMovement(true);
@@ -147,7 +150,7 @@ namespace CAS
 
         public void SetPositionSorting(Vector3 position)
         {
-            toBeWorldPosition = position;
+            toBeWorldPosition = position + offset;
             initialWorldPosition = toBeWorldPosition;
             movingSorting = true;
             GetComponent<CAS_PrepareModels>().SetInitialMovement(true);
@@ -170,7 +173,7 @@ namespace CAS
             //stepManager.SetTrueScale();
             //should use something like backward step index 
             layerIndex = GetComponentInParent<CAS_EachStepManager>().stepIndex;
-            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f));
+            toBeWorldPosition = LerpWithoutClamp(Vector3.zero, initialWorldPosition, 1f + (layerIndex * 1f)) + offset;
             moving = true;
             //stepManager.SetOriginalScale();
         }
