@@ -31,7 +31,8 @@ namespace CAS
                     if (!placed)
                     {
                         placed = true;
-                        stepManager.manager.compareManager.compareTrigger.SetModelsPlacedTrue();
+                        stepManager.manager.compareManager.compareTriggerLeft.SetModelsPlacedTrue();
+                        stepManager.manager.compareManager.compareTriggerRight.SetModelsPlacedTrue();
                         stepManager.manager.displayPatientDetailsUIManager.showDataUI.Initialize(gameObject.name);  
                     }
                 }

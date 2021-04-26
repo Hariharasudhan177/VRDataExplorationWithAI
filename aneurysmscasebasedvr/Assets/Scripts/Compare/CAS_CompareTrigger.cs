@@ -48,7 +48,7 @@ namespace CAS
                 }
                 else
                 {
-                    mateiral.color = new Color(0f, 0f, 0f, 0.40f);
+                    mateiral.color = new Color(1f, 1f, 1f, 0.10f);
                     status = true;
                     red = 0f;
                     green = 1f;

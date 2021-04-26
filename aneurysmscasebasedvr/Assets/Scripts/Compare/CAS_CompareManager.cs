@@ -35,7 +35,8 @@ namespace CAS
 
         bool compareUIVisibilityStatus = true;
 
-        public CAS_CompareTrigger compareTrigger;
+        public CAS_CompareTrigger compareTriggerLeft;
+        public CAS_CompareTrigger compareTriggerRight;
 
 
         // Start is called before the first frame update
