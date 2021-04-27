@@ -47,7 +47,12 @@ namespace CAS
             new Color(0.854f, 0.647f, 0.125f, 1f), new Color(0.184f, 0.309f, 0.309f, 1f)};
 
         string modelWithMultipleRecords = "";
-        int modelWithMultipleRecordsCount = 0; 
+        int modelWithMultipleRecordsCount = 0;
+
+        private void Awake()
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-GB");
+        }
 
         public void Start()
         {
