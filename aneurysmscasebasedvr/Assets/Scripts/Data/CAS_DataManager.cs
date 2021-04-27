@@ -181,7 +181,9 @@ namespace CAS
                             {
                                 if (content[i] != "" && content[i] != "N/A")
                                 {
-                                    newRow[patientDetails.Columns[i + 1]] = double.Parse(content[i]);
+                                    double tempValue = double.Parse(content[i]);
+                                    string tempValueString = tempValue.ToString("0.00"); 
+                                    newRow[patientDetails.Columns[i + 1]] = double.Parse(tempValueString);
                                 }
                                 else
                                 {

@@ -26,7 +26,7 @@ namespace CAS
         public void SetGroupedDetailsContent(Color colour, string subKeyName, int count)
         {
             groupedColor.color = colour;
-            groupedDetails.text = subKeyName + " - " + count; 
+            groupedDetails.text = subKeyName + " - #" + count; 
         }
     }
 
