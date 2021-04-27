@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using TMPro;
+using UnityEngine.UI; 
 
 namespace CAS
 {
@@ -11,13 +13,14 @@ namespace CAS
         public CAS_ObjectOfInterestUI objectOfInterestUI;
         public CAS_SimilarityUI similarityUI;
         public CAS_ClassificationUI classificationUI;
-        public GameObject aiUIParent; 
-
+        public GameObject aiUIParent;
+        public TextMeshProUGUI visualisationButtonText;
         bool aiUIVisibilityStatus = true;
 
         public GameObject similartiyVisualisation;
         public GameObject similartiyContent;
-        public Camera cameraForRadialChart; 
+        public Camera cameraForRadialChart;
+        bool similarityVisualisationStatus = false;  
         // Start is called before the first frame update
         void Start()
         {
@@ -48,22 +51,46 @@ namespace CAS
             aiUIParent.GetComponent<TrackedDeviceGraphicRaycaster>().enabled = aiUIVisibilityStatus;
         }
 
-        public void OnClickVisualisationOfSimilarity(float value)
+        public void OnClickVisualisationOfSimilarity()
         {
-            if (value == 0)
+            if(aiManager.GetIndexOfInterest() == -1)
             {
-                similartiyVisualisation.SetActive(false);
-                similartiyContent.SetActive(true);
-                cameraForRadialChart.gameObject.SetActive(false); 
-                aiManager.DeActivateSimilarityVisualisation();
+                return; 
+            }
+
+            similarityVisualisationStatus = !similarityVisualisationStatus; 
+
+            if (similarityVisualisationStatus)
+            {
+                ActivateSimilarityVisualisation();
             }
             else
             {
-                similartiyVisualisation.SetActive(true);
-                similartiyContent.SetActive(false);
-                cameraForRadialChart.gameObject.SetActive(true);
-                aiManager.ActivateSimilartiyVisualisation();
+                DeactivateSimilarityVisualisation(); 
             }
+        }
+
+        public void DeactivateSimilarityVisualisation()
+        {
+            visualisationButtonText.text = "Activate Visualisation";
+            similartiyVisualisation.SetActive(false);
+            similartiyContent.SetActive(true);
+            cameraForRadialChart.gameObject.SetActive(false);
+            aiManager.DeActivateSimilarityVisualisation();
+        }
+
+        public void ActivateSimilarityVisualisation()
+        {
+            visualisationButtonText.text = "Deactivate Visualisation";
+            similartiyVisualisation.SetActive(true);
+            similartiyContent.SetActive(false);
+            cameraForRadialChart.gameObject.SetActive(true);
+            aiManager.ActivateSimilartiyVisualisation();
+        }
+
+        public void SimilarityVisualisationButton(bool value)
+        {
+            visualisationButtonText.transform.parent.GetComponent<Button>().interactable = value; 
         }
     }
 }

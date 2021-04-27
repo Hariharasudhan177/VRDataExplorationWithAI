@@ -92,6 +92,7 @@ namespace CAS
             objectsOfInterest[indexOfInterest].gameObject.SetActive(true);
 
             CalculateSimilarity(currentIndexOfInterest);
+            aiUI.SimilarityVisualisationButton(true);
         }
 
         public void UnSetObjectOfInterest()
@@ -101,6 +102,8 @@ namespace CAS
             {
                 example.gameObject.SetActive(false);
             }
+            aiUI.DeactivateSimilarityVisualisation();
+            aiUI.SimilarityVisualisationButton(false); 
         }
 
         public Dictionary<string, double> CalculateSimilarity(int indexOfInterest)
